@@ -1,0 +1,21 @@
+apply plugin: 'java'
+apply plugin: 'spring-boot'
+
+group 'rs.symbolic.cache.memcached'
+version = '0.0.1-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile('org.springframework.boot:spring-boot-autoconfigure')
+
+    optional('org.springframework.boot:spring-boot-configuration-processor')
+    optional('com.amazonaws:elasticache-java-cluster-client:1.1.0')
+
+    testCompile('org.springframework.boot:spring-boot-starter-test')
+    testCompile('commons-logging:commons-logging:1.2')
+}
+
+compileJava.dependsOn(processResources)

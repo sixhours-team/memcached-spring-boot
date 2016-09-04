@@ -1,0 +1,1 @@
+include 'memcached-spring-boot-autoconfigure', 'memcached-spring-boot-starter'
