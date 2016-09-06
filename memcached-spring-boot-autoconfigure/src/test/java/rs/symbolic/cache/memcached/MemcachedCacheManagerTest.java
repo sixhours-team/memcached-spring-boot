@@ -18,15 +18,14 @@ import static org.mockito.Mockito.mock;
  */
 public class MemcachedCacheManagerTest {
 
-    public static final String EXISTING_CACHE = "existing-cache";
-    public static final String NON_EXISTING_CACHE = "non-existing-cache";
+    private static final String EXISTING_CACHE = "existing-cache";
+    private static final String NON_EXISTING_CACHE = "non-existing-cache";
 
     private MemcachedCacheManager cacheManager;
-    private MemcachedClient memcachedClient;
 
     @Before
     public void setup() {
-        memcachedClient = mock(MemcachedClient.class);
+        MemcachedClient memcachedClient = mock(MemcachedClient.class);
         cacheManager = new MemcachedCacheManager(memcachedClient);
 
         cacheManager.getCache(EXISTING_CACHE);

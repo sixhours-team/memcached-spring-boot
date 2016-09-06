@@ -3,7 +3,7 @@ package rs.symbolic.cache.memcached;
 import net.spy.memcached.ClientMode;
 
 /**
- * Constant values for the default configuration.
+ * Constant values for the default cache configuration.
  *
  * @author Igor Bolic
  */
@@ -14,7 +14,7 @@ public class Default {
     public static final ClientMode CLIENT_MODE = ClientMode.Static;
     public static final int EXPIRATION = 60;
     public static final String PREFIX = "memcached:spring-boot";
-    public static final String NAMESPACE_KEY = "namespace-key";
+    public static final String NAMESPACE = "namespace";
 
     private Default() {
     }

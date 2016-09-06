@@ -32,8 +32,12 @@ import java.util.Collections;
 @AutoConfigureBefore(CacheAutoConfiguration.class)
 public class MemcachedCacheAutoConfiguration {
 
+    private final MemcachedCacheProperties cacheProperties;
+
     @Autowired
-    private MemcachedCacheProperties cacheProperties;
+    public MemcachedCacheAutoConfiguration(MemcachedCacheProperties cacheProperties) {
+        this.cacheProperties = cacheProperties;
+    }
 
     public MemcachedClient memcachedClient() throws IOException {
         final String host = cacheProperties.getHost();

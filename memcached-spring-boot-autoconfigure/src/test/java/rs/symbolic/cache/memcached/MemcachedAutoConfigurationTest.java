@@ -27,9 +27,7 @@ public class MemcachedAutoConfigurationTest {
 
     @After
     public void teardown() {
-        if (applicationContext != null) {
-            applicationContext.close();
-        }
+        applicationContext.close();
     }
 
     @Test
@@ -41,7 +39,7 @@ public class MemcachedAutoConfigurationTest {
         MemcachedClient memcachedClient = (MemcachedClient) ReflectionTestUtils.getField(memcachedCacheManager, "memcachedClient");
 
         assertMemcachedClient(memcachedClient, Default.HOST, Default.PORT, Default.CLIENT_MODE);
-        assertMemcachedCacheManager(memcachedCacheManager, Default.EXPIRATION, Default.PREFIX, Default.NAMESPACE_KEY);
+        assertMemcachedCacheManager(memcachedCacheManager, Default.EXPIRATION, Default.PREFIX, Default.NAMESPACE);
     }
 
     @Test
@@ -72,7 +70,7 @@ public class MemcachedAutoConfigurationTest {
         MemcachedClient memcachedClient = (MemcachedClient) ReflectionTestUtils.getField(memcachedCacheManager, "memcachedClient");
 
         assertMemcachedClient(memcachedClient, "192.168.99.100", 12345, Default.CLIENT_MODE);
-        assertMemcachedCacheManager(memcachedCacheManager, Default.EXPIRATION, "custom:prefix", Default.NAMESPACE_KEY);
+        assertMemcachedCacheManager(memcachedCacheManager, Default.EXPIRATION, "custom:prefix", Default.NAMESPACE);
     }
 
     private void assertMemcachedClient(MemcachedClient memcachedClient, String host, int port, ClientMode clientMode) {

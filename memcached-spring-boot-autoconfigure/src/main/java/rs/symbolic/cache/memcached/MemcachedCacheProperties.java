@@ -4,6 +4,8 @@ import net.spy.memcached.ClientMode;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
+ * Configuration properties for Memcached cache.
+ *
  * @author Igor Bolic
  */
 @ConfigurationProperties(prefix = "memcached.cache", ignoreInvalidFields = true)
@@ -35,9 +37,9 @@ public class MemcachedCacheProperties {
     private String prefix = Default.PREFIX;
 
     /**
-     * Namespace key value used for invalidation of cached values. The default value is "namespace-key".
+     * Namespace key value used for invalidation of cached values. The default value is "namespace".
      */
-    private String namespace = Default.NAMESPACE_KEY;
+    private String namespace = Default.NAMESPACE;
 
     public String getHost() {
         return host;

@@ -14,7 +14,7 @@ import java.util.concurrent.ConcurrentMap;
  * <p>
  * By default appends prefix {@code memcached:spring-boot} and uses namespace key value of {@code namespace-key}
  * to avoid clashes with other data that might be kept in the cache. Custom prefix can be specified
- * in spring configuration file e.g.
+ * in Spring configuration file e.g.
  * <br><br>
  * <code>
  * memcached.cache.prefix=custom-prefix<br>
@@ -26,11 +26,11 @@ import java.util.concurrent.ConcurrentMap;
 public class MemcachedCacheManager implements CacheManager {
 
     private final ConcurrentMap<String, Cache> cacheMap = new ConcurrentHashMap<>(16);
-    protected final MemcachedClient memcachedClient;
+    final MemcachedClient memcachedClient;
 
     private int expiration = Default.EXPIRATION;
     private String prefix = Default.PREFIX;
-    private String namespace = Default.NAMESPACE_KEY;
+    private String namespace = Default.NAMESPACE;
 
     /**
      * Construct a {@link MemcachedCacheManager}
