@@ -6,15 +6,17 @@ import net.spy.memcached.MemcachedClient;
 import net.spy.memcached.config.NodeEndPoint;
 import org.junit.After;
 import org.junit.Test;
+import org.springframework.beans.factory.config.ConstructorArgumentValues;
+import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.List;
 
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
 
 /**
  * Memcached auto-configuration tests
@@ -39,6 +41,27 @@ public class MemcachedAutoConfigurationTest {
         MemcachedClient memcachedClient = (MemcachedClient) ReflectionTestUtils.getField(memcachedCacheManager, "memcachedClient");
 
         assertMemcachedClient(memcachedClient, Default.HOST, Default.PORT, Default.CLIENT_MODE);
+        assertMemcachedCacheManager(memcachedCacheManager, Default.EXPIRATION, Default.PREFIX, Default.NAMESPACE);
+    }
+
+    @Test
+    public void thatMemcachedWithNonCustomConfigurationIsLoadedWhenCacheManagerBeanAlreadyInContext() throws Exception {
+        // add cache manager to the context before triggering auto-configuration on context load
+        ConstructorArgumentValues constructorArgumentValues = new ConstructorArgumentValues();
+        constructorArgumentValues.addGenericArgumentValue(mock(MemcachedClient.class));
+        RootBeanDefinition cacheManagerBeanDefinition = new RootBeanDefinition(
+                MemcachedCacheManager.class,
+                constructorArgumentValues,
+                null);
+        applicationContext.registerBeanDefinition("cacheManager", cacheManagerBeanDefinition);
+
+        loadContext("memcached.cache.expiration=3600",
+                "memcached.cache.prefix=custom:prefix",
+                "memcached.cache.namespace=custom_namespace");
+
+        MemcachedCacheManager memcachedCacheManager = this.applicationContext.getBean(MemcachedCacheManager.class);
+
+        assertThat("Auto-configured disposable instace should not be loaded in context", memcachedCacheManager, not(instanceOf(MemcachedCacheAutoConfiguration.DisposableMemcachedCacheManager.class)));
         assertMemcachedCacheManager(memcachedCacheManager, Default.EXPIRATION, Default.PREFIX, Default.NAMESPACE);
     }
 

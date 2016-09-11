@@ -59,7 +59,7 @@ public class MemcachedCacheAutoConfiguration {
         return cacheManager;
     }
 
-    private class DisposableMemcachedCacheManager extends MemcachedCacheManager implements DisposableBean {
+    protected class DisposableMemcachedCacheManager extends MemcachedCacheManager implements DisposableBean {
 
         public DisposableMemcachedCacheManager(MemcachedClient memcachedClient) {
             super(memcachedClient);
