@@ -17,7 +17,7 @@ import static org.mockito.Mockito.anyInt;
 import static org.mockito.Mockito.*;
 
 /**
- * Memcached cache test.
+ * Memcached cache tests
  *
  * @author Igor Bolic
  */
@@ -118,11 +118,7 @@ public class MemcachedCacheTest {
         thrown.expect(hasProperty("key", is(CACHED_OBJECT_KEY)));
 
         memcachedCache.get(CACHED_OBJECT_KEY, () -> {
-            // cause exception to be thrown
-            Object result = null;
-            if (result.equals(null)) {
-            }
-            return result;
+            throw new Exception("exception to be wrapped");
         });
     }
 
