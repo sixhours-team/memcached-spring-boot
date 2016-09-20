@@ -5,11 +5,19 @@ import net.spy.memcached.ConnectionFactory;
 import net.spy.memcached.MemcachedClient;
 import net.spy.memcached.config.NodeEndPoint;
 import org.junit.After;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
+import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.config.ConstructorArgumentValues;
 import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.boot.test.util.EnvironmentTestUtils;
+import org.springframework.cache.CacheManager;
+import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.cache.concurrent.ConcurrentMapCacheManager;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.List;
@@ -25,6 +33,9 @@ import static org.mockito.Mockito.mock;
  */
 public class MemcachedAutoConfigurationTest {
 
+    @Rule
+    public ExpectedException thrown = ExpectedException.none();
+
     private final AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext();
 
     @After
@@ -33,8 +44,37 @@ public class MemcachedAutoConfigurationTest {
     }
 
     @Test
+    public void thatMemcachedNotLoadedWhenCachingNotEnabled() throws Exception {
+        loadContext(EmptyConfiguration.class);
+
+        thrown.expect(NoSuchBeanDefinitionException.class);
+        thrown.expectMessage("No qualifying bean of type [rs.symbolic.cache.memcached.MemcachedCacheManager] is defined");
+
+        this.applicationContext.getBean(MemcachedCacheManager.class);
+    }
+
+    @Test
+    public void thatMemcachedNotLoadedWhenUsingCustomCacheManager() throws Exception {
+        loadContext(CacheWithCustomCacheManagerConfiguration.class);
+
+        thrown.expect(NoSuchBeanDefinitionException.class);
+        thrown.expectMessage("No qualifying bean of type [rs.symbolic.cache.memcached.MemcachedCacheManager] is defined");
+
+        this.applicationContext.getBean(MemcachedCacheManager.class);
+    }
+
+    @Test
+    public void thatMemcachedCustomCacheManagerIsLoaded() throws Exception {
+        loadContext(CacheWithCustomCacheManagerConfiguration.class);
+
+        CacheManager cacheManager = this.applicationContext.getBean(CacheManager.class);
+
+        assertThat(cacheManager.getClass(), equalTo(ConcurrentMapCacheManager.class));
+    }
+
+    @Test
     public void thatMemcachedWithDefaultConfigurationIsLoaded() throws Exception {
-        loadContext();
+        loadContext(CacheConfiguration.class);
 
         MemcachedCacheManager memcachedCacheManager = this.applicationContext.getBean(MemcachedCacheManager.class);
 
@@ -55,7 +95,7 @@ public class MemcachedAutoConfigurationTest {
                 null);
         applicationContext.registerBeanDefinition("cacheManager", cacheManagerBeanDefinition);
 
-        loadContext("memcached.cache.expiration=3600",
+        loadContext(CacheConfiguration.class, "memcached.cache.expiration=3600",
                 "memcached.cache.prefix=custom:prefix",
                 "memcached.cache.namespace=custom_namespace");
 
@@ -67,7 +107,7 @@ public class MemcachedAutoConfigurationTest {
 
     @Test
     public void thatMemcachedWithCustomConfigurationIsLoaded() throws Exception {
-        loadContext("memcached.cache.host=192.168.99.100",
+        loadContext(CacheConfiguration.class, "memcached.cache.host=192.168.99.100",
                 "memcached.cache.port=11212",
                 "memcached.cache.mode=dynamic",
                 "memcached.cache.expiration=3600",
@@ -84,7 +124,7 @@ public class MemcachedAutoConfigurationTest {
 
     @Test
     public void thatMemcachedWithMissingConfigurationValuesIsLoaded() throws Exception {
-        loadContext("memcached.cache.host=192.168.99.100",
+        loadContext(CacheConfiguration.class, "memcached.cache.host=192.168.99.100",
                 "memcached.cache.port=12345",
                 "memcached.cache.prefix=custom:prefix");
 
@@ -120,10 +160,31 @@ public class MemcachedAutoConfigurationTest {
         assertThat(actualNamespace, is(namespace));
     }
 
-    private void loadContext(String... environment) {
+    private void loadContext(Class<?> configuration, String... environment) {
         EnvironmentTestUtils.addEnvironment(applicationContext, environment);
 
+        applicationContext.register(configuration);
         applicationContext.register(MemcachedCacheAutoConfiguration.class);
         applicationContext.refresh();
     }
+
+    @Configuration
+    static class EmptyConfiguration {
+    }
+
+    @Configuration
+    @EnableCaching
+    static class CacheConfiguration {
+    }
+
+    @Configuration
+    @EnableCaching
+    static class CacheWithCustomCacheManagerConfiguration {
+
+        @Bean
+        public CacheManager cacheManager() {
+            return new ConcurrentMapCacheManager();
+        }
+    }
+
 }

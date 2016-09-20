@@ -5,6 +5,8 @@ import org.springframework.cache.support.AbstractValueAdaptingCache;
 
 import java.util.Random;
 import java.util.concurrent.Callable;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * Cache implementation on top of Memcached.
@@ -17,6 +19,8 @@ public class MemcachedCache extends AbstractValueAdaptingCache {
 
     private final MemcachedClient memcachedClient;
     private final MemcacheCacheMetadata memcacheCacheMetadata;
+
+    private final Lock lock = new ReentrantLock();
 
     /**
      * Create an {@code MemcachedCache} with the given settings.
@@ -55,13 +59,16 @@ public class MemcachedCache extends AbstractValueAdaptingCache {
             return (T) fromStoreValue(value);
         }
 
-        synchronized (memcachedClient) {
+        lock.lock();
+        try {
             value = lookup(key);
             if (value != null) {
                 return (T) fromStoreValue(value);
             } else {
                 return loadValue(key, valueLoader);
             }
+        } finally {
+            lock.unlock();
         }
     }
 
@@ -140,7 +147,7 @@ public class MemcachedCache extends AbstractValueAdaptingCache {
         }
     }
 
-    static class MemcacheCacheMetadata {
+    class MemcacheCacheMetadata {
         private final String name;
         private final int expiration;
         private final String cachePrefix;
