@@ -52,6 +52,7 @@ public class MemcachedCache extends AbstractValueAdaptingCache {
         return this.memcachedClient;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public <T> T get(Object key, Callable<T> valueLoader) {
         Object value = lookup(key);
@@ -116,7 +117,7 @@ public class MemcachedCache extends AbstractValueAdaptingCache {
      * key to be valid.
      */
     class MemcachedKey {
-        private StringBuilder value;
+        private final StringBuilder value;
 
         public MemcachedKey(Object key) {
             this.value = new StringBuilder(memcacheCacheMetadata.cachePrefix())
@@ -130,7 +131,7 @@ public class MemcachedCache extends AbstractValueAdaptingCache {
         }
 
         /**
-         * Gets namespace value form the cache. The value is used for invalidation of the cache data
+         * Gets namespace value from the cache. The value is used for invalidation of the cache data
          * by incrementing current namespace value by 1.
          *
          * @return Namespace integer value returned as {@code String}

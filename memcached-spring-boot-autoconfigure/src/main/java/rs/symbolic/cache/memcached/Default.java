@@ -7,7 +7,7 @@ import net.spy.memcached.ClientMode;
  *
  * @author Igor Bolic
  */
-public class Default {
+public final class Default {
 
     public static final String HOST = "localhost";
     public static final int PORT = 11211;

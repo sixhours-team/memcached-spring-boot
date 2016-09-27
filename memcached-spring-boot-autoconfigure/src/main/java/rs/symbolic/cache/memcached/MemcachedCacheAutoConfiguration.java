@@ -44,7 +44,7 @@ public class MemcachedCacheAutoConfiguration {
         this.cacheProperties = cacheProperties;
     }
 
-    public MemcachedClient memcachedClient() throws IOException {
+    private MemcachedClient memcachedClient() throws IOException {
         final String host = cacheProperties.getHost();
         final int port = cacheProperties.getPort();
         final ClientMode mode = cacheProperties.getMode();
