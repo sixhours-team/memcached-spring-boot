@@ -1,14 +1,4 @@
-apply plugin: 'java'
-apply plugin: 'spring-boot'
-
-group 'rs.symbolic.cache.memcached'
-version = '0.0.1-SNAPSHOT'
-
-repositories {
-    mavenCentral()
-}
-
 dependencies {
-    compile('rs.symbolic.cache.memcached:memcached-spring-boot-autoconfigure')
-    compile('com.amazonaws:elasticache-java-cluster-client:1.1.0')
+    compile("rs.symbolic.cache.memcached:memcached-spring-boot-autoconfigure:${version}")
+    compile("com.amazonaws:elasticache-java-cluster-client:${elasticacheClientVersion}")
 }
