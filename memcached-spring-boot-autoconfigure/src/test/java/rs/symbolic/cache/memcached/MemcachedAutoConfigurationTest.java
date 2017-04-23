@@ -48,7 +48,7 @@ public class MemcachedAutoConfigurationTest {
         loadContext(EmptyConfiguration.class);
 
         thrown.expect(NoSuchBeanDefinitionException.class);
-        thrown.expectMessage("No qualifying bean of type [rs.symbolic.cache.memcached.MemcachedCacheManager] is defined");
+        thrown.expectMessage("No qualifying bean of type 'rs.symbolic.cache.memcached.MemcachedCacheManager' available");
 
         this.applicationContext.getBean(MemcachedCacheManager.class);
     }
@@ -58,7 +58,7 @@ public class MemcachedAutoConfigurationTest {
         loadContext(CacheWithCustomCacheManagerConfiguration.class);
 
         thrown.expect(NoSuchBeanDefinitionException.class);
-        thrown.expectMessage("No qualifying bean of type [rs.symbolic.cache.memcached.MemcachedCacheManager] is defined");
+        thrown.expectMessage("No qualifying bean of type 'rs.symbolic.cache.memcached.MemcachedCacheManager' available");
 
         this.applicationContext.getBean(MemcachedCacheManager.class);
     }

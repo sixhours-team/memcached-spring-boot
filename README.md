@@ -10,7 +10,7 @@ specific, it is using the `spymemcached` fork: [Amazon's ElastiCache Clustered C
 
 To install library in your local Maven repository run this command:
 
-`gradle clean test install`
+`./gradlew clean test install`
 
 
 

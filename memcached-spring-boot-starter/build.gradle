@@ -1,4 +1,4 @@
 dependencies {
-    compile("rs.symbolic.cache.memcached:memcached-spring-boot-autoconfigure:${version}")
-    compile("com.amazonaws:elasticache-java-cluster-client:${elasticacheClientVersion}")
+    compile("rs.symbolic.cache.memcached:memcached-spring-boot-autoconfigure:$version")
+    compile("com.amazonaws:elasticache-java-cluster-client:$elasticacheClientVersion")
 }
