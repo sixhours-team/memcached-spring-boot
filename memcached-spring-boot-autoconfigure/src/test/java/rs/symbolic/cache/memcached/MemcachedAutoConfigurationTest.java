@@ -27,7 +27,7 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 
 /**
- * Memcached auto-configuration tests
+ * Memcached auto-configuration tests.
  *
  * @author Igor Bolic
  */
@@ -101,7 +101,7 @@ public class MemcachedAutoConfigurationTest {
 
         MemcachedCacheManager memcachedCacheManager = this.applicationContext.getBean(MemcachedCacheManager.class);
 
-        assertThat("Auto-configured disposable instace should not be loaded in context", memcachedCacheManager, not(instanceOf(MemcachedCacheAutoConfiguration.DisposableMemcachedCacheManager.class)));
+        assertThat("Auto-configured disposable instance should not be loaded in context", memcachedCacheManager, not(instanceOf(MemcachedCacheAutoConfiguration.DisposableMemcachedCacheManager.class)));
         assertMemcachedCacheManager(memcachedCacheManager, Default.EXPIRATION, Default.PREFIX, Default.NAMESPACE);
     }
 

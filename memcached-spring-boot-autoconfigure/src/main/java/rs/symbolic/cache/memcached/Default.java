@@ -3,7 +3,7 @@ package rs.symbolic.cache.memcached;
 import net.spy.memcached.ClientMode;
 
 /**
- * Constant values for the default cache configuration.
+ * Default cache configuration values.
  *
  * @author Igor Bolic
  */

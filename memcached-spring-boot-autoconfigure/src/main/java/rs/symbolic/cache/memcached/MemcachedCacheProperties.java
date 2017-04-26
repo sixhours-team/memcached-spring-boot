@@ -1,5 +1,6 @@
 package rs.symbolic.cache.memcached;
 
+import lombok.Data;
 import net.spy.memcached.ClientMode;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
@@ -9,6 +10,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author Igor Bolic
  */
 @ConfigurationProperties(prefix = "memcached.cache", ignoreInvalidFields = true)
+@Data
 public class MemcachedCacheProperties {
 
     /**
@@ -41,51 +43,4 @@ public class MemcachedCacheProperties {
      */
     private String namespace = Default.NAMESPACE;
 
-    public String getHost() {
-        return host;
-    }
-
-    public void setHost(String host) {
-        this.host = host;
-    }
-
-    public Integer getPort() {
-        return port;
-    }
-
-    public void setPort(Integer port) {
-        this.port = port;
-    }
-
-    public ClientMode getMode() {
-        return mode;
-    }
-
-    public void setMode(ClientMode mode) {
-        this.mode = mode;
-    }
-
-    public Integer getExpiration() {
-        return expiration;
-    }
-
-    public void setExpiration(Integer expiration) {
-        this.expiration = expiration;
-    }
-
-    public String getPrefix() {
-        return prefix;
-    }
-
-    public void setPrefix(String prefix) {
-        this.prefix = prefix;
-    }
-
-    public String getNamespace() {
-        return namespace;
-    }
-
-    public void setNamespace(String namespace) {
-        this.namespace = namespace;
-    }
 }

@@ -12,7 +12,7 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 
 /**
- * Memcached cache manager tests
+ * Memcached cache manager tests.
  *
  * @author Igor Bolic
  */

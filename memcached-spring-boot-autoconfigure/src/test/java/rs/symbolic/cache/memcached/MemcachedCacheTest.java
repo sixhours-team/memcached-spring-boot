@@ -10,14 +10,10 @@ import org.springframework.cache.Cache;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.hasProperty;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Matchers.anyObject;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.argThat;
-import static org.mockito.Mockito.anyInt;
 import static org.mockito.Mockito.*;
 
 /**
- * Memcached cache tests
+ * Memcached cache tests.
  *
  * @author Igor Bolic
  */

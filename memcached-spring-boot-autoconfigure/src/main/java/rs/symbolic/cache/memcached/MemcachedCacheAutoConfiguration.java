@@ -25,7 +25,7 @@ import java.util.Collections;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for the Memcached cache.
- * Creates {@link CacheManager} when caching is enabled via {@link EnableCaching}
+ * Creates {@link CacheManager} when caching is enabled via {@link EnableCaching}.
  *
  * @author Igor Bolic
  */
