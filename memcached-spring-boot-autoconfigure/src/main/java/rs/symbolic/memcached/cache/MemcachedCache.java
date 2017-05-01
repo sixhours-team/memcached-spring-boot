@@ -1,4 +1,4 @@
-package io.sixhours.memcached.cache;
+package rs.symbolic.memcached.cache;
 
 import net.spy.memcached.MemcachedClient;
 import org.springframework.cache.support.AbstractValueAdaptingCache;
