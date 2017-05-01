@@ -20,7 +20,7 @@ subprojects {
     apply plugin: 'propdeps-idea'
     apply plugin: 'propdeps-eclipse'
 
-    group = "rs.symbolic.cache.memcached"
+    group = "rs.symbolic.memcached.cache"
     version = "0.0.1-SNAPSHOT"
 
     sourceCompatibility = 1.8

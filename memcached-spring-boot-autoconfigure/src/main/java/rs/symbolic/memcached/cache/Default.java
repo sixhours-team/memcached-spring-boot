@@ -1,4 +1,4 @@
-package rs.symbolic.cache.memcached;
+package io.sixhours.memcached.cache;
 
 import net.spy.memcached.ClientMode;
 
@@ -17,5 +17,6 @@ public final class Default {
     public static final String NAMESPACE = "namespace";
 
     private Default() {
+        new AssertionError("Suppress default constructor");
     }
 }

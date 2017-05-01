@@ -1,4 +1,4 @@
-package rs.symbolic.cache.memcached;
+package io.sixhours.memcached.cache;
 
 import net.spy.memcached.ClientMode;
 import net.spy.memcached.ConnectionFactory;
@@ -48,7 +48,7 @@ public class MemcachedAutoConfigurationTest {
         loadContext(EmptyConfiguration.class);
 
         thrown.expect(NoSuchBeanDefinitionException.class);
-        thrown.expectMessage("No qualifying bean of type 'rs.symbolic.cache.memcached.MemcachedCacheManager' available");
+        thrown.expectMessage("No qualifying bean of type 'io.sixhours.memcached.cache.MemcachedCacheManager' available");
 
         this.applicationContext.getBean(MemcachedCacheManager.class);
     }
@@ -58,7 +58,7 @@ public class MemcachedAutoConfigurationTest {
         loadContext(CacheWithCustomCacheManagerConfiguration.class);
 
         thrown.expect(NoSuchBeanDefinitionException.class);
-        thrown.expectMessage("No qualifying bean of type 'rs.symbolic.cache.memcached.MemcachedCacheManager' available");
+        thrown.expectMessage("No qualifying bean of type 'io.sixhours.memcached.cache.MemcachedCacheManager' available");
 
         this.applicationContext.getBean(MemcachedCacheManager.class);
     }

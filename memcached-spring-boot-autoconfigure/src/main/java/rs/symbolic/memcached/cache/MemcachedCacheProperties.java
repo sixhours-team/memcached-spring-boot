@@ -1,4 +1,4 @@
-package rs.symbolic.cache.memcached;
+package io.sixhours.memcached.cache;
 
 import lombok.Data;
 import net.spy.memcached.ClientMode;
