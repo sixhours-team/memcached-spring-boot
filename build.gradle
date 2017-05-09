@@ -47,6 +47,8 @@ subprojects {
 
     jar {
         manifest {
+            attributes('Implementation-Title': project.name)
+            attributes('Implementation-Version': project.version)
             attributes('Build-Time-ISO-8601': new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"))
         }
     }
