@@ -1,6 +1,6 @@
 buildscript {
     ext {
-        springBootVersion = '1.5.3.RELEASE'
+        springBootVersion = '1.5.4.RELEASE'
         elasticacheClientVersion = '1.1.1'
     }
     repositories {
@@ -8,7 +8,7 @@ buildscript {
     }
     dependencies {
         classpath("org.springframework.boot:spring-boot-gradle-plugin:$springBootVersion")
-        classpath("io.spring.gradle:propdeps-plugin:0.0.8")
+        classpath("io.spring.gradle:propdeps-plugin:0.0.9.RELEASE")
     }
 }
 
