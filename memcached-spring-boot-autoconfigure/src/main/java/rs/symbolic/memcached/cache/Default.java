@@ -17,6 +17,6 @@ public final class Default {
     public static final String NAMESPACE = "namespace";
 
     private Default() {
-        new AssertionError("Suppress default constructor");
+        throw new AssertionError("Suppress default constructor");
     }
 }
