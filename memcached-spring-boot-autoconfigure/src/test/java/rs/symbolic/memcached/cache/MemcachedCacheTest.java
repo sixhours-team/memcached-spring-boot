@@ -19,14 +19,14 @@ import static org.mockito.Mockito.*;
  */
 public class MemcachedCacheTest {
 
-    public static final String CACHED_OBJECT_KEY = "cached_value_key";
+    private static final String CACHED_OBJECT_KEY = "cached_value_key";
 
-    public static final String CACHE_NAME = "cache";
-    public static final String CACHE_PREFIX = Default.PREFIX;
-    public static final int CACHE_EXPIRATION = Default.EXPIRATION;
+    private static final String CACHE_NAME = "cache";
+    private static final String CACHE_PREFIX = Default.PREFIX;
+    private static final int CACHE_EXPIRATION = Default.EXPIRATION;
 
-    public static final String NAMESPACE_KEY = Default.NAMESPACE;
-    public static final String NAMESPACE_KEY_VALUE = "123";
+    private static final String NAMESPACE_KEY = Default.NAMESPACE;
+    private static final String NAMESPACE_KEY_VALUE = "123";
 
 
     private MemcachedClient memcachedClient;
