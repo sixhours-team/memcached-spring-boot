@@ -144,7 +144,7 @@ public class MemcachedAutoConfigurationTest {
         ConnectionFactory cf = (ConnectionFactory) ReflectionTestUtils.getField(memcachedClient, "connFactory");
         NodeEndPoint nodeEndPoint = nodeEndPoints.get(0);
 
-        assertThat("Memcached node endpoint host is incorrect", nodeEndPoint.getHostName(), is(host));
+        assertThat("Memcached node endpoint host is incorrect", host.matches("\\w+") ? nodeEndPoint.getHostName() : nodeEndPoint.getIpAddress(), is(host));
         assertThat("Memcached node endpoint port is incorrect", nodeEndPoint.getPort(), is(port));
         assertThat("Memcached node endpoint mode is incorrect", cf.getClientMode(), is(clientMode));
     }
