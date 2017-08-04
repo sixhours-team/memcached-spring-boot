@@ -1,14 +1,14 @@
 buildscript {
     ext {
-        springBootVersion = '1.5.6.RELEASE'
-        elasticacheClientVersion = '1.1.1'
-        lombokVersion = '1.16.18'
+        spring_boot_version = '1.5.6.RELEASE'
+        elasticache_client_version = '1.1.1'
+        lombok_version = '1.16.18'
     }
     repositories {
         maven { url 'http://repo.spring.io/plugins-release' }
     }
     dependencies {
-        classpath("org.springframework.boot:spring-boot-gradle-plugin:$springBootVersion")
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:$spring_boot_version")
         classpath("io.spring.gradle:propdeps-plugin:0.0.9.RELEASE")
     }
 }

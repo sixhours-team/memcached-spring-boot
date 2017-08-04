@@ -2,9 +2,9 @@ dependencies {
     compile("org.springframework.boot:spring-boot-autoconfigure")
 
     optional("org.springframework.boot:spring-boot-configuration-processor")
-    optional("com.amazonaws:elasticache-java-cluster-client:$elasticacheClientVersion")
+    optional("com.amazonaws:elasticache-java-cluster-client:$elasticache_client_version")
 
-    provided("org.projectlombok:lombok:$lombokVersion")
+    provided("org.projectlombok:lombok:$lombok_version")
 
     testCompile("org.springframework.boot:spring-boot-starter-test")
     testCompile("commons-logging:commons-logging")
