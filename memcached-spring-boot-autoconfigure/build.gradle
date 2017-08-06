@@ -7,7 +7,7 @@ dependencies {
     provided("org.projectlombok:lombok:$lombok_version")
 
     testCompile("org.springframework.boot:spring-boot-starter-test")
-    testCompile("commons-logging:commons-logging")
+    testCompile("commons-logging:commons-logging:$commons_logging_version")
 }
 
 compileJava.dependsOn(processResources)
