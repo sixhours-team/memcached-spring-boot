@@ -112,7 +112,7 @@ public class MemcachedCache extends AbstractValueAdaptingCache {
 
     /**
      * Wrapper class for the Memcached key value.
-     *
+     * <p>
      * All whitespace characters will be stripped from the key value, for Memcached
      * key to be valid.
      */

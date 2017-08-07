@@ -28,7 +28,6 @@ public class MemcachedCacheTest {
     private static final String NAMESPACE_KEY = Default.NAMESPACE;
     private static final String NAMESPACE_KEY_VALUE = "123";
 
-
     private MemcachedClient memcachedClient;
     private MemcachedCache memcachedCache;
 

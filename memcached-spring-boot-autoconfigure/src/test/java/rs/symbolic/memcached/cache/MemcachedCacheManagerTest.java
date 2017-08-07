@@ -35,7 +35,6 @@ public class MemcachedCacheManagerTest {
     public void thatGetCacheReturnsNewCacheWhenRequestedCacheIsNotAvailable() throws Exception {
         Cache cache = cacheManager.getCache(NON_EXISTING_CACHE);
 
-
         assertThat(cache, is(notNullValue()));
         assertThat("Cache size should be incremented", cacheManager.getCacheNames().size(), is(2));
     }
