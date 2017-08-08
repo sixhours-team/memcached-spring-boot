@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/igorbolic/memcached-spring-boot.svg?branch=master)](https://travis-ci.org/igorbolic/memcached-spring-boot)
+
 # Memcached Spring Boot Auto-configuration
 
 Library that provides support for auto-configuration of Memcached cache in a Spring Boot application.
