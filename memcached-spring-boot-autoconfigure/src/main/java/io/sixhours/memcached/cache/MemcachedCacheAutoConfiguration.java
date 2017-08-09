@@ -1,4 +1,4 @@
-package rs.symbolic.memcached.cache;
+package io.sixhours.memcached.cache;
 
 import net.spy.memcached.ClientMode;
 import net.spy.memcached.DefaultConnectionFactory;

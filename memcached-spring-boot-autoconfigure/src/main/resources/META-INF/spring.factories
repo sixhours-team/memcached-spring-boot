@@ -1,1 +1,1 @@
-org.springframework.boot.autoconfigure.EnableAutoConfiguration=rs.symbolic.memcached.cache.MemcachedCacheAutoConfiguration
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=io.sixhours.memcached.cache.MemcachedCacheAutoConfiguration

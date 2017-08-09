@@ -1,4 +1,4 @@
-package rs.symbolic.memcached.cache;
+package io.sixhours.memcached.cache;
 
 import org.junit.Rule;
 import org.junit.Test;
