@@ -1,6 +1,7 @@
 package io.sixhours.memcached.cache;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import net.spy.memcached.ClientMode;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
@@ -10,7 +11,8 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author Igor Bolic
  */
 @ConfigurationProperties(prefix = "memcached.cache", ignoreInvalidFields = true)
-@Data
+@Getter
+@Setter
 public class MemcachedCacheProperties {
 
     /**

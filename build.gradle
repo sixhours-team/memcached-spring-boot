@@ -14,6 +14,10 @@ buildscript {
     }
 }
 
+allprojects {
+    apply plugin: 'jacoco'
+}
+
 subprojects {
     apply plugin: 'java'
     apply plugin: 'org.springframework.boot'
@@ -59,4 +63,5 @@ subprojects {
         jcenter()
     }
 
+    build.dependsOn jacocoTestReport
 }
