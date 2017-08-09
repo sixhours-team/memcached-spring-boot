@@ -1,4 +1,5 @@
-[![Build Status](https://travis-ci.org/igorbolic/memcached-spring-boot.svg?branch=master)](https://travis-ci.org/igorbolic/memcached-spring-boot)
+[![Build Status](https://travis-ci.org/igorbolic/memcached-spring-boot.svg?branch=master)](https://travis-ci.org/igorbolic/memcached-spring-boot) 
+[![codecov](https://codecov.io/gh/igorbolic/memcached-spring-boot/branch/master/graph/badge.svg)](https://codecov.io/gh/igorbolic/memcached-spring-boot)
 
 # Memcached Spring Boot Auto-configuration
 
