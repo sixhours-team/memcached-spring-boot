@@ -31,7 +31,7 @@ memcached.cache.expiration: # Cache expiration in seconds (default "60")
 memcached.cache.prefix: # Cache key prefix (default "memcached:spring-boot")
 ```
 
-All of the values have sensible defaults, and bound to [MemcachedCacheProperties](https://github.com/igorbolic/memcached-spring-boot/blob/master/memcached-spring-boot-autoconfigure/src/main/java/rs/symbolic/memcached/cache/MemcachedCacheProperties.java) class. 
+All of the values have sensible defaults, and bound to [MemcachedCacheProperties](https://github.com/igorbolic/memcached-spring-boot/blob/master/memcached-spring-boot-autoconfigure/src/main/java/io/sixhours/memcached/cache/MemcachedCacheProperties.java) class. 
 It is advised to set your own `namespace` and `prefix` values to avoid cache data conflicts when multiple applications are sharing the same Memcached server.
 
 
