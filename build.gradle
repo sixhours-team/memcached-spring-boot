@@ -63,6 +63,14 @@ subprojects {
         jcenter()
     }
 
+    dependencyManagement {
+        dependencies {
+            dependency "com.amazonaws:elasticache-java-cluster-client:$elasticache_client_version"
+            dependency "org.projectlombok:lombok:$lombok_version"
+            dependency "commons-logging:commons-logging:$commons_logging_version"
+        }
+    }
+
     jacocoTestReport {
         reports {
             xml.enabled true
