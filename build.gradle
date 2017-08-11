@@ -11,6 +11,7 @@ buildscript {
     dependencies {
         classpath("org.springframework.boot:spring-boot-gradle-plugin:$spring_boot_version")
         classpath("io.spring.gradle:propdeps-plugin:0.0.9.RELEASE")
+        classpath("com.jfrog.bintray.gradle:gradle-bintray-plugin:1.7.3")
     }
 }
 
@@ -27,7 +28,7 @@ subprojects {
     apply plugin: 'propdeps-eclipse'
 
     group = "io.sixhours.memcached.cache"
-    version = "0.0.1-SNAPSHOT"
+    version = "1.0.0.RC1"
 
     sourceCompatibility = 1.8
     targetCompatibility = 1.8
