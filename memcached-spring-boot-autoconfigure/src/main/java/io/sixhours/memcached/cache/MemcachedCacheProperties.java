@@ -16,7 +16,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class MemcachedCacheProperties {
 
     /**
-     * Memcached server host. The default is "localhost".
+     * Memcached server host. The default is 'localhost'.
      */
     private String host = Default.HOST;
 
@@ -26,7 +26,7 @@ public class MemcachedCacheProperties {
     private Integer port = Default.PORT;
 
     /**
-     * Memcached client mode. The default mode is "static". Use "dynamic" mode for AWS node auto discovery.
+     * Memcached client mode. The default mode is 'static'. Use 'dynamic' mode for AWS node auto discovery.
      */
     private ClientMode mode = Default.CLIENT_MODE;
 
@@ -36,12 +36,12 @@ public class MemcachedCacheProperties {
     private Integer expiration = Default.EXPIRATION;
 
     /**
-     * Cached object key prefix. The default is "memcached:spring-boot".
+     * Cached object key prefix. The default is 'memcached:spring-boot'.
      */
     private String prefix = Default.PREFIX;
 
     /**
-     * Namespace key value used for invalidation of cached values. The default value is "namespace".
+     * Namespace key value used for invalidation of cached values. The default value is 'namespace'.
      */
     private String namespace = Default.NAMESPACE;
 

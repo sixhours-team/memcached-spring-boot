@@ -1,3 +1,8 @@
+apply from: file('../gradle/release.gradle')
+
+ext.projectName = 'Memcached Spring Boot AutoConfiguration'
+ext.projectDesc = 'Memcached Spring Boot AutoConfiguration'
+
 dependencies {
     compile("org.springframework.boot:spring-boot-autoconfigure")
 

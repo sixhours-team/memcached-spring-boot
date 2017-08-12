@@ -1,4 +1,9 @@
+apply from: file('../gradle/release.gradle')
+
+ext.projectName = 'Memcached Spring Boot Starter'
+ext.projectDesc = 'Starter for the Memcached Spring Boot Cache'
+
 dependencies {
-    compile("io.sixhours.memcached.cache:memcached-spring-boot-autoconfigure:$version")
+    compile("io.sixhours.memcached.cache:memcached-spring-boot-autoconfigure:$project.version")
     compile("com.amazonaws:elasticache-java-cluster-client")
 }
