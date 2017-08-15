@@ -15,6 +15,7 @@ buildscript {
     }
 }
 
+
 allprojects {
     apply plugin: 'jacoco'
 }
@@ -27,8 +28,19 @@ subprojects {
     apply plugin: 'propdeps-idea'
     apply plugin: 'propdeps-eclipse'
 
+    def gitVersion = { ->
+        def stdout = new ByteArrayOutputStream()
+        exec {
+            ignoreExitValue true
+            commandLine 'git', 'describe', '--tags', '--match', 'v[[:digit:]]*\\.[[:digit:]]*\\.[[:digit:]]*'
+            standardOutput = stdout
+        }
+        def version = stdout.toString().trim()
+        return !version.isEmpty() ? version - 'v' : '1.0.0-SNAPSHOT'
+    }
+
     group = "io.sixhours.memcached.cache"
-    version = "1.0.0.RC1"
+    version = gitVersion()
 
     sourceCompatibility = 1.8
     targetCompatibility = 1.8
