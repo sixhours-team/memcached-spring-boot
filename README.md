@@ -44,13 +44,13 @@ To plug-in Memcached cache in your application follow the steps below:
    * **Gradle**
    
       ```shell
-      compile('io.sixhours.memcached.cache:memcached-spring-boot-starter:1.0.0-SNAPSHOT') 
+      compile('io.sixhours:memcached-spring-boot-starter:1.0.0-SNAPSHOT') 
       ```
    * **Maven**
    
       ```xml
       <dependency>
-          <groupId>io.sixhours.memcached.cache</groupId>
+          <groupId>io.sixhours</groupId>
           <artifactId>memcached-spring-boot-starter</artifactId>
           <version>1.0.0-SNAPSHOT</version>
       </dependency>

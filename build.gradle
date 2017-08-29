@@ -39,7 +39,7 @@ subprojects {
         return !version.isEmpty() ? version - 'v' : '1.0.0-SNAPSHOT'
     }
 
-    group = "io.sixhours.memcached.cache"
+    group = "io.sixhours"
     version = gitVersion()
 
     sourceCompatibility = 1.8
