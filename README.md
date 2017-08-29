@@ -25,8 +25,7 @@ full list of supported properties for the Memcached Cache library:
 
 ```.properties
 # MEMCACHED CACHE 
-memcached.cache.host: # Memcached server host (default "localhost")
-memcached.cache.port: # Memcached server port (default "11211")
+memcached.cache.servers: # Comma-separated list of hostname:port for memcached servers (default "localhost:11211")
 memcached.cache.mode: # Memcached client mode (use one of following: "static", "dynamic"). Default mode is "static", use "dynamic" for AWS node auto discovery
 memcached.cache.namespace: # Cache eviction namespace key name (default "namespace")
 memcached.cache.expiration: # Cache expiration in seconds (default "60")
@@ -59,13 +58,20 @@ To plug-in Memcached cache in your application follow the steps below:
       
 2. Configure location of your `Memcached` key-value store in the properties file (e.g. `application.yml`) e.g.
    
-      ```.properties
-      memcached.cache:
-        host: localhost
-        port: 11211
+    ```.properties
+    memcached.cache:
+        servers: example.com:11211
         mode: dynamic
         expiration: 86400
-      ```
+    ```
+   or for multi-server configuration:
+   
+    ```.properties
+     memcached.cache:
+       servers: example1.com:11211,example2.com:11211
+       mode: dynamic
+       expiration: 86400
+     ```
    
 3. Enable caching annotations by adding Spring's `@EnableCaching` annotation to one of your `@Configuration` classes e.g.
     

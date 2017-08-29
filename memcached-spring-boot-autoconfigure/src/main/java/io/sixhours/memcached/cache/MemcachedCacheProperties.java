@@ -20,7 +20,7 @@ import java.util.List;
 public class MemcachedCacheProperties {
 
     /**
-     * Comma-separated list of hostname:port for Memcached servers. The default hostname:port is 'localhost:11211'.
+     * Comma-separated list of hostname:port for memcached servers. The default hostname:port is 'localhost:11211'.
      */
     private List<Server> servers = Default.SERVERS;
 
