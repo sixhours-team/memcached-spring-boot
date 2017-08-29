@@ -2,6 +2,9 @@ package io.sixhours.memcached.cache;
 
 import net.spy.memcached.ClientMode;
 
+import java.util.Collections;
+import java.util.List;
+
 /**
  * Default cache configuration values.
  *
@@ -9,6 +12,7 @@ import net.spy.memcached.ClientMode;
  */
 public final class Default {
 
+    public static final List<MemcachedCacheProperties.Server> SERVERS = Collections.singletonList(new MemcachedCacheProperties.Server("localhost:11211"));
     public static final String HOST = "localhost";
     public static final int PORT = 11211;
     public static final ClientMode CLIENT_MODE = ClientMode.Static;

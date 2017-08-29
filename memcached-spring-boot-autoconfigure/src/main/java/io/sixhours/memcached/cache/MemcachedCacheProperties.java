@@ -4,6 +4,10 @@ import lombok.Getter;
 import lombok.Setter;
 import net.spy.memcached.ClientMode;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.util.StringUtils;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Configuration properties for Memcached cache.
@@ -14,6 +18,11 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @Getter
 @Setter
 public class MemcachedCacheProperties {
+
+    /**
+     * Memcached server list. The default is 'localhost:11211'.
+     */
+    private List<Server> servers = Default.SERVERS;
 
     /**
      * Memcached server host. The default is 'localhost'.
@@ -44,5 +53,31 @@ public class MemcachedCacheProperties {
      * Namespace key value used for invalidation of cached values. The default value is 'namespace'.
      */
     private String namespace = Default.NAMESPACE;
+
+    /**
+     * Populate server list from comma-separated list of hostname:port strings.
+     *
+     * @param value
+     */
+    public void setServers(String value) {
+        this.servers = new ArrayList<>();
+        if (!StringUtils.isEmpty(value)) {
+            for (String s : value.split(",")) {
+                this.servers.add(new Server(s.trim()));
+            }
+        }
+    }
+
+    @Getter
+    public static class Server {
+        private String host;
+        private int port;
+
+        public Server(String server) {
+            String[] values = server.split(":");
+            host = values[0];
+            port = Integer.valueOf(values[1]);
+        }
+    }
 
 }

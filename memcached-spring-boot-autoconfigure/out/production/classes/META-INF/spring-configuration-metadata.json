@@ -1,0 +1,54 @@
+{
+  "hints": [],
+  "groups": [
+    {
+      "sourceType": "io.sixhours.memcached.cache.MemcachedCacheProperties",
+      "name": "memcached.cache",
+      "type": "io.sixhours.memcached.cache.MemcachedCacheProperties"
+    }
+  ],
+  "properties": [
+    {
+      "sourceType": "io.sixhours.memcached.cache.MemcachedCacheProperties",
+      "name": "memcached.cache.expiration",
+      "description": "Cache expiration in seconds. The default is 60 seconds.",
+      "type": "java.lang.Integer"
+    },
+    {
+      "sourceType": "io.sixhours.memcached.cache.MemcachedCacheProperties",
+      "name": "memcached.cache.host",
+      "description": "Memcached server host. The default is 'localhost'.",
+      "type": "java.lang.String"
+    },
+    {
+      "sourceType": "io.sixhours.memcached.cache.MemcachedCacheProperties",
+      "name": "memcached.cache.mode",
+      "description": "Memcached client mode. The default mode is 'static'. Use 'dynamic' mode for AWS node auto discovery.",
+      "type": "net.spy.memcached.ClientMode"
+    },
+    {
+      "sourceType": "io.sixhours.memcached.cache.MemcachedCacheProperties",
+      "name": "memcached.cache.namespace",
+      "description": "Namespace key value used for invalidation of cached values. The default value is 'namespace'.",
+      "type": "java.lang.String"
+    },
+    {
+      "sourceType": "io.sixhours.memcached.cache.MemcachedCacheProperties",
+      "name": "memcached.cache.port",
+      "description": "Memcached server port. The default is 11211.",
+      "type": "java.lang.Integer"
+    },
+    {
+      "sourceType": "io.sixhours.memcached.cache.MemcachedCacheProperties",
+      "name": "memcached.cache.prefix",
+      "description": "Cached object key prefix. The default is 'memcached:spring-boot'.",
+      "type": "java.lang.String"
+    },
+    {
+      "sourceType": "io.sixhours.memcached.cache.MemcachedCacheProperties",
+      "name": "memcached.cache.servers",
+      "description": "Memcached server list. The default is 'localhost:11211'.",
+      "type": "java.util.List<io.sixhours.memcached.cache.MemcachedCacheProperties.Server>"
+    }
+  ]
+}

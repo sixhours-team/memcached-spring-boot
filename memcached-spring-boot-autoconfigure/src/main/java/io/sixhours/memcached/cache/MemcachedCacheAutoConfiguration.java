@@ -22,6 +22,8 @@ import org.springframework.context.annotation.Configuration;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for the Memcached cache.
@@ -45,12 +47,14 @@ public class MemcachedCacheAutoConfiguration {
     }
 
     private MemcachedClient memcachedClient() throws IOException {
-        final String host = cacheProperties.getHost();
-        final int port = cacheProperties.getPort();
+        final List<MemcachedCacheProperties.Server> servers = cacheProperties.getServers();
         final ClientMode mode = cacheProperties.getMode();
 
-        return new MemcachedClient(new DefaultConnectionFactory(mode),
-                Collections.singletonList(new InetSocketAddress(host, port)));
+        final List<InetSocketAddress> socketAddresses = servers.stream()
+                .map(s -> new InetSocketAddress(s.getHost(), s.getPort()))
+                .collect(Collectors.toList());
+
+        return new MemcachedClient(new DefaultConnectionFactory(mode), socketAddresses);
     }
 
     @Bean
