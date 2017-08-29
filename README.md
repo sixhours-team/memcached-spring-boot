@@ -64,12 +64,12 @@ To plug-in Memcached cache in your application follow the steps below:
         mode: dynamic
         expiration: 86400
     ```
-   or for multi-server configuration:
+   For multi-server configuration specify comma-separated list of hostname:port with `static` mode:
    
     ```.properties
      memcached.cache:
        servers: example1.com:11211,example2.com:11211
-       mode: dynamic
+       mode: static
        expiration: 86400
      ```
    

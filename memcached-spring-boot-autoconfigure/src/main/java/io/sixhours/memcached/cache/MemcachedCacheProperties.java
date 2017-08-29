@@ -25,7 +25,8 @@ public class MemcachedCacheProperties {
     private List<Server> servers = Default.SERVERS;
 
     /**
-     * Memcached client mode. The default mode is 'static'. Use 'dynamic' mode for AWS node auto discovery.
+     * Memcached client mode. The default mode is 'static'. Use 'dynamic' mode for AWS node auto discovery, or 'static'
+     * if using multiple memcached servers.
      */
     private ClientMode mode = Default.CLIENT_MODE;
 
