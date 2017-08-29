@@ -115,19 +115,13 @@ public class MemcachedAutoConfigurationTest {
         thrown.expectCause(isA(BeanInstantiationException.class));
 
         loadContext(CacheConfiguration.class, "memcached.cache.servers=192.168.99.100:11212, 192.168.99.101:11211",
-                "memcached.cache.mode=dynamic",
-                "memcached.cache.expiration=3600",
-                "memcached.cache.prefix=custom:prefix",
-                "memcached.cache.namespace=custom_namespace");
+                "memcached.cache.mode=dynamic");
     }
 
     @Test
     public void thatMemcachedWithStaticModeAndMultipleServerListIsLoaded() throws Exception {
         loadContext(CacheConfiguration.class, "memcached.cache.servers=192.168.99.100:11212,192.168.99.101:11211",
-                "memcached.cache.mode=static",
-                "memcached.cache.expiration=3600",
-                "memcached.cache.prefix=custom:prefix",
-                "memcached.cache.namespace=custom_namespace");
+                "memcached.cache.mode=static");
 
         MemcachedCacheManager memcachedCacheManager = this.applicationContext.getBean(MemcachedCacheManager.class);
 
@@ -166,27 +160,12 @@ public class MemcachedAutoConfigurationTest {
         assertMemcachedCacheManager(memcachedCacheManager, Default.EXPIRATION, "custom:prefix", Default.NAMESPACE);
     }
 
-    private void assertMemcachedClient(MemcachedClient memcachedClient, String host, int port, ClientMode clientMode) {
-        List<NodeEndPoint> nodeEndPoints = (List<NodeEndPoint>) memcachedClient.getAllNodeEndPoints();
-
-        assertThat("There should be only one memcached node endpoint", nodeEndPoints.size(), equalTo(1));
-
-        ConnectionFactory cf = (ConnectionFactory) ReflectionTestUtils.getField(memcachedClient, "connFactory");
-        NodeEndPoint nodeEndPoint = nodeEndPoints.get(0);
-
-        assertThat("Memcached node endpoint host is incorrect", host.matches("\\w+") ? nodeEndPoint.getHostName() : nodeEndPoint.getIpAddress(), is(host));
-        assertThat("Memcached node endpoint port is incorrect", nodeEndPoint.getPort(), is(port));
-        assertThat("Memcached node endpoint mode is incorrect", cf.getClientMode(), is(clientMode));
-    }
-
     private void assertMemcachedClient(MemcachedClient memcachedClient, ClientMode clientMode, Server... servers) {
         List<NodeEndPoint> nodeEndPoints = (List<NodeEndPoint>) memcachedClient.getAllNodeEndPoints();
 
         assertThat("The number of memcached node endpoints should match server list size", nodeEndPoints.size(), equalTo(servers.length));
 
         ConnectionFactory cf = (ConnectionFactory) ReflectionTestUtils.getField(memcachedClient, "connFactory");
-        System.out.println("nodeEndPoints.size()=" + nodeEndPoints.size());
-//        NodeEndPoint nodeEndPoint = nodeEndPoints.get(0);
 
         for (int i = 0; i < nodeEndPoints.size(); i++) {
             NodeEndPoint nodeEndPoint = nodeEndPoints.get(i);

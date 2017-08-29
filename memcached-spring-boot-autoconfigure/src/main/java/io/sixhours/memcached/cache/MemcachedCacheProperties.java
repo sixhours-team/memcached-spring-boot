@@ -20,19 +20,9 @@ import java.util.List;
 public class MemcachedCacheProperties {
 
     /**
-     * Memcached server list. The default is 'localhost:11211'.
+     * Comma-separated list of hostname:port for Memcached servers. The default hostname:port is 'localhost:11211'.
      */
     private List<Server> servers = Default.SERVERS;
-
-    /**
-     * Memcached server host. The default is 'localhost'.
-     */
-    private String host = Default.HOST;
-
-    /**
-     * Memcached server port. The default is 11211.
-     */
-    private Integer port = Default.PORT;
 
     /**
      * Memcached client mode. The default mode is 'static'. Use 'dynamic' mode for AWS node auto discovery.
@@ -57,7 +47,7 @@ public class MemcachedCacheProperties {
     /**
      * Populate server list from comma-separated list of hostname:port strings.
      *
-     * @param value
+     * @param value Comma-separated list
      */
     public void setServers(String value) {
         this.servers = new ArrayList<>();
