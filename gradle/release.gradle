@@ -11,7 +11,7 @@ ext.pomConfig = {
     }
 
     scm {
-        url "https://github.com/igorbolic/memcached-spring-boot"
+        url "https://github.com/igorbolic/memcached-spring-boot.git"
     }
 }
 
@@ -40,7 +40,7 @@ bintray {
     publications = ['mavenJava']
     pkg {
         repo = 'maven'
-        name = "io.sixhours.memcached.cache:${project.name}"
+        name = "io.sixhours:${project.name}"
         userOrg = user
         websiteUrl = 'https://github.com/igorbolic/memcached-spring-boot'
         issueTrackerUrl = 'https://github.com/igorbolic/memcached-spring-boot/issues'
