@@ -132,6 +132,16 @@ public class MemcachedAutoConfigurationTest {
     }
 
     @Test
+    public void thatMemcachedWithStaticModeAndEmptyServerListIsNotLoaded() throws Exception {
+        thrown.expect(BeanCreationException.class);
+        thrown.expectMessage("You must have at least one server to connect to");
+        thrown.expectCause(isA(BeanInstantiationException.class));
+
+        loadContext(CacheConfiguration.class, "memcached.cache.servers=",
+                "memcached.cache.mode=static");
+    }
+
+    @Test
     public void thatMemcachedWithCustomConfigurationIsLoaded() throws Exception {
         loadContext(CacheConfiguration.class, "memcached.cache.servers=192.168.99.100:11212",
                 "memcached.cache.mode=dynamic",
