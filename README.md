@@ -2,7 +2,7 @@
 [![codecov](https://codecov.io/gh/igorbolic/memcached-spring-boot/branch/master/graph/badge.svg)](https://codecov.io/gh/igorbolic/memcached-spring-boot)
 [![Join the chat at gitter.im/six-hours/memcached-spring-boot](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/six-hours/memcached-spring-boot?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
-# Memcached Spring Boot Auto-configuration
+# Memcached Spring Boot
 
 Library that provides support for auto-configuration of Memcached cache in a Spring Boot application.
 The auto-configuration will be triggered if the `spymemcached` client is found on the classpath. More 
