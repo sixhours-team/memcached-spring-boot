@@ -13,6 +13,13 @@ ext.pomConfig = {
     scm {
         url "https://github.com/igorbolic/memcached-spring-boot.git"
     }
+
+    developers {
+        developer {
+            name 'Igor Bolic'
+            email 'igor.bolic@sixhours.com'
+        }
+    }
 }
 
 publishing {
