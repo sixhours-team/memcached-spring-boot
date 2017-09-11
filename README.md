@@ -8,16 +8,6 @@ Library that provides support for auto-configuration of Memcached cache in a Spr
 The auto-configuration will be triggered if the `spymemcached` client is found on the classpath. More 
 specific, it is using the `spymemcached` fork: [Amazon's ElastiCache Clustered Client](https://github.com/awslabs/aws-elasticache-cluster-client-memcached-for-java).
 
-
-
-## Installation
-
-To install library in your local Maven repository run this command:
-
-`./gradlew clean test install`
-
-
-
 ## Properties
 
 Properties can be set in your `application.properties/application.yml` file or as a command line properties. Below is the
@@ -35,7 +25,6 @@ memcached.cache.prefix: # Cache key prefix (default "memcached:spring-boot")
 All of the values have sensible defaults and bound to [MemcachedCacheProperties](https://github.com/igorbolic/memcached-spring-boot/blob/master/memcached-spring-boot-autoconfigure/src/main/java/io/sixhours/memcached/cache/MemcachedCacheProperties.java) class. 
 It is advised to set your own `namespace` and `prefix` values to avoid cache data conflicts when multiple applications are sharing the same Memcached server.
 
-
 ## Usage
 
 To plug-in Memcached cache in your application follow the steps below:
@@ -43,8 +32,8 @@ To plug-in Memcached cache in your application follow the steps below:
 1. Add libraries to your dependency management section:
    * **Gradle**
    
-      ```shell
-      compile('io.sixhours:memcached-spring-boot-starter:1.0.0-SNAPSHOT') 
+      ```groovy
+      compile('io.sixhours:memcached-spring-boot-starter:1.0.0') 
       ```
    * **Maven**
    
@@ -52,7 +41,7 @@ To plug-in Memcached cache in your application follow the steps below:
       <dependency>
           <groupId>io.sixhours</groupId>
           <artifactId>memcached-spring-boot-starter</artifactId>
-          <version>1.0.0-SNAPSHOT</version>
+          <version>1.0.0</version>
       </dependency>
       ```
       
@@ -76,9 +65,6 @@ To plug-in Memcached cache in your application follow the steps below:
 3. Enable caching annotations by adding Spring's `@EnableCaching` annotation to one of your `@Configuration` classes e.g.
     
     ```java
-    /**
-     * Cache configuration.
-     */
     @Configuration
     @EnableCaching
     public class CacheConfiguration {
