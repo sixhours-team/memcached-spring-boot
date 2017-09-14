@@ -17,9 +17,9 @@ full list of supported properties:
 # MEMCACHED CACHE 
 memcached.cache.servers: # Comma-separated list of hostname:port for memcached servers (default "localhost:11211")
 memcached.cache.mode: # Memcached client mode (use one of following: "static", "dynamic"). Default mode is "static", use "dynamic" for AWS node auto discovery
-memcached.cache.namespace: # Cache eviction namespace key name (default "namespace")
 memcached.cache.expiration: # Cache expiration in seconds (default "60")
 memcached.cache.prefix: # Cache key prefix (default "memcached:spring-boot")
+memcached.cache.namespace: # Cache eviction namespace key name (default "namespace")
 ```
 
 All of the values have sensible defaults and bound to [MemcachedCacheProperties](https://github.com/igorbolic/memcached-spring-boot/blob/master/memcached-spring-boot-autoconfigure/src/main/java/io/sixhours/memcached/cache/MemcachedCacheProperties.java) class. 
@@ -29,7 +29,7 @@ It is advised to set your own `namespace` and `prefix` values to avoid cache dat
 
 To plug-in Memcached cache in your application follow the steps below:
 
-1. Add libraries to your dependency management section:
+1. Add library to your dependency management section:
    * **Gradle**
    
       ```groovy
@@ -71,4 +71,19 @@ To plug-in Memcached cache in your application follow the steps below:
     }
     ```
 
-The Memcached cache store will be auto-configured on the application startup.
+    Now you can add caching to an operation of your service as in an example:  
+ 
+    ```java
+    import org.springframework.cache.annotation.Cacheable;
+    import org.springframework.stereotype.Component;
+    
+    @Component
+    public class BookService {
+    
+        @Cacheable("books")
+        public Book findByTitle(String title) {
+            // ...
+        }
+    
+    }
+    ```
