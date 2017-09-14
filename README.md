@@ -23,13 +23,13 @@ memcached.cache.namespace: # Cache eviction namespace key name (default "namespa
 ```
 
 All of the values have sensible defaults and bound to [MemcachedCacheProperties](https://github.com/igorbolic/memcached-spring-boot/blob/master/memcached-spring-boot-autoconfigure/src/main/java/io/sixhours/memcached/cache/MemcachedCacheProperties.java) class. 
-It is advised to set your own `namespace` and `prefix` values to avoid cache data conflicts when multiple applications are sharing the same Memcached server.
+It is advised to set your own cache `prefix` value to avoid cache data conflicts when multiple applications are sharing the same Memcached server.
 
 ## Usage
 
 To plug-in Memcached cache in your application follow the steps below:
 
-1. Add library to your dependency management section:
+1. Include library as a Gradle or Maven compile dependency:
    * **Gradle**
    
       ```groovy
@@ -45,33 +45,40 @@ To plug-in Memcached cache in your application follow the steps below:
       </dependency>
       ```
       
-2. Configure location of your `Memcached` key-value store in the properties file (e.g. `application.yml`) e.g.
-   
-    ```.properties
-    memcached.cache:
-        servers: example.com:11211
-        mode: dynamic
-        expiration: 86400
-    ```
-   For multi-server configuration specify comma-separated list of hostname:port with `static` mode:
-   
+2. Configure your `Memcached` key-value store in the properties file (e.g. `application.yml`).
+
+    To manually connect to one or more cache nodes, specify comma-separated list of hostname:port with the `static` mode, for example:
+       
     ```.properties
      memcached.cache:
        servers: example1.com:11211,example2.com:11211
        mode: static
        expiration: 86400
      ```
+
+    To connect to a cluster with AWS [Auto Discovery](http://docs.aws.amazon.com/AmazonElastiCache/latest/UserGuide/AutoDiscovery.html), specify
+    cluster configuration endpoint in *memcached.cache.servers* property with the `dynamic` mode, for example:
+   
+    ```.properties
+    memcached.cache:
+        servers: mycluster.example.cfg.use1.cache.amazonaws.com:11211
+        mode: dynamic
+        expiration: 86400
+    ```
    
 3. Enable caching annotations by adding Spring's `@EnableCaching` annotation to one of your `@Configuration` classes e.g.
     
     ```java
+    import org.springframework.cache.annotation.EnableCaching;
+    import org.springframework.context.annotation.Configuration;   
+ 
     @Configuration
     @EnableCaching
     public class CacheConfiguration {
     }
     ```
 
-    Now you can add caching to an operation of your service as in an example:  
+    Now you can add caching to an operation of your service, as shown below:  
  
     ```java
     import org.springframework.cache.annotation.Cacheable;
@@ -87,3 +94,6 @@ To plug-in Memcached cache in your application follow the steps below:
     
     }
     ```
+
+Please look at the [demo](https://github.com/igorbolic/spring-boot-memcached-demo) project for further details on using 
+the Memcached cache in a Spring Boot application. 
