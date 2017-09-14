@@ -24,9 +24,7 @@ memcached.cache.namespace: # Cache eviction namespace key name (default "namespa
 
 All of the values have sensible defaults and are bound to [MemcachedCacheProperties](https://github.com/igorbolic/memcached-spring-boot/blob/master/memcached-spring-boot-autoconfigure/src/main/java/io/sixhours/memcached/cache/MemcachedCacheProperties.java) class.
 
-**Notice**
-
-If multiple applications are sharing the same Memcached server, make sure to specify unique cache `prefix` for each application 
+>**Notice:** If multiple applications are sharing the same Memcached server, make sure to specify unique cache `prefix` for each application 
 in order to avoid cache data conflicts.
 
 ## Usage
