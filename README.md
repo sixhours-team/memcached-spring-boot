@@ -14,7 +14,7 @@ Supports cache eviction per key, as well as clearing out of the entire cache reg
 Properties can be set in your `application.properties/application.yml` file or as a command line properties. Below is the
 full list of supported properties:
 
-```.properties
+```.yaml
 # MEMCACHED CACHE 
 memcached.cache.servers: # Comma-separated list of hostname:port for memcached servers (default "localhost:11211")
 memcached.cache.mode: # Memcached client mode (use one of following: "static", "dynamic"). Default mode is "static", use "dynamic" for AWS node auto discovery
@@ -63,7 +63,7 @@ To plug-in Memcached cache in your application follow the steps below:
      ```
 
     To connect to a cluster with AWS [Auto Discovery](http://docs.aws.amazon.com/AmazonElastiCache/latest/UserGuide/AutoDiscovery.html), specify
-    cluster configuration endpoint in **memcached.cache.servers** property with the `dynamic` mode:
+    cluster configuration endpoint in `memcached.cache.servers` property with the `dynamic` mode:
    
     ```.properties
     memcached.cache:
@@ -72,8 +72,8 @@ To plug-in Memcached cache in your application follow the steps below:
         expiration: 86400
     ```
    
-3. Enable caching support by adding `@EnableCaching` annotation to one of your `@Configuration` classes e.g.
-    
+3. Enable caching support by adding `@EnableCaching` annotation to one of your `@Configuration` classes.
+
     ```java
     import org.springframework.cache.annotation.EnableCaching;
     import org.springframework.context.annotation.Configuration;   
@@ -101,5 +101,4 @@ To plug-in Memcached cache in your application follow the steps below:
     }
     ```
 
-Please look at the [demo](https://github.com/igorbolic/spring-boot-memcached-demo) project for further details on using 
-the Memcached cache in a Spring Boot application. 
+For further details on using the Memcached cache in a Spring Boot application please look at the [demo](https://github.com/igorbolic/spring-boot-memcached-demo) project. 
