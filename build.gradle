@@ -32,7 +32,7 @@ subprojects {
         def stdout = new ByteArrayOutputStream()
         exec {
             ignoreExitValue true
-            commandLine 'git', 'describe', '--tags', '--match', 'v[[:digit:]]*\\.[[:digit:]]*\\.[[:digit:]]*'
+            commandLine 'git', 'describe', '--tags', '--abbrev=0', '--match', 'v[[:digit:]]*\\.[[:digit:]]*\\.[[:digit:]]*'
             standardOutput = stdout
         }
         def version = stdout.toString().trim()
