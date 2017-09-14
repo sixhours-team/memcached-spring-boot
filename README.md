@@ -5,8 +5,9 @@
 # Memcached Spring Boot
 
 Library that provides support for auto-configuration of Memcached cache in a Spring Boot application.
-The auto-configuration will be triggered if the `spymemcached` client is found on the classpath. More 
-specific, it is using the `spymemcached` fork: [Amazon's ElastiCache Clustered Client](https://github.com/awslabs/aws-elasticache-cluster-client-memcached-for-java).
+
+It provides implementation for the [Spring Cache Abstraction](https://docs.spring.io/spring/docs/4.3.x/spring-framework-reference/html/cache.html), backed by the [Amazon's ElastiCache Clustered Client](https://github.com/awslabs/aws-elasticache-cluster-client-memcached-for-java).
+Supports cache eviction per key, as well as clearing out of the entire cache region.
 
 ## Properties
 
