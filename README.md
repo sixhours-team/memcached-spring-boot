@@ -14,7 +14,7 @@ Supports cache eviction per key, as well as clearing out of the entire cache reg
 Properties can be set in your `application.properties/application.yml` file or as a command line properties. Below is the
 full list of supported properties:
 
-```.yaml
+```yaml
 # MEMCACHED CACHE 
 memcached.cache.servers: # Comma-separated list of hostname:port for memcached servers (default "localhost:11211")
 memcached.cache.mode: # Memcached client mode (use one of following: "static", "dynamic"). Default mode is "static", use "dynamic" for AWS node auto discovery
@@ -37,7 +37,7 @@ To plug-in Memcached cache in your application follow the steps below:
    * **Gradle**
    
       ```groovy
-      compile('io.sixhours:memcached-spring-boot-starter:1.0.0') 
+      compile('io.sixhours:memcached-spring-boot-starter:1.0.1') 
       ```
    * **Maven**
    
@@ -45,9 +45,10 @@ To plug-in Memcached cache in your application follow the steps below:
       <dependency>
           <groupId>io.sixhours</groupId>
           <artifactId>memcached-spring-boot-starter</artifactId>
-          <version>1.0.0</version>
+          <version>1.0.1</version>
       </dependency>
       ```
+   Binaries are available from **Maven Central** and **JCenter**.
       
 2. Configure `Memcached` key-value store in your properties file (`application.yml`).
 
@@ -55,7 +56,7 @@ To plug-in Memcached cache in your application follow the steps below:
 
     To manually connect to one or more cache servers (nodes), specify comma-separated list of hostname:port with the `static` mode:
        
-    ```.properties
+    ```yaml
      memcached.cache:
        servers: example1.com:11211,example2.com:11211
        mode: static
@@ -65,7 +66,7 @@ To plug-in Memcached cache in your application follow the steps below:
     To connect to a cluster with AWS [Auto Discovery](http://docs.aws.amazon.com/AmazonElastiCache/latest/UserGuide/AutoDiscovery.html), specify
     cluster configuration endpoint in `memcached.cache.servers` property with the `dynamic` mode:
    
-    ```.properties
+    ```yaml
     memcached.cache:
         servers: mycluster.example.com:11211
         mode: dynamic

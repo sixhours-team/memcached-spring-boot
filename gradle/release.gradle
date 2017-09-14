@@ -28,7 +28,10 @@ publishing {
             from components.java
 
             artifact sourcesJar
-            artifact javadocJar
+
+            if (file('src/main').exists()) {
+                artifact javadocJar
+            }
 
             pom.withXml {
                 def root = asNode()
@@ -47,7 +50,7 @@ bintray {
     publications = ['mavenJava']
     pkg {
         repo = 'maven'
-        name = "io.sixhours:${project.name}"
+        name = "${project.group}:${project.name}"
         userOrg = user
         websiteUrl = 'https://github.com/igorbolic/memcached-spring-boot'
         issueTrackerUrl = 'https://github.com/igorbolic/memcached-spring-boot/issues'
