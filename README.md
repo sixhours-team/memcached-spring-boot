@@ -11,7 +11,7 @@ Supports cache eviction per key, as well as clearing out of the entire cache reg
 
 ## Properties
 
-Properties can be set in your `application.properties/application.yml` file or as a command line properties. Below is the
+Properties can be set in your `application.yml` file or as a command line properties. Below is the
 full list of supported properties:
 
 ```yaml
@@ -85,7 +85,7 @@ To plug-in Memcached cache in your application follow the steps below:
     }
     ```
 
-    Now you can add caching to an operation of your service, for example:
+    Now you can add caching to an operation of your service:
  
     ```java
     import org.springframework.cache.annotation.Cacheable;
@@ -103,3 +103,17 @@ To plug-in Memcached cache in your application follow the steps below:
     ```
 
 For further details on using the Memcached cache in a Spring Boot application please look at the [demo](https://github.com/igorbolic/spring-boot-memcached-demo) project. 
+
+## Build
+
+To build the project invoke the following command:
+
+    ./gradlew clean build
+    
+To install the modules in the local Maven repository:
+
+    ./gradlew clean build publishToMavenLocal
+    
+## License
+
+Memcached Spring Boot is an Open Source software released under the [Apache 2.0 license](http://www.apache.org/licenses/LICENSE-2.0.html).
