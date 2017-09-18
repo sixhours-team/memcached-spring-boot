@@ -46,6 +46,7 @@ import java.util.stream.Collectors;
  * @author Igor Bolic
  */
 @Configuration
+@ConditionalOnMissingSpringCacheType
 @ConditionalOnClass({MemcachedClient.class, CacheManager.class})
 @ConditionalOnBean(CacheAspectSupport.class)
 @ConditionalOnMissingBean({CacheManager.class, CacheResolver.class})
