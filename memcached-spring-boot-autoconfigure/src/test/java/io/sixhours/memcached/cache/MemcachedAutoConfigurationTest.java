@@ -29,10 +29,12 @@ import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.config.ConstructorArgumentValues;
 import org.springframework.beans.factory.support.RootBeanDefinition;
+import org.springframework.boot.autoconfigure.cache.CacheAutoConfiguration;
 import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cache.concurrent.ConcurrentMapCacheManager;
+import org.springframework.cache.support.NoOpCacheManager;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -48,6 +50,7 @@ import static org.mockito.Mockito.mock;
  * Memcached auto-configuration tests.
  *
  * @author Igor Bolic
+ * @author Sasa Bolic
  */
 public class MemcachedAutoConfigurationTest {
 
@@ -69,6 +72,52 @@ public class MemcachedAutoConfigurationTest {
         thrown.expectMessage("No qualifying bean of type 'io.sixhours.memcached.cache.MemcachedCacheManager' available");
 
         this.applicationContext.getBean(MemcachedCacheManager.class);
+    }
+
+    @Test
+    public void thatMemcachedNotLoadedWhenSpringCacheTypeIsNone() {
+        loadContext(CacheConfiguration.class, "spring.cache.type=none");
+
+        thrown.expect(NoSuchBeanDefinitionException.class);
+        thrown.expectMessage("No qualifying bean of type 'io.sixhours.memcached.cache.MemcachedCacheManager' available");
+
+        this.applicationContext.getBean(MemcachedCacheManager.class);
+    }
+
+    @Test
+    public void thatNoOpCacheLoadedWhenSpringCacheTypeIsNone() {
+        loadContext(CacheConfiguration.class, "spring.cache.type=none");
+
+        CacheManager cacheManager = this.applicationContext.getBean(CacheManager.class);
+
+        assertThat(cacheManager.getClass(), equalTo(NoOpCacheManager.class));
+    }
+
+    @Test
+    public void thatMemcachedNotLoadedWhenSpringCacheTypeIsSimple() {
+        loadContext(CacheConfiguration.class, "spring.cache.type=simple");
+
+        thrown.expect(NoSuchBeanDefinitionException.class);
+        thrown.expectMessage("No qualifying bean of type 'io.sixhours.memcached.cache.MemcachedCacheManager' available");
+
+        this.applicationContext.getBean(MemcachedCacheManager.class);
+    }
+
+    @Test
+    public void thatSimpleCacheLoadedWhenSpringCacheTypeIsSimple() {
+        loadContext(CacheConfiguration.class, "spring.cache.type=simple");
+
+        CacheManager cacheManager = this.applicationContext.getBean(CacheManager.class);
+
+        assertThat(cacheManager.getClass(), equalTo(ConcurrentMapCacheManager.class));
+    }
+
+    @Test
+    public void thatContextNotLoadedWhenSpringCacheTypeIsInvalid() {
+        thrown.expect(BeanCreationException.class);
+        thrown.expectMessage(containsString("Field error in object 'spring.cache' on field 'type': rejected value [invalid-type]"));
+
+        loadContext(CacheConfiguration.class, "spring.cache.type=invalid-type");
     }
 
     @Test
@@ -221,6 +270,7 @@ public class MemcachedAutoConfigurationTest {
 
         applicationContext.register(configuration);
         applicationContext.register(MemcachedCacheAutoConfiguration.class);
+        applicationContext.register(CacheAutoConfiguration.class);
         applicationContext.refresh();
     }
 
