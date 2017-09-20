@@ -47,7 +47,7 @@ public class MemcachedCacheManagerTest {
     }
 
     @Test
-    public void thatGetCacheReturnsNewCacheWhenRequestedCacheIsNotAvailable() throws Exception {
+    public void thatGetCacheReturnsNewCacheWhenRequestedCacheIsNotAvailable() {
         Cache cache = cacheManager.getCache(NON_EXISTING_CACHE);
 
         assertThat(cache, is(notNullValue()));
@@ -55,7 +55,7 @@ public class MemcachedCacheManagerTest {
     }
 
     @Test
-    public void thatGetCacheReturnsExistingCacheWhenRequested() throws Exception {
+    public void thatGetCacheReturnsExistingCacheWhenRequested() {
         Cache cache = cacheManager.getCache(EXISTING_CACHE);
 
         assertThat(cacheManager.getCache(EXISTING_CACHE), sameInstance(cache));
@@ -63,7 +63,7 @@ public class MemcachedCacheManagerTest {
     }
 
     @Test
-    public void thatGetCacheNamesReturnsExistingCacheNames() throws Exception {
+    public void thatGetCacheNamesReturnsExistingCacheNames() {
         Collection<String> cacheNames = cacheManager.getCacheNames();
         String[] cacheNamesArray = cacheNames.toArray(new String[cacheNames.size()]);
 

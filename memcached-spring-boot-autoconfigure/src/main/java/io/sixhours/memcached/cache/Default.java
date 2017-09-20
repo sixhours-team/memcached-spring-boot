@@ -26,7 +26,7 @@ import java.util.List;
  *
  * @author Igor Bolic
  */
-public final class Default {
+final class Default {
 
     public static final List<Server> SERVERS = Collections.singletonList(new Server("localhost:11211"));
     public static final ClientMode CLIENT_MODE = ClientMode.Static;

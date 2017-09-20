@@ -83,14 +83,14 @@ public class MemcachedCacheAutoConfiguration {
         return cacheManager;
     }
 
-    protected class DisposableMemcachedCacheManager extends MemcachedCacheManager implements DisposableBean {
+    class DisposableMemcachedCacheManager extends MemcachedCacheManager implements DisposableBean {
 
         public DisposableMemcachedCacheManager(MemcachedClient memcachedClient) {
             super(memcachedClient);
         }
 
         @Override
-        public void destroy() throws Exception {
+        public void destroy() {
             this.memcachedClient.shutdown();
         }
     }
