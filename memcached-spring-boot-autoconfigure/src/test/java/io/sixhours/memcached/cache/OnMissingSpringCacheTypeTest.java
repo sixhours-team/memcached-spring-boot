@@ -27,7 +27,7 @@ import static org.junit.Assert.assertThat;
 
 
 /**
- * Conditional {@link OnMissingSpringCacheTypeTest} tests.
+ * Condition {@link OnMissingSpringCacheTypeTest} tests.
  *
  * @author Sasa Bolic
  */
