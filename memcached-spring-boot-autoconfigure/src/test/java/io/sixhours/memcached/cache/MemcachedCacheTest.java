@@ -65,7 +65,7 @@ public class MemcachedCacheTest {
     }
 
     @Test
-    public void thatLookupCallsMemcachedClientGetKey() throws Exception {
+    public void thatLookupCallsMemcachedClientGetKey() {
         when(memcachedClient.get(anyObject())).thenReturn(NAMESPACE_KEY_VALUE).thenReturn(cachedValue);
 
         Object actual = memcachedCache.lookup(CACHED_OBJECT_KEY);
@@ -78,21 +78,21 @@ public class MemcachedCacheTest {
     }
 
     @Test
-    public void thatGetNameReturnsCacheName() throws Exception {
+    public void thatGetNameReturnsCacheName() {
         String actual = memcachedCache.getName();
 
         assertThat(actual, is(CACHE_NAME));
     }
 
     @Test
-    public void thatGetNativeCacheReturnsMemcachedClient() throws Exception {
+    public void thatGetNativeCacheReturnsMemcachedClient() {
         Object actual = memcachedCache.getNativeCache();
 
         assertThat(actual, is(memcachedClient));
     }
 
     @Test
-    public void thatGetWithValueLoaderReturnsExistingValue() throws Exception {
+    public void thatGetWithValueLoaderReturnsExistingValue() {
         when(memcachedClient.get(anyString())).thenReturn(NAMESPACE_KEY_VALUE).thenReturn(cachedValue);
 
         Object actual = memcachedCache.get(CACHED_OBJECT_KEY, () -> valueLoaderValue);
@@ -105,7 +105,7 @@ public class MemcachedCacheTest {
     }
 
     @Test
-    public void thatGetWithValueLoaderReturnsValueLoaderValueWhenCachedValueMissing() throws Exception {
+    public void thatGetWithValueLoaderReturnsValueLoaderValueWhenCachedValueMissing() {
         when(memcachedClient.get(namespaceKey)).thenReturn(NAMESPACE_KEY_VALUE);
         when(memcachedClient.get(memcachedKey)).thenReturn(null);
 
@@ -120,7 +120,7 @@ public class MemcachedCacheTest {
     }
 
     @Test
-    public void thatGetWithValueLoaderWithExceptionIsWrappedInValueRetrievalException() throws Exception {
+    public void thatGetWithValueLoaderWithExceptionIsWrappedInValueRetrievalException() {
         when(memcachedClient.get(namespaceKey)).thenReturn(NAMESPACE_KEY_VALUE);
         when(memcachedClient.get(memcachedKey)).thenReturn(null);
 
@@ -133,7 +133,7 @@ public class MemcachedCacheTest {
     }
 
     @Test
-    public void thatPutForNewNamespaceValueCallsMemcachedClientSet() throws Exception {
+    public void thatPutForNewNamespaceValueCallsMemcachedClientSet() {
         when(memcachedClient.get(namespaceKey)).thenReturn(null);
 
         memcachedCache.put(CACHED_OBJECT_KEY, cachedValue);
@@ -144,7 +144,7 @@ public class MemcachedCacheTest {
     }
 
     @Test
-    public void thatPutIfAbsentReturnsExistingValue() throws Exception {
+    public void thatPutIfAbsentReturnsExistingValue() {
         when(memcachedClient.get(anyString())).thenReturn(NAMESPACE_KEY_VALUE).thenReturn(cachedValue);
 
         Cache.ValueWrapper actual = memcachedCache.putIfAbsent(CACHED_OBJECT_KEY, newCachedValue);
@@ -157,7 +157,7 @@ public class MemcachedCacheTest {
     }
 
     @Test
-    public void thatPutIfAbsentReturnsNewValue() throws Exception {
+    public void thatPutIfAbsentReturnsNewValue() {
         when(memcachedClient.get(anyString())).thenReturn(NAMESPACE_KEY_VALUE, null, NAMESPACE_KEY_VALUE);
 
         Cache.ValueWrapper actual = memcachedCache.putIfAbsent(CACHED_OBJECT_KEY, newCachedValue);
@@ -171,7 +171,7 @@ public class MemcachedCacheTest {
     }
 
     @Test
-    public void thatEvictCallsMemcachedClientDelete() throws Exception {
+    public void thatEvictCallsMemcachedClientDelete() {
         when(memcachedClient.get(anyString())).thenReturn(NAMESPACE_KEY_VALUE);
 
         memcachedCache.evict(CACHED_OBJECT_KEY);
@@ -180,7 +180,7 @@ public class MemcachedCacheTest {
     }
 
     @Test
-    public void thatClearCallsMemcachedClientIncrOnNamespace() throws Exception {
+    public void thatClearCallsMemcachedClientIncrOnNamespace() {
         memcachedCache.clear();
 
         verify(memcachedClient).incr(namespaceKey, 1);

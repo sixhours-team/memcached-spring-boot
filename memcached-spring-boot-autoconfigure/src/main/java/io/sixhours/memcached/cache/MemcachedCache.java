@@ -28,7 +28,7 @@ import java.util.concurrent.locks.ReentrantLock;
  *
  * @author Igor Bolic
  */
-public class MemcachedCache extends AbstractValueAdaptingCache {
+class MemcachedCache extends AbstractValueAdaptingCache {
 
     private static final String KEY_DELIMITER = ":";
 
@@ -134,7 +134,7 @@ public class MemcachedCache extends AbstractValueAdaptingCache {
     class MemcachedKey {
         private final StringBuilder value;
 
-        public MemcachedKey(Object key) {
+        MemcachedKey(Object key) {
             this.value = new StringBuilder(memcacheCacheMetadata.cachePrefix())
                     .append(namespaceValue())
                     .append(KEY_DELIMITER)
@@ -169,7 +169,7 @@ public class MemcachedCache extends AbstractValueAdaptingCache {
         private final String cachePrefix;
         private final String namespace;
 
-        public MemcacheCacheMetadata(String name, int expiration, String cachePrefix, String namespace) {
+        MemcacheCacheMetadata(String name, int expiration, String cachePrefix, String namespace) {
             this.name = name;
             this.expiration = expiration;
 
@@ -182,19 +182,19 @@ public class MemcachedCache extends AbstractValueAdaptingCache {
             this.namespace = sb.append(namespace).toString();
         }
 
-        public String name() {
+        String name() {
             return name;
         }
 
-        public int expiration() {
+        int expiration() {
             return expiration;
         }
 
-        public String cachePrefix() {
+        String cachePrefix() {
             return cachePrefix;
         }
 
-        public String namespace() {
+        String namespace() {
             return namespace;
         }
     }
