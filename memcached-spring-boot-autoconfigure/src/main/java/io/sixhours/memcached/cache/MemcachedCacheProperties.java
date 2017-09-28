@@ -15,8 +15,6 @@
  */
 package io.sixhours.memcached.cache;
 
-import lombok.Getter;
-import lombok.Setter;
 import net.spy.memcached.ClientMode;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.util.StringUtils;
@@ -30,8 +28,6 @@ import java.util.List;
  * @author Igor Bolic
  */
 @ConfigurationProperties(prefix = "memcached.cache", ignoreInvalidFields = true)
-@Getter
-@Setter
 public class MemcachedCacheProperties {
 
     /**
@@ -60,6 +56,10 @@ public class MemcachedCacheProperties {
      */
     private String namespace = Default.NAMESPACE;
 
+    public List<Server> getServers() {
+        return servers;
+    }
+
     /**
      * Populate server list from comma-separated list of hostname:port strings.
      *
@@ -74,7 +74,38 @@ public class MemcachedCacheProperties {
         }
     }
 
-    @Getter
+    public ClientMode getMode() {
+        return mode;
+    }
+
+    public void setMode(ClientMode mode) {
+        this.mode = mode;
+    }
+
+    public Integer getExpiration() {
+        return expiration;
+    }
+
+    public void setExpiration(Integer expiration) {
+        this.expiration = expiration;
+    }
+
+    public String getPrefix() {
+        return prefix;
+    }
+
+    public void setPrefix(String prefix) {
+        this.prefix = prefix;
+    }
+
+    public String getNamespace() {
+        return namespace;
+    }
+
+    public void setNamespace(String namespace) {
+        this.namespace = namespace;
+    }
+
     public static class Server {
         private String host;
         private int port;
@@ -83,6 +114,22 @@ public class MemcachedCacheProperties {
             String[] values = server.split(":");
             host = values[0];
             port = Integer.valueOf(values[1]);
+        }
+
+        public String getHost() {
+            return host;
+        }
+
+        public void setHost(String host) {
+            this.host = host;
+        }
+
+        public int getPort() {
+            return port;
+        }
+
+        public void setPort(int port) {
+            this.port = port;
         }
     }
 

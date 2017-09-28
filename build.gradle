@@ -2,7 +2,6 @@ buildscript {
     ext {
         spring_boot_version = '1.5.6.RELEASE'
         elasticache_client_version = '1.1.1'
-        lombok_version = '1.16.18'
         commons_logging_version = '1.2'
     }
     repositories {
@@ -79,7 +78,6 @@ subprojects {
     dependencyManagement {
         dependencies {
             dependency "com.amazonaws:elasticache-java-cluster-client:$elasticache_client_version"
-            dependency "org.projectlombok:lombok:$lombok_version"
             dependency "commons-logging:commons-logging:$commons_logging_version"
         }
     }
