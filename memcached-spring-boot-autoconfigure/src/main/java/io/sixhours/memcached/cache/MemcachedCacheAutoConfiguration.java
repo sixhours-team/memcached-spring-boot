@@ -85,7 +85,7 @@ public class MemcachedCacheAutoConfiguration {
         }
 
         @Override
-        public void destroy() throws Exception {
+        public void destroy() {
             this.memcachedClient.shutdown();
         }
     }

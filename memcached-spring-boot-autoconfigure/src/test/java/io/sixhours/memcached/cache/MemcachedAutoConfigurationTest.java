@@ -66,7 +66,7 @@ public class MemcachedAutoConfigurationTest {
     }
 
     @Test
-    public void thatMemcachedNotLoadedWhenCachingNotEnabled() throws Exception {
+    public void thatMemcachedNotLoadedWhenCachingNotEnabled() {
         loadContext(EmptyConfiguration.class);
 
         thrown.expect(NoSuchBeanDefinitionException.class);
@@ -122,7 +122,7 @@ public class MemcachedAutoConfigurationTest {
     }
 
     @Test
-    public void thatMemcachedNotLoadedWhenUsingCustomCacheManager() throws Exception {
+    public void thatMemcachedNotLoadedWhenUsingCustomCacheManager() {
         loadContext(CacheWithCustomCacheManagerConfiguration.class);
 
         thrown.expect(NoSuchBeanDefinitionException.class);
@@ -132,7 +132,7 @@ public class MemcachedAutoConfigurationTest {
     }
 
     @Test
-    public void thatMemcachedCustomCacheManagerIsLoaded() throws Exception {
+    public void thatMemcachedCustomCacheManagerIsLoaded() {
         loadContext(CacheWithCustomCacheManagerConfiguration.class);
 
         CacheManager cacheManager = this.applicationContext.getBean(CacheManager.class);
@@ -141,7 +141,7 @@ public class MemcachedAutoConfigurationTest {
     }
 
     @Test
-    public void thatMemcachedWithDefaultConfigurationIsLoaded() throws Exception {
+    public void thatMemcachedWithDefaultConfigurationIsLoaded() {
         loadContext(CacheConfiguration.class);
 
         MemcachedCacheManager memcachedCacheManager = this.applicationContext.getBean(MemcachedCacheManager.class);
@@ -153,7 +153,7 @@ public class MemcachedAutoConfigurationTest {
     }
 
     @Test
-    public void thatMemcachedWithNonCustomConfigurationIsLoadedWhenCacheManagerBeanAlreadyInContext() throws Exception {
+    public void thatMemcachedWithNonCustomConfigurationIsLoadedWhenCacheManagerBeanAlreadyInContext() {
         // add cache manager to the context before triggering auto-configuration on context load
         ConstructorArgumentValues constructorArgumentValues = new ConstructorArgumentValues();
         constructorArgumentValues.addGenericArgumentValue(mock(MemcachedClient.class));
@@ -174,7 +174,7 @@ public class MemcachedAutoConfigurationTest {
     }
 
     @Test
-    public void thatMemcachedWithDynamicModeAndMultipleServerListIsNotLoaded() throws Exception {
+    public void thatMemcachedWithDynamicModeAndMultipleServerListIsNotLoaded() {
         thrown.expect(BeanCreationException.class);
         thrown.expectMessage("Only one configuration endpoint is valid with dynamic client mode.");
         thrown.expectCause(isA(BeanInstantiationException.class));
