@@ -15,7 +15,6 @@
  */
 package io.sixhours.memcached.cache;
 
-import io.sixhours.memcached.cache.MemcachedCacheProperties.Server;
 import net.spy.memcached.ClientMode;
 import net.spy.memcached.ConnectionFactory;
 import net.spy.memcached.MemcachedClient;
@@ -27,6 +26,7 @@ import org.junit.rules.ExpectedException;
 import org.springframework.beans.BeanInstantiationException;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
+import org.springframework.beans.factory.UnsatisfiedDependencyException;
 import org.springframework.beans.factory.config.ConstructorArgumentValues;
 import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.boot.autoconfigure.cache.CacheAutoConfiguration;
@@ -40,6 +40,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import java.net.InetSocketAddress;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.*;
@@ -65,7 +66,7 @@ public class MemcachedAutoConfigurationTest {
     }
 
     @Test
-    public void thatMemcachedNotLoadedWhenCachingNotEnabled() throws Exception {
+    public void thatMemcachedNotLoadedWhenCachingNotEnabled() {
         loadContext(EmptyConfiguration.class);
 
         thrown.expect(NoSuchBeanDefinitionException.class);
@@ -121,7 +122,7 @@ public class MemcachedAutoConfigurationTest {
     }
 
     @Test
-    public void thatMemcachedNotLoadedWhenUsingCustomCacheManager() throws Exception {
+    public void thatMemcachedNotLoadedWhenUsingCustomCacheManager() {
         loadContext(CacheWithCustomCacheManagerConfiguration.class);
 
         thrown.expect(NoSuchBeanDefinitionException.class);
@@ -131,7 +132,7 @@ public class MemcachedAutoConfigurationTest {
     }
 
     @Test
-    public void thatMemcachedCustomCacheManagerIsLoaded() throws Exception {
+    public void thatMemcachedCustomCacheManagerIsLoaded() {
         loadContext(CacheWithCustomCacheManagerConfiguration.class);
 
         CacheManager cacheManager = this.applicationContext.getBean(CacheManager.class);
@@ -140,19 +141,19 @@ public class MemcachedAutoConfigurationTest {
     }
 
     @Test
-    public void thatMemcachedWithDefaultConfigurationIsLoaded() throws Exception {
+    public void thatMemcachedWithDefaultConfigurationIsLoaded() {
         loadContext(CacheConfiguration.class);
 
         MemcachedCacheManager memcachedCacheManager = this.applicationContext.getBean(MemcachedCacheManager.class);
 
         MemcachedClient memcachedClient = (MemcachedClient) ReflectionTestUtils.getField(memcachedCacheManager, "memcachedClient");
 
-        assertMemcachedClient(memcachedClient, Default.CLIENT_MODE, Default.SERVERS.toArray(new Server[Default.SERVERS.size()]));
+        assertMemcachedClient(memcachedClient, Default.CLIENT_MODE, Default.SERVERS.toArray(new InetSocketAddress[Default.SERVERS.size()]));
         assertMemcachedCacheManager(memcachedCacheManager, Default.EXPIRATION, Default.PREFIX, Default.NAMESPACE);
     }
 
     @Test
-    public void thatMemcachedWithNonCustomConfigurationIsLoadedWhenCacheManagerBeanAlreadyInContext() throws Exception {
+    public void thatMemcachedWithNonCustomConfigurationIsLoadedWhenCacheManagerBeanAlreadyInContext() {
         // add cache manager to the context before triggering auto-configuration on context load
         ConstructorArgumentValues constructorArgumentValues = new ConstructorArgumentValues();
         constructorArgumentValues.addGenericArgumentValue(mock(MemcachedClient.class));
@@ -173,7 +174,7 @@ public class MemcachedAutoConfigurationTest {
     }
 
     @Test
-    public void thatMemcachedWithDynamicModeAndMultipleServerListIsNotLoaded() throws Exception {
+    public void thatMemcachedWithDynamicModeAndMultipleServerListIsNotLoaded() {
         thrown.expect(BeanCreationException.class);
         thrown.expectMessage("Only one configuration endpoint is valid with dynamic client mode.");
         thrown.expectCause(isA(BeanInstantiationException.class));
@@ -183,7 +184,7 @@ public class MemcachedAutoConfigurationTest {
     }
 
     @Test
-    public void thatMemcachedWithStaticModeAndMultipleServerListIsLoaded() throws Exception {
+    public void thatMemcachedWithStaticModeAndMultipleServerListIsLoaded() {
         loadContext(CacheConfiguration.class, "memcached.cache.servers=192.168.99.100:11212,192.168.99.101:11211",
                 "memcached.cache.mode=static");
 
@@ -191,22 +192,22 @@ public class MemcachedAutoConfigurationTest {
 
         MemcachedClient memcachedClient = (MemcachedClient) ReflectionTestUtils.getField(memcachedCacheManager, "memcachedClient");
 
-        assertMemcachedClient(memcachedClient, ClientMode.Static, new Server("192.168.99.100:11212"), new Server("192.168.99.101:11211"));
+        assertMemcachedClient(memcachedClient, ClientMode.Static, new InetSocketAddress("192.168.99.100", 11212), new InetSocketAddress("192.168.99.101", 11211));
         assertMemcachedCacheManager(memcachedCacheManager, Default.EXPIRATION, Default.PREFIX, Default.NAMESPACE);
     }
 
     @Test
-    public void thatMemcachedWithStaticModeAndEmptyServerListIsNotLoaded() throws Exception {
-        thrown.expect(BeanCreationException.class);
-        thrown.expectMessage("You must have at least one server to connect to");
-        thrown.expectCause(isA(BeanInstantiationException.class));
+    public void thatMemcachedWithStaticModeAndEmptyServerListIsNotLoaded() {
+        thrown.expect(UnsatisfiedDependencyException.class);
+        thrown.expectMessage("Server list is empty");
+        thrown.expectCause(isA(BeanCreationException.class));
 
         loadContext(CacheConfiguration.class, "memcached.cache.servers=",
                 "memcached.cache.mode=static");
     }
 
     @Test
-    public void thatMemcachedWithCustomConfigurationIsLoaded() throws Exception {
+    public void thatMemcachedWithCustomConfigurationIsLoaded() {
         loadContext(CacheConfiguration.class, "memcached.cache.servers=192.168.99.100:11212",
                 "memcached.cache.mode=dynamic",
                 "memcached.cache.expiration=3600",
@@ -217,12 +218,12 @@ public class MemcachedAutoConfigurationTest {
 
         MemcachedClient memcachedClient = (MemcachedClient) ReflectionTestUtils.getField(memcachedCacheManager, "memcachedClient");
 
-        assertMemcachedClient(memcachedClient, ClientMode.Dynamic, new Server("192.168.99.100:11212"));
+        assertMemcachedClient(memcachedClient, ClientMode.Dynamic, new InetSocketAddress("192.168.99.100", 11212));
         assertMemcachedCacheManager(memcachedCacheManager, 3600, "custom:prefix", "custom_namespace");
     }
 
     @Test
-    public void thatMemcachedWithMissingConfigurationValuesIsLoaded() throws Exception {
+    public void thatMemcachedWithMissingConfigurationValuesIsLoaded() {
         loadContext(CacheConfiguration.class, "memcached.cache.servers=192.168.99.100:12345",
                 "memcached.cache.prefix=custom:prefix");
 
@@ -230,11 +231,11 @@ public class MemcachedAutoConfigurationTest {
 
         MemcachedClient memcachedClient = (MemcachedClient) ReflectionTestUtils.getField(memcachedCacheManager, "memcachedClient");
 
-        assertMemcachedClient(memcachedClient, Default.CLIENT_MODE, new Server("192.168.99.100:12345"));
+        assertMemcachedClient(memcachedClient, Default.CLIENT_MODE, new InetSocketAddress("192.168.99.100", 12345));
         assertMemcachedCacheManager(memcachedCacheManager, Default.EXPIRATION, "custom:prefix", Default.NAMESPACE);
     }
 
-    private void assertMemcachedClient(MemcachedClient memcachedClient, ClientMode clientMode, Server... servers) {
+    private void assertMemcachedClient(MemcachedClient memcachedClient, ClientMode clientMode, InetSocketAddress... servers) {
         List<NodeEndPoint> nodeEndPoints = (List<NodeEndPoint>) memcachedClient.getAllNodeEndPoints();
 
         assertThat("The number of memcached node endpoints should match server list size", nodeEndPoints.size(), equalTo(servers.length));
@@ -243,9 +244,9 @@ public class MemcachedAutoConfigurationTest {
 
         for (int i = 0; i < nodeEndPoints.size(); i++) {
             NodeEndPoint nodeEndPoint = nodeEndPoints.get(i);
-            Server server = servers[i];
+            InetSocketAddress server = servers[i];
 
-            String host = server.getHost();
+            String host = server.getHostString();
             int port = server.getPort();
 
             assertThat("Memcached node endpoint host is incorrect", host.matches("\\w+") ? nodeEndPoint.getHostName() : nodeEndPoint.getIpAddress(), is(host));

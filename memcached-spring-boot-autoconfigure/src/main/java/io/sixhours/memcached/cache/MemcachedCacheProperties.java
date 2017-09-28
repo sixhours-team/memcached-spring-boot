@@ -15,11 +15,13 @@
  */
 package io.sixhours.memcached.cache;
 
+import net.spy.memcached.AddrUtil;
 import net.spy.memcached.ClientMode;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.util.StringUtils;
 
-import java.util.ArrayList;
+import java.net.InetSocketAddress;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -33,7 +35,7 @@ public class MemcachedCacheProperties {
     /**
      * Comma-separated list of hostname:port for memcached servers. The default hostname:port is 'localhost:11211'.
      */
-    private List<Server> servers = Default.SERVERS;
+    private List<InetSocketAddress> servers = Default.SERVERS;
 
     /**
      * Memcached client mode. The default mode is 'static'. Use 'dynamic' mode for AWS node auto discovery, or 'static'
@@ -56,7 +58,7 @@ public class MemcachedCacheProperties {
      */
     private String namespace = Default.NAMESPACE;
 
-    public List<Server> getServers() {
+    public List<InetSocketAddress> getServers() {
         return servers;
     }
 
@@ -66,12 +68,10 @@ public class MemcachedCacheProperties {
      * @param value Comma-separated list
      */
     public void setServers(String value) {
-        this.servers = new ArrayList<>();
-        if (!StringUtils.isEmpty(value)) {
-            for (String s : value.split(",")) {
-                this.servers.add(new Server(s.trim()));
-            }
+        if (StringUtils.isEmpty(value)) {
+            throw new IllegalArgumentException("Server list is empty");
         }
+        this.servers = AddrUtil.getAddresses(Arrays.asList(value.split(",")));
     }
 
     public ClientMode getMode() {
@@ -104,33 +104,6 @@ public class MemcachedCacheProperties {
 
     public void setNamespace(String namespace) {
         this.namespace = namespace;
-    }
-
-    public static class Server {
-        private String host;
-        private int port;
-
-        public Server(String server) {
-            String[] values = server.split(":");
-            host = values[0];
-            port = Integer.valueOf(values[1]);
-        }
-
-        public String getHost() {
-            return host;
-        }
-
-        public void setHost(String host) {
-            this.host = host;
-        }
-
-        public int getPort() {
-            return port;
-        }
-
-        public void setPort(int port) {
-            this.port = port;
-        }
     }
 
 }
