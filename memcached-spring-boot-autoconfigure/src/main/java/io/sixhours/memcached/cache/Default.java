@@ -15,9 +15,9 @@
  */
 package io.sixhours.memcached.cache;
 
-import io.sixhours.memcached.cache.MemcachedCacheProperties.Server;
 import net.spy.memcached.ClientMode;
 
+import java.net.InetSocketAddress;
 import java.util.Collections;
 import java.util.List;
 
@@ -28,7 +28,7 @@ import java.util.List;
  */
 public final class Default {
 
-    public static final List<Server> SERVERS = Collections.singletonList(new Server("localhost:11211"));
+    public static final List<InetSocketAddress> SERVERS = Collections.singletonList(new InetSocketAddress("localhost", 11211));
     public static final ClientMode CLIENT_MODE = ClientMode.Static;
     public static final int EXPIRATION = 60;
     public static final String PREFIX = "memcached:spring-boot";
