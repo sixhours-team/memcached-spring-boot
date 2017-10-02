@@ -4,6 +4,6 @@ ext.projectName = 'Memcached Spring Boot Starter'
 ext.projectDesc = 'Starter for the Memcached Spring Boot Cache'
 
 dependencies {
-    compile("io.sixhours:memcached-spring-boot-autoconfigure:$project.version")
-    compile("com.amazonaws:elasticache-java-cluster-client")
+    compile project(':memcached-spring-boot-autoconfigure')
+    compile('com.amazonaws:elasticache-java-cluster-client')
 }
