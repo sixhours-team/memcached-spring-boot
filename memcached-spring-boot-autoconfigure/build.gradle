@@ -4,13 +4,13 @@ ext.projectName = 'Memcached Spring Boot AutoConfiguration'
 ext.projectDesc = 'Memcached Spring Boot AutoConfiguration'
 
 dependencies {
-    compile("org.springframework.boot:spring-boot-autoconfigure")
+    compile('org.springframework.boot:spring-boot-autoconfigure')
 
-    optional("org.springframework.boot:spring-boot-configuration-processor")
-    optional("com.amazonaws:elasticache-java-cluster-client")
+    optional('org.springframework.boot:spring-boot-configuration-processor')
+    optional('com.amazonaws:elasticache-java-cluster-client')
 
-    testCompile("org.springframework.boot:spring-boot-starter-test")
-    testCompile("commons-logging:commons-logging")
+    testCompile('org.springframework.boot:spring-boot-starter-test')
+    testCompile('commons-logging:commons-logging')
 }
 
 compileJava.dependsOn(processResources)
