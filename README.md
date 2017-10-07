@@ -1,5 +1,5 @@
-[![Build Status](https://travis-ci.org/igorbolic/memcached-spring-boot.svg?branch=master)](https://travis-ci.org/igorbolic/memcached-spring-boot) 
-[![codecov](https://codecov.io/gh/igorbolic/memcached-spring-boot/branch/master/graph/badge.svg)](https://codecov.io/gh/igorbolic/memcached-spring-boot)
+[![Build Status](https://travis-ci.org/sixhours-team/memcached-spring-boot.svg?branch=master)](https://travis-ci.org/sixhours-team/memcached-spring-boot) 
+[![codecov](https://codecov.io/gh/sixhours-team/memcached-spring-boot/branch/master/graph/badge.svg)](https://codecov.io/gh/sixhours-team/memcached-spring-boot)
 [![Join the chat at gitter.im/six-hours/memcached-spring-boot](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/six-hours/memcached-spring-boot?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 # Memcached Spring Boot
@@ -23,7 +23,7 @@ memcached.cache.prefix: # Cache key prefix (default "memcached:spring-boot")
 memcached.cache.namespace: # Cache eviction namespace key name (default "namespace")
 ```
 
-All of the values have sensible defaults and are bound to [MemcachedCacheProperties](https://github.com/igorbolic/memcached-spring-boot/blob/master/memcached-spring-boot-autoconfigure/src/main/java/io/sixhours/memcached/cache/MemcachedCacheProperties.java) class.
+All of the values have sensible defaults and are bound to [MemcachedCacheProperties](https://github.com/sixhours-team/memcached-spring-boot/blob/master/memcached-spring-boot-autoconfigure/src/main/java/io/sixhours/memcached/cache/MemcachedCacheProperties.java) class.
 
 **Notice:** 
 >If multiple applications are sharing the same Memcached server, make sure to specify unique cache `prefix` for each application 
@@ -102,7 +102,7 @@ To plug-in Memcached cache in your application follow the steps below:
     }
     ```
 
-For further details on using the Memcached cache in a Spring Boot application please look at the [demo](https://github.com/igorbolic/spring-boot-memcached-demo) project. 
+For further details on using the Memcached cache in a Spring Boot application please look at the [demo](https://github.com/sixhours-team/spring-boot-memcached-demo-kotlin) project. 
 
 ## Build
 
