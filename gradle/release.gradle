@@ -11,13 +11,17 @@ ext.pomConfig = {
     }
 
     scm {
-        url "https://github.com/igorbolic/memcached-spring-boot.git"
+        url "https://github.com/sixhours-team/memcached-spring-boot.git"
     }
 
     developers {
         developer {
             name 'Igor Bolic'
             email 'igor.bolic@sixhours.io'
+        }
+        developer {
+            name 'Sasa Bolic'
+            email 'sasa.bolic@sixhours.io'
         }
     }
 }
@@ -37,7 +41,7 @@ publishing {
                 def root = asNode()
                 root.appendNode('name', "${project.projectName}")
                 root.appendNode('description', "${project.projectDesc}")
-                root.appendNode('url', 'https://github.com/igorbolic/memcached-spring-boot')
+                root.appendNode('url', 'https://github.com/sixhours-team/memcached-spring-boot')
                 root.children().last() + pomConfig
             }
         }
@@ -52,10 +56,10 @@ bintray {
         repo = 'maven'
         name = "${project.group}:${project.name}"
         userOrg = user
-        websiteUrl = 'https://github.com/igorbolic/memcached-spring-boot'
-        issueTrackerUrl = 'https://github.com/igorbolic/memcached-spring-boot/issues'
+        websiteUrl = 'https://github.com/sixhours-team/memcached-spring-boot'
+        issueTrackerUrl = 'https://github.com/sixhours-team/memcached-spring-boot/issues'
         licenses = ['Apache-2.0']
-        vcsUrl = 'https://github.com/igorbolic/memcached-spring-boot'
+        vcsUrl = 'https://github.com/sixhours-team/memcached-spring-boot'
         version {
             name = project.version
             released = new Date()
