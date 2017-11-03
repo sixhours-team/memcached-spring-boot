@@ -9,26 +9,6 @@ Library that provides support for auto-configuration of Memcached cache in a Spr
 It provides implementation for the [Spring Cache Abstraction](https://docs.spring.io/spring/docs/4.3.x/spring-framework-reference/html/cache.html), backed by the [Amazon's ElastiCache Clustered Client](https://github.com/awslabs/aws-elasticache-cluster-client-memcached-for-java).
 Supports cache eviction per key, as well as clearing out of the entire cache region.
 
-## Properties
-
-Properties can be set in your `application.yml` file or as a command line properties. Below is the
-full list of supported properties:
-
-```yaml
-# MEMCACHED CACHE 
-memcached.cache.servers: # Comma-separated list of hostname:port for memcached servers (default "localhost:11211")
-memcached.cache.mode: # Memcached client mode (use one of following: "static", "dynamic"). Default mode is "static", use "dynamic" for AWS node auto discovery
-memcached.cache.expiration: # Cache expiration in seconds (default "60")
-memcached.cache.prefix: # Cache key prefix (default "memcached:spring-boot")
-memcached.cache.namespace: # Cache eviction namespace key name (default "namespace")
-```
-
-All of the values have sensible defaults and are bound to [MemcachedCacheProperties](https://github.com/sixhours-team/memcached-spring-boot/blob/master/memcached-spring-boot-autoconfigure/src/main/java/io/sixhours/memcached/cache/MemcachedCacheProperties.java) class.
-
-**Notice:** 
->If multiple applications are sharing the same Memcached server, make sure to specify unique cache `prefix` for each application 
-in order to avoid cache data conflicts.
-
 ## Usage
 
 To plug-in Memcached cache in your application follow the steps below:
@@ -102,10 +82,31 @@ To plug-in Memcached cache in your application follow the steps below:
     }
     ```
 
-For further details on using the Memcached cache in a Spring Boot application please look at the [demo](https://github.com/sixhours-team/spring-boot-memcached-demo-kotlin) project. 
+For further details on using the Memcached cache in a Spring Boot application please look at the [demo](https://github.com/sixhours-team/spring-boot-memcached-demo-java) project. 
+
+## Properties
+
+Properties can be set in your `application.yml` file or as a command line properties. Below is the
+full list of supported properties:
+
+```yaml
+# MEMCACHED CACHE 
+memcached.cache.servers: # Comma-separated list of hostname:port for memcached servers (default "localhost:11211")
+memcached.cache.mode: # Memcached client mode (use one of following: "static", "dynamic"). Default mode is "static", use "dynamic" for AWS node auto discovery
+memcached.cache.expiration: # Cache expiration in seconds (default "60")
+memcached.cache.prefix: # Cache key prefix (default "memcached:spring-boot")
+memcached.cache.namespace: # Cache eviction namespace key name (default "namespace")
+```
+
+All of the values have sensible defaults and are bound to [MemcachedCacheProperties](https://github.com/sixhours-team/memcached-spring-boot/blob/master/memcached-spring-boot-autoconfigure/src/main/java/io/sixhours/memcached/cache/MemcachedCacheProperties.java) class.
+
+**Notice:** 
+>If multiple applications are sharing the same Memcached server, make sure to specify unique cache `prefix` for each application 
+in order to avoid cache book conflicts.
 
 ## Build
 
+In order to build the project you will have to have [Java 1.8+](http://www.oracle.com/technetwork/java/javase/downloads/index.html) and [Docker](http://www.oracle.com/technetwork/java/javase/downloads/index.html) installed.
 To build the project invoke the following command:
 
     ./gradlew clean build

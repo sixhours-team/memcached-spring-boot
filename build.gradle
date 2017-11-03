@@ -1,6 +1,6 @@
 buildscript {
     ext {
-        spring_boot_version = '1.5.6.RELEASE'
+        spring_boot_version = '1.5.8.RELEASE'
         elasticache_client_version = '1.1.1'
         commons_logging_version = '1.2'
     }
@@ -14,18 +14,22 @@ buildscript {
     }
 }
 
+ext.JAVA_GRADLE = "$rootDir/gradle/java.gradle"
+ext.RELEASE_GRADE = "$rootDir/gradle/release.gradle"
+
 
 allprojects {
     apply plugin: 'jacoco'
 }
 
 subprojects {
-    apply plugin: 'java'
     apply plugin: 'org.springframework.boot'
     apply plugin: 'propdeps'
     apply plugin: 'propdeps-maven'
     apply plugin: 'propdeps-idea'
     apply plugin: 'propdeps-eclipse'
+    apply from: JAVA_GRADLE
+    apply from: RELEASE_GRADE
 
     def gitVersion = { ->
         def stdout = new ByteArrayOutputStream()
@@ -40,9 +44,6 @@ subprojects {
 
     group = "io.sixhours"
     version = gitVersion()
-
-    sourceCompatibility = 1.8
-    targetCompatibility = 1.8
 
     bootRepackage {
         enabled false
