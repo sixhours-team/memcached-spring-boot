@@ -22,9 +22,7 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Condition {@link OnMissingSpringCacheTypeTest} tests.
@@ -36,7 +34,7 @@ public class OnMissingSpringCacheTypeTest {
     private final AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext();
 
     @After
-    public void teardown() {
+    public void tearDown() {
         applicationContext.close();
     }
 
@@ -44,14 +42,14 @@ public class OnMissingSpringCacheTypeTest {
     public void thatOutcomeShouldNotMatchWhenSpringCacheTypeIsPresent() {
         loadContext(MissingSpringCacheTypeConfig.class, "spring.cache.type=none");
 
-        assertThat(this.applicationContext.containsBean("foo"), is(false));
+        assertThat(this.applicationContext.containsBean("foo")).isFalse();
     }
 
     @Test
     public void thatOutcomeShouldMatchWhenSpringCacheTypeIsNotPresent() {
         loadContext(MissingSpringCacheTypeConfig.class);
 
-        assertThat(this.applicationContext.containsBean("foo"), is(true));
+        assertThat(this.applicationContext.containsBean("foo")).isTrue();
     }
 
     private void loadContext(Class<?> configuration, String... environment) {
