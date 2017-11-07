@@ -9,6 +9,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.cache.interceptor.SimpleKey;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -52,19 +53,37 @@ public class MemcachedCacheIT {
     }
 
     @Test
-    public void thatBooksAreNotCached() {
-        List<Book> data = bookService.findAll();
+    public void thatBooksAreCached() {
+        List<Book> books = bookService.findAll();
 
-        assertThat(data).isNotNull();
+        assertThat(books).isNotNull();
         assertThat(bookService.getCounterFindAll()).isEqualTo(1);
 
         bookService.findAll();
         bookService.findAll();
-        assertThat(bookService.getCounterFindAll()).isEqualTo(3);
+        assertThat(bookService.getCounterFindAll()).isEqualTo(1);
+
+        Object value = cacheManager.getCache("books").get(SimpleKey.EMPTY);
+        assertThat(value).isNotNull();
     }
 
     @Test
-    public void thatBookHasBeenCached() {
+    public void thatBooksWithYearAreNotCached() {
+        List<Book> books = bookService.findByYear(2016);
+
+        assertThat(books).isNotNull();
+        assertThat(bookService.getCounterFindByYear()).isEqualTo(1);
+
+        bookService.findByYear(2016);
+        bookService.findByYear(2016);
+        assertThat(bookService.getCounterFindByYear()).isEqualTo(3);
+
+        Object value = cacheManager.getCache("books").get("2016");
+        assertThat(value).isNull();
+    }
+
+    @Test
+    public void thatBookWithTitleHasBeenCached() {
         Book book = bookService.findByTitle("Kotlin");
 
         assertThat(book).isNotNull();
@@ -90,7 +109,8 @@ public class MemcachedCacheIT {
         bookService.findByTitle("Kotlin");
         assertThat(bookService.getCounterFindByTitle()).isEqualTo(1);
 
-        Thread.sleep(1000 * 6L);
+        Thread.sleep(1000 * 2L);
+
         Object value = cacheManager.getCache("books").get("Kotlin");
         assertThat(value).isNull();
 
@@ -103,9 +123,9 @@ public class MemcachedCacheIT {
     }
 
     @Test
-    public void thatBookHasBeenCachedWhenUnlessNotMet() {
-        Book book = bookService.findByTitleWithYear("Programming Kotlin", 2017);
-        Book cachedBook = bookService.findByTitleWithYear("Programming Kotlin", 2017);
+    public void thatBookWithTitleAndYearHasBeenCachedWhenUnlessNotMet() {
+        Book book = bookService.findByTitleAndYear("Programming Kotlin", 2017);
+        Book cachedBook = bookService.findByTitleAndYear("Programming Kotlin", 2017);
 
         assertThat(book).isNotNull();
         assertThat(cachedBook).isNotNull();
@@ -118,9 +138,9 @@ public class MemcachedCacheIT {
     }
 
     @Test
-    public void thatBookHasBeenNotBeenCachedWhenUnlessMet() {
-        Book book = bookService.findByTitleWithYear("Spring Boot in Action", 2016);
-        Book cachedBook = bookService.findByTitleWithYear("Spring Boot in Action", 2016);
+    public void thatBookWithTitleAndYearHasBeenNotBeenCachedWhenUnlessMet() {
+        Book book = bookService.findByTitleAndYear("Spring Boot in Action", 2016);
+        Book cachedBook = bookService.findByTitleAndYear("Spring Boot in Action", 2016);
 
         assertThat(book).isNotNull();
         assertThat(cachedBook).isNotNull();
@@ -133,7 +153,7 @@ public class MemcachedCacheIT {
     }
 
     @Test
-    public void thatBookWithTitleKeyHasBeenEvicted() {
+    public void thatBookWithTitleHasBeenEvicted() {
         Book book = bookService.findByTitle("Spring Boot in Action");
         assertThat(book).isNotNull();
 
@@ -151,6 +171,28 @@ public class MemcachedCacheIT {
         assertThat(value).isNotNull();
     }
 
+    @Test
+    public void thatBooksHaveBeenReCached() {
+        bookService.findAll();
+        assertThat(bookService.getCounterFindAll()).isEqualTo(1);
+
+        List<Book> books = bookService.deleteAndReCache("Kotlin");
+
+        assertThat(books.size()).isEqualTo(3);
+        assertThat(books).contains(new Book(1, "Kotlin in Action", 2017));
+        assertThat(books).doesNotContain(new Book(4, "Kotlin", 2017));
+
+        Object value = cacheManager.getCache("books").get(SimpleKey.EMPTY);
+        assertThat(value).isNotNull();
+
+        books = bookService.findAll();
+
+        assertThat(bookService.getCounterFindAll()).isEqualTo(1);
+        assertThat(books.size()).isEqualTo(3);
+        assertThat(books).contains(new Book(1, "Kotlin in Action", 2017));
+        assertThat(books).doesNotContain(new Book(4, "Kotlin", 2017));
+    }
+
     @Configuration
     @EnableCaching
     @ComponentScan(basePackageClasses = BookService.class)
@@ -159,7 +201,7 @@ public class MemcachedCacheIT {
         @Bean
         public MemcachedCacheManager cacheManager() throws IOException {
             final MemcachedCacheManager memcachedCacheManager = new MemcachedCacheManager(memcachedClient());
-            memcachedCacheManager.setExpiration(5);
+            memcachedCacheManager.setExpiration(1);
 
             return memcachedCacheManager;
         }
