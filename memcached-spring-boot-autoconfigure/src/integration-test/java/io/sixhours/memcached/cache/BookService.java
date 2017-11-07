@@ -1,3 +1,18 @@
+/*
+ * Copyright 2017 Sixhours.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package io.sixhours.memcached.cache;
 
 import org.springframework.cache.annotation.CacheEvict;
@@ -12,7 +27,7 @@ import java.util.stream.Collectors;
 @Repository
 public class BookService {
 
-    private List<Book> books = Arrays.asList(
+    private final List<Book> books = Arrays.asList(
             new Book(1, "Kotlin in Action", 2017),
             new Book(2, "Spring Boot in Action", 2016),
             new Book(3, "Programming Kotlin", 2017),
@@ -29,11 +44,6 @@ public class BookService {
         return this.books;
     }
 
-    @Cacheable("books")
-    public Book find(String argument, int year) {
-        return new Book(6, "Test", 2017);
-    }
-
     public List<Book> findByYear(int year) {
         counterFindByYear++;
         return books.stream()
@@ -46,8 +56,8 @@ public class BookService {
         counterFindByTitle++;
         return books.stream()
                 .filter(b -> b.getTitle().equals(title))
-                .collect(Collectors.reducing((a, b) -> null))
-                .get();
+                .reduce((a, b) -> null)
+                .orElseGet(null);
     }
 
     @Cacheable(value = "books", key = "#title", unless = "#year <= 2016")
@@ -55,8 +65,8 @@ public class BookService {
         counterFindByTitleWithYear++;
         return books.stream()
                 .filter(b -> b.getTitle().equals(title) && b.getYear().equals(year))
-                .collect(Collectors.reducing((a, b) -> null))
-                .get();
+                .reduce((a, b) -> null)
+                .orElseGet(null);
     }
 
     @CacheEvict(value = "books", key = "#book.title")
