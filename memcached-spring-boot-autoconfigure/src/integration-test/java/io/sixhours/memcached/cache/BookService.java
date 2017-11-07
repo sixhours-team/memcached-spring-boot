@@ -4,13 +4,11 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Repository;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-/**
- * @author Igor Bolic
- */
 @Repository
 public class BookService {
 
@@ -21,18 +19,31 @@ public class BookService {
             new Book(4, "Kotlin", 2017));
 
     private int counterFindAll = 0;
+    private int counterFindByYear = 0;
     private int counterFindByTitle = 0;
     private int counterFindByTitleWithYear = 0;
 
+    @Cacheable("books")
     public List<Book> findAll() {
         counterFindAll++;
         return this.books;
     }
 
     @Cacheable("books")
+    public Book find(String argument, int year) {
+        return new Book(6, "Test", 2017);
+    }
+
+    public List<Book> findByYear(int year) {
+        counterFindByYear++;
+        return books.stream()
+                .filter(b -> b.getYear().equals(year))
+                .collect(Collectors.toList());
+    }
+
+    @Cacheable("books")
     public Book findByTitle(String title) {
         counterFindByTitle++;
-
         return books.stream()
                 .filter(b -> b.getTitle().equals(title))
                 .collect(Collectors.reducing((a, b) -> null))
@@ -40,13 +51,12 @@ public class BookService {
     }
 
     @Cacheable(value = "books", key = "#title", unless = "#year <= 2016")
-    public Book findByTitleWithYear(String title, int year) {
+    public Book findByTitleAndYear(String title, int year) {
         counterFindByTitleWithYear++;
         return books.stream()
                 .filter(b -> b.getTitle().equals(title) && b.getYear().equals(year))
                 .collect(Collectors.reducing((a, b) -> null))
                 .get();
-//        return new Book(5, title, year);
     }
 
     @CacheEvict(value = "books", key = "#book.title")
@@ -54,14 +64,29 @@ public class BookService {
         // do nothing
     }
 
+    @CacheEvict(value = "books", allEntries = true, beforeInvocation = true)
+    @Cacheable(value = "books", key = "T(org.springframework.cache.interceptor.SimpleKey).EMPTY")
+    public List<Book> deleteAndReCache(String title) {
+        // delete book with title & return
+        final List<Book> result = new ArrayList<>(books);
+        result.removeIf(b -> b.getTitle().equals(title));
+
+        return result;
+    }
+
     public void resetCounters() {
         counterFindAll = 0;
+        counterFindByYear = 0;
         counterFindByTitle = 0;
         counterFindByTitleWithYear = 0;
     }
 
     public int getCounterFindAll() {
         return counterFindAll;
+    }
+
+    public int getCounterFindByYear() {
+        return counterFindByYear;
     }
 
     public int getCounterFindByTitle() {
@@ -71,6 +96,5 @@ public class BookService {
     public int getCounterFindByTitleWithYear() {
         return counterFindByTitleWithYear;
     }
-
 
 }

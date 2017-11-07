@@ -8,7 +8,6 @@ dependencies {
     optional('com.amazonaws:elasticache-java-cluster-client')
 
     testCompile('org.springframework.boot:spring-boot-starter-test')
-    testCompile('org.assertj:assertj-core:3.8.0')
     testCompile('commons-logging:commons-logging')
 
     integrationTestCompile('org.testcontainers:testcontainers:1.4.3')
