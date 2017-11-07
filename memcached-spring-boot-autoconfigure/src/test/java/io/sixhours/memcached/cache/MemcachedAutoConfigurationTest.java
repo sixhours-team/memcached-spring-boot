@@ -43,8 +43,9 @@ import org.springframework.test.util.ReflectionTestUtils;
 import java.net.InetSocketAddress;
 import java.util.List;
 
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.CoreMatchers.isA;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -61,7 +62,7 @@ public class MemcachedAutoConfigurationTest {
     private final AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext();
 
     @After
-    public void teardown() {
+    public void tearDown() {
         applicationContext.close();
     }
 
@@ -91,7 +92,7 @@ public class MemcachedAutoConfigurationTest {
 
         CacheManager cacheManager = this.applicationContext.getBean(CacheManager.class);
 
-        assertThat(cacheManager.getClass(), equalTo(NoOpCacheManager.class));
+        assertThat(cacheManager).isInstanceOf(NoOpCacheManager.class);
     }
 
     @Test
@@ -110,7 +111,7 @@ public class MemcachedAutoConfigurationTest {
 
         CacheManager cacheManager = this.applicationContext.getBean(CacheManager.class);
 
-        assertThat(cacheManager.getClass(), equalTo(ConcurrentMapCacheManager.class));
+        assertThat(cacheManager).isInstanceOf(ConcurrentMapCacheManager.class);
     }
 
     @Test
@@ -137,7 +138,7 @@ public class MemcachedAutoConfigurationTest {
 
         CacheManager cacheManager = this.applicationContext.getBean(CacheManager.class);
 
-        assertThat(cacheManager.getClass(), equalTo(ConcurrentMapCacheManager.class));
+        assertThat(cacheManager).isInstanceOf(ConcurrentMapCacheManager.class);
     }
 
     @Test
@@ -169,7 +170,9 @@ public class MemcachedAutoConfigurationTest {
 
         MemcachedCacheManager memcachedCacheManager = this.applicationContext.getBean(MemcachedCacheManager.class);
 
-        assertThat("Auto-configured disposable instance should not be loaded in context", memcachedCacheManager, not(instanceOf(MemcachedCacheAutoConfiguration.DisposableMemcachedCacheManager.class)));
+        assertThat(memcachedCacheManager)
+                .as("Auto-configured disposable instance should not be loaded in context")
+                .isNotInstanceOf(MemcachedCacheAutoConfiguration.DisposableMemcachedCacheManager.class);
         assertMemcachedCacheManager(memcachedCacheManager, Default.EXPIRATION, Default.PREFIX, Default.NAMESPACE);
     }
 
@@ -238,7 +241,9 @@ public class MemcachedAutoConfigurationTest {
     private void assertMemcachedClient(MemcachedClient memcachedClient, ClientMode clientMode, InetSocketAddress... servers) {
         List<NodeEndPoint> nodeEndPoints = (List<NodeEndPoint>) memcachedClient.getAllNodeEndPoints();
 
-        assertThat("The number of memcached node endpoints should match server list size", nodeEndPoints.size(), equalTo(servers.length));
+        assertThat(nodeEndPoints)
+                .as("The number of memcached node endpoints should match server list size")
+                .hasSize(servers.length);
 
         ConnectionFactory cf = (ConnectionFactory) ReflectionTestUtils.getField(memcachedClient, "connFactory");
 
@@ -249,21 +254,27 @@ public class MemcachedAutoConfigurationTest {
             String host = server.getHostString();
             int port = server.getPort();
 
-            assertThat("Memcached node endpoint host is incorrect", host.matches("\\w+") ? nodeEndPoint.getHostName() : nodeEndPoint.getIpAddress(), is(host));
-            assertThat("Memcached node endpoint port is incorrect", nodeEndPoint.getPort(), is(port));
+            assertThat(host.matches("\\w+") ? nodeEndPoint.getHostName() : nodeEndPoint.getIpAddress())
+                    .as("Memcached node endpoint host is incorrect")
+                    .isEqualTo(host);
+            assertThat(nodeEndPoint.getPort())
+                    .as("Memcached node endpoint port is incorrect")
+                    .isEqualTo(port);
         }
-        assertThat("Memcached node endpoint mode is incorrect", cf.getClientMode(), is(clientMode));
+        assertThat(cf.getClientMode())
+                .as("Memcached node endpoint mode is incorrect")
+                .isEqualTo(clientMode);
     }
 
     private void assertMemcachedCacheManager(MemcachedCacheManager memcachedCacheManager, int expiration, String prefix, String namespace) {
         int actualExpiration = (int) ReflectionTestUtils.getField(memcachedCacheManager, "expiration");
-        assertThat(actualExpiration, is(expiration));
+        assertThat(actualExpiration).isEqualTo(expiration);
 
         String actualPrefix = (String) ReflectionTestUtils.getField(memcachedCacheManager, "prefix");
-        assertThat(actualPrefix, is(prefix));
+        assertThat(actualPrefix).isEqualTo(prefix);
 
         String actualNamespace = (String) ReflectionTestUtils.getField(memcachedCacheManager, "namespace");
-        assertThat(actualNamespace, is(namespace));
+        assertThat(actualNamespace).isEqualTo(namespace);
     }
 
     private void loadContext(Class<?> configuration, String... environment) {

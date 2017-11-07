@@ -22,9 +22,9 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.springframework.cache.Cache;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.hasProperty;
-import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.*;
 
 /**
@@ -56,7 +56,7 @@ public class MemcachedCacheTest {
     public ExpectedException thrown = ExpectedException.none();
 
     @Before
-    public void setup() {
+    public void setUp() {
         memcachedClient = mock(MemcachedClient.class);
         memcachedCache = new MemcachedCache(CACHE_NAME, memcachedClient, CACHE_EXPIRATION, CACHE_PREFIX, NAMESPACE_KEY);
 
@@ -70,7 +70,7 @@ public class MemcachedCacheTest {
 
         Object actual = memcachedCache.lookup(CACHED_OBJECT_KEY);
 
-        assertThat(actual, is(cachedValue));
+        assertThat(actual).isEqualTo(cachedValue);
 
         verify(memcachedClient).get(argThat(is(memcachedKey)));
         verify(memcachedClient).get(namespaceKey);
@@ -81,14 +81,14 @@ public class MemcachedCacheTest {
     public void thatGetNameReturnsCacheName() {
         String actual = memcachedCache.getName();
 
-        assertThat(actual, is(CACHE_NAME));
+        assertThat(actual).isEqualTo(CACHE_NAME);
     }
 
     @Test
     public void thatGetNativeCacheReturnsMemcachedClient() {
         Object actual = memcachedCache.getNativeCache();
 
-        assertThat(actual, is(memcachedClient));
+        assertThat(actual).isSameAs(memcachedClient);
     }
 
     @Test
@@ -97,7 +97,7 @@ public class MemcachedCacheTest {
 
         Object actual = memcachedCache.get(CACHED_OBJECT_KEY, () -> valueLoaderValue);
 
-        assertThat(actual, is(cachedValue));
+        assertThat(actual).isEqualTo(cachedValue);
 
         verify(memcachedClient).get(memcachedKey);
         verify(memcachedClient).get(namespaceKey);
@@ -111,7 +111,7 @@ public class MemcachedCacheTest {
 
         Object actual = memcachedCache.get(CACHED_OBJECT_KEY, () -> valueLoaderValue);
 
-        assertThat(actual, is(valueLoaderValue));
+        assertThat(actual).isEqualTo(valueLoaderValue);
 
         verify(memcachedClient, times(2)).get(memcachedKey);
         verify(memcachedClient, times(3)).get(namespaceKey);
@@ -149,7 +149,7 @@ public class MemcachedCacheTest {
 
         Cache.ValueWrapper actual = memcachedCache.putIfAbsent(CACHED_OBJECT_KEY, newCachedValue);
 
-        assertThat(actual.get(), is(cachedValue));
+        assertThat(actual.get()).isEqualTo(cachedValue);
 
         verify(memcachedClient).get(memcachedKey);
         verify(memcachedClient).get(namespaceKey);
@@ -162,7 +162,7 @@ public class MemcachedCacheTest {
 
         Cache.ValueWrapper actual = memcachedCache.putIfAbsent(CACHED_OBJECT_KEY, newCachedValue);
 
-        assertThat(actual.get(), is(newCachedValue));
+        assertThat(actual.get()).isEqualTo(newCachedValue);
 
         verify(memcachedClient, times(2)).get(namespaceKey);
         verify(memcachedClient).get(memcachedKey);

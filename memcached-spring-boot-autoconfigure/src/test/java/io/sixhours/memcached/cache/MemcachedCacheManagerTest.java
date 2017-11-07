@@ -22,8 +22,7 @@ import org.springframework.cache.Cache;
 
 import java.util.Collection;
 
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -39,7 +38,7 @@ public class MemcachedCacheManagerTest {
     private MemcachedCacheManager cacheManager;
 
     @Before
-    public void setup() {
+    public void setUp() {
         MemcachedClient memcachedClient = mock(MemcachedClient.class);
         cacheManager = new MemcachedCacheManager(memcachedClient);
 
@@ -50,16 +49,20 @@ public class MemcachedCacheManagerTest {
     public void thatGetCacheReturnsNewCacheWhenRequestedCacheIsNotAvailable() {
         Cache cache = cacheManager.getCache(NON_EXISTING_CACHE);
 
-        assertThat(cache, is(notNullValue()));
-        assertThat("Cache size should be incremented", cacheManager.getCacheNames().size(), is(2));
+        assertThat(cache).isNotNull();
+        assertThat(cacheManager.getCacheNames())
+                .as("Cache size should be incremented")
+                .hasSize(2);
     }
 
     @Test
     public void thatGetCacheReturnsExistingCacheWhenRequested() {
         Cache cache = cacheManager.getCache(EXISTING_CACHE);
 
-        assertThat(cacheManager.getCache(EXISTING_CACHE), sameInstance(cache));
-        assertThat("Cache size should remain the same", cacheManager.getCacheNames().size(), is(1));
+        assertThat(cacheManager.getCache(EXISTING_CACHE)).isSameAs(cache);
+        assertThat(cacheManager.getCacheNames())
+                .as("Cache size should remain the same")
+                .hasSize(1);
     }
 
     @Test
@@ -67,7 +70,7 @@ public class MemcachedCacheManagerTest {
         Collection<String> cacheNames = cacheManager.getCacheNames();
         String[] cacheNamesArray = cacheNames.toArray(new String[cacheNames.size()]);
 
-        assertThat(cacheNamesArray.length, is(1));
-        assertThat(cacheNamesArray[0], is(EXISTING_CACHE));
+        assertThat(cacheNamesArray).hasSize(1);
+        assertThat(cacheNamesArray[0]).isEqualTo(EXISTING_CACHE);
     }
 }
