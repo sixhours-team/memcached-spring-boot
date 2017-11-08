@@ -146,7 +146,7 @@ public class MemcachedCacheIT {
         assertThat(cachedBook).isNotNull();
         assertThat(cachedBook).isNotSameAs(book);
         assertThat(cachedBook).isEqualTo(book);
-        assertThat(bookService.getCounterFindByTitleWithYear()).isEqualTo(1);
+        assertThat(bookService.getCounterFindByTitleAndYear()).isEqualTo(1);
 
         Object value = cacheManager.getCache("books").get("Programming Kotlin");
         assertThat(value).isNotNull();
@@ -161,7 +161,7 @@ public class MemcachedCacheIT {
         assertThat(cachedBook).isNotNull();
         assertThat(cachedBook).isSameAs(book);
         assertThat(cachedBook).isEqualTo(book);
-        assertThat(bookService.getCounterFindByTitleWithYear()).isEqualTo(2);
+        assertThat(bookService.getCounterFindByTitleAndYear()).isEqualTo(2);
 
         Object value = cacheManager.getCache("books").get("Spring Boot in Action");
         assertThat(value).isNull();
@@ -200,12 +200,12 @@ public class MemcachedCacheIT {
         Object value = cacheManager.getCache("books").get(SimpleKey.EMPTY);
         assertThat(value).isNotNull();
 
-        books = bookService.findAll();
+        List<Book> cachedBooks = bookService.findAll();
 
         assertThat(bookService.getCounterFindAll()).isEqualTo(1);
-        assertThat(books.size()).isEqualTo(3);
-        assertThat(books).contains(new Book(1, "Kotlin in Action", 2017));
-        assertThat(books).doesNotContain(new Book(4, "Kotlin", 2017));
+        assertThat(cachedBooks.size()).isEqualTo(3);
+        assertThat(cachedBooks).contains(new Book(1, "Kotlin in Action", 2017));
+        assertThat(cachedBooks).doesNotContain(new Book(4, "Kotlin", 2017));
     }
 
     @Configuration
