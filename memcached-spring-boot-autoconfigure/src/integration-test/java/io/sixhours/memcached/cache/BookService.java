@@ -36,7 +36,7 @@ public class BookService {
     private int counterFindAll = 0;
     private int counterFindByYear = 0;
     private int counterFindByTitle = 0;
-    private int counterFindByTitleWithYear = 0;
+    private int counterFindByTitleAndYear = 0;
 
     @Cacheable("books")
     public List<Book> findAll() {
@@ -62,7 +62,7 @@ public class BookService {
 
     @Cacheable(value = "books", key = "#title", unless = "#year <= 2016")
     public Book findByTitleAndYear(String title, int year) {
-        counterFindByTitleWithYear++;
+        counterFindByTitleAndYear++;
         return books.stream()
                 .filter(b -> b.getTitle().equals(title) && b.getYear().equals(year))
                 .reduce((a, b) -> null)
@@ -88,7 +88,7 @@ public class BookService {
         counterFindAll = 0;
         counterFindByYear = 0;
         counterFindByTitle = 0;
-        counterFindByTitleWithYear = 0;
+        counterFindByTitleAndYear = 0;
     }
 
     public int getCounterFindAll() {
@@ -103,8 +103,8 @@ public class BookService {
         return counterFindByTitle;
     }
 
-    public int getCounterFindByTitleWithYear() {
-        return counterFindByTitleWithYear;
+    public int getCounterFindByTitleAndYear() {
+        return counterFindByTitleAndYear;
     }
 
 }

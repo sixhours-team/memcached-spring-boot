@@ -17,7 +17,6 @@ buildscript {
 ext.JAVA_GRADLE = "$rootDir/gradle/java.gradle"
 ext.RELEASE_GRADE = "$rootDir/gradle/release.gradle"
 
-
 allprojects {
     apply plugin: 'jacoco'
 }
