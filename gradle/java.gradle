@@ -1,4 +1,5 @@
 apply plugin: 'java'
+apply plugin: 'propdeps-idea'
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
@@ -11,15 +12,29 @@ sourceSets {
             }
             sourceSet."$it".srcDir "src/integration-test/$it"
         }
+        compileClasspath = sourceSets.main.output + sourceSets.test.output + configurations.integrationTestCompile
+        runtimeClasspath = output + compileClasspath + configurations.integrationTestRuntime
     }
 }
 
-dependencies {
-    integrationTestCompile sourceSets.main.output
-    integrationTestCompile sourceSets.test.output
-    integrationTestCompile configurations.compile
-    integrationTestCompile configurations.testCompile
-    integrationTestRuntime configurations.testRuntime
+idea {
+    module {
+        ["java", "kotlin", "groovy", "scala", "resources"].each {
+            if (!project.sourceSets.integrationTest.hasProperty(it)) {
+                return
+            }
+            testSourceDirs += project.sourceSets.integrationTest."$it".srcDirs
+        }
+    }
+}
+
+configurations {
+    integrationTestCompile {
+        extendsFrom testCompile, optional, provided
+    }
+    integrationTestRuntime {
+        extendsFrom integrationTestCompile, testRuntime
+    }
 }
 
 task integrationTest(type: Test) {
