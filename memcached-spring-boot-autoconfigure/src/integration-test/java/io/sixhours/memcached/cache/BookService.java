@@ -57,7 +57,7 @@ public class BookService {
         return books.stream()
                 .filter(b -> b.getTitle().equals(title))
                 .reduce((a, b) -> null)
-                .orElseGet(null);
+                .orElseThrow(IllegalArgumentException::new);
     }
 
     @Cacheable(value = "books", key = "#title", unless = "#year <= 2016")
@@ -66,7 +66,7 @@ public class BookService {
         return books.stream()
                 .filter(b -> b.getTitle().equals(title) && b.getYear().equals(year))
                 .reduce((a, b) -> null)
-                .orElseGet(null);
+                .orElseThrow(IllegalArgumentException::new);
     }
 
     @CacheEvict(value = "books", key = "#book.title")
