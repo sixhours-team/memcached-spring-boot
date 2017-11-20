@@ -40,7 +40,7 @@ import java.util.concurrent.ConcurrentMap;
  */
 public class MemcachedCacheManager implements CacheManager {
 
-    private final ConcurrentMap<String, Cache> cacheMap = new ConcurrentHashMap<>(16);
+    private final ConcurrentMap<String, Cache> cacheMap = new ConcurrentHashMap<>();
     final MemcachedClient memcachedClient;
 
     private int expiration = Default.EXPIRATION;

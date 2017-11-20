@@ -18,7 +18,6 @@ package io.sixhours.memcached.cache;
 import net.spy.memcached.MemcachedClient;
 import org.springframework.cache.support.AbstractValueAdaptingCache;
 
-import java.util.Random;
 import java.util.concurrent.Callable;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -122,7 +121,7 @@ public class MemcachedCache extends AbstractValueAdaptingCache {
 
     @Override
     public void clear() {
-        this.memcachedClient.incr(this.memcacheCacheMetadata.namespace(), 1);
+        this.memcachedClient.incr(this.memcacheCacheMetadata.namespaceKey(), 1);
     }
 
     /**
@@ -135,7 +134,7 @@ public class MemcachedCache extends AbstractValueAdaptingCache {
         private final StringBuilder value;
 
         public MemcachedKey(Object key) {
-            this.value = new StringBuilder(memcacheCacheMetadata.cachePrefix())
+            this.value = new StringBuilder(memcacheCacheMetadata.keyPrefix())
                     .append(namespaceValue())
                     .append(KEY_DELIMITER)
                     .append(String.valueOf(key).replaceAll("\\s", ""));
@@ -152,10 +151,10 @@ public class MemcachedCache extends AbstractValueAdaptingCache {
          * @return Namespace integer value returned as {@code String}
          */
         private String namespaceValue() {
-            String value = (String) MemcachedCache.this.memcachedClient.get(MemcachedCache.this.memcacheCacheMetadata.namespace());
+            String value = (String) MemcachedCache.this.memcachedClient.get(MemcachedCache.this.memcacheCacheMetadata.namespaceKey());
             if (value == null) {
-                value = String.valueOf(new Random().nextInt(1000));
-                MemcachedCache.this.memcachedClient.set(MemcachedCache.this.memcacheCacheMetadata.namespace(),
+                value = String.valueOf(System.currentTimeMillis());
+                MemcachedCache.this.memcachedClient.set(MemcachedCache.this.memcacheCacheMetadata.namespaceKey(),
                         MemcachedCache.this.memcacheCacheMetadata.expiration(), value);
             }
 
@@ -166,8 +165,8 @@ public class MemcachedCache extends AbstractValueAdaptingCache {
     class MemcacheCacheMetadata {
         private final String name;
         private final int expiration;
-        private final String cachePrefix;
-        private final String namespace;
+        private final String keyPrefix;
+        private final String namespaceKey;
 
         public MemcacheCacheMetadata(String name, int expiration, String cachePrefix, String namespace) {
             this.name = name;
@@ -178,8 +177,8 @@ public class MemcachedCache extends AbstractValueAdaptingCache {
                     .append(name)
                     .append(KEY_DELIMITER);
 
-            this.cachePrefix = sb.toString();
-            this.namespace = sb.append(namespace).toString();
+            this.keyPrefix = sb.toString();
+            this.namespaceKey = sb.append(namespace).toString();
         }
 
         public String name() {
@@ -190,12 +189,12 @@ public class MemcachedCache extends AbstractValueAdaptingCache {
             return expiration;
         }
 
-        public String cachePrefix() {
-            return cachePrefix;
+        public String keyPrefix() {
+            return keyPrefix;
         }
 
-        public String namespace() {
-            return namespace;
+        public String namespaceKey() {
+            return namespaceKey;
         }
     }
 }
