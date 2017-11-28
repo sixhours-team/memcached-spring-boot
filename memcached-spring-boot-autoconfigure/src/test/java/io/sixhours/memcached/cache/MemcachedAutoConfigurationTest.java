@@ -67,7 +67,7 @@ public class MemcachedAutoConfigurationTest {
     }
 
     @Test
-    public void thatMemcachedNotLoadedWhenCachingNotEnabled() {
+    public void whenCachingNotEnableThenMemcachedNotLoaded() {
         loadContext(EmptyConfiguration.class);
 
         thrown.expect(NoSuchBeanDefinitionException.class);
@@ -77,7 +77,7 @@ public class MemcachedAutoConfigurationTest {
     }
 
     @Test
-    public void thatMemcachedNotLoadedWhenSpringCacheTypeIsNone() {
+    public void whenSpringCacheTypeIsNoneThenMemcachedNotLoaded() {
         loadContext(CacheConfiguration.class, "spring.cache.type=none");
 
         thrown.expect(NoSuchBeanDefinitionException.class);
@@ -87,7 +87,7 @@ public class MemcachedAutoConfigurationTest {
     }
 
     @Test
-    public void thatNoOpCacheLoadedWhenSpringCacheTypeIsNone() {
+    public void whenSpringCacheTypeIsNoneThenNoOpCacheLoaded() {
         loadContext(CacheConfiguration.class, "spring.cache.type=none");
 
         CacheManager cacheManager = this.applicationContext.getBean(CacheManager.class);
@@ -96,7 +96,7 @@ public class MemcachedAutoConfigurationTest {
     }
 
     @Test
-    public void thatMemcachedNotLoadedWhenSpringCacheTypeIsSimple() {
+    public void whenSpringCacheTypeIsSimpleThenMemcachedNotLoaded() {
         loadContext(CacheConfiguration.class, "spring.cache.type=simple");
 
         thrown.expect(NoSuchBeanDefinitionException.class);
@@ -106,7 +106,7 @@ public class MemcachedAutoConfigurationTest {
     }
 
     @Test
-    public void thatSimpleCacheLoadedWhenSpringCacheTypeIsSimple() {
+    public void whenSpringCacheTypeIsSimpleThenSimpleCacheLoaded() {
         loadContext(CacheConfiguration.class, "spring.cache.type=simple");
 
         CacheManager cacheManager = this.applicationContext.getBean(CacheManager.class);
@@ -115,7 +115,7 @@ public class MemcachedAutoConfigurationTest {
     }
 
     @Test
-    public void thatContextNotLoadedWhenSpringCacheTypeIsInvalid() {
+    public void whenSpringCacheTypeIsInvalidThenContextNotLoaded() {
         thrown.expect(BeanCreationException.class);
         thrown.expectMessage(containsString("Field error in object 'spring.cache' on field 'type': rejected value [invalid-type]"));
 
@@ -123,7 +123,7 @@ public class MemcachedAutoConfigurationTest {
     }
 
     @Test
-    public void thatMemcachedNotLoadedWhenUsingCustomCacheManager() {
+    public void whenUsingCustomCacheManagerThenMemcachedNotLoaded() {
         loadContext(CacheWithCustomCacheManagerConfiguration.class);
 
         thrown.expect(NoSuchBeanDefinitionException.class);
@@ -133,7 +133,7 @@ public class MemcachedAutoConfigurationTest {
     }
 
     @Test
-    public void thatMemcachedCustomCacheManagerIsLoaded() {
+    public void whenUsingCustomCacheManagerThenMemcachedCustomCacheManagerLoaded() {
         loadContext(CacheWithCustomCacheManagerConfiguration.class);
 
         CacheManager cacheManager = this.applicationContext.getBean(CacheManager.class);
@@ -142,7 +142,7 @@ public class MemcachedAutoConfigurationTest {
     }
 
     @Test
-    public void thatMemcachedWithDefaultConfigurationIsLoaded() {
+    public void whenCachingEnabledThenMemcachedWithDefaultConfigurationLoaded() {
         loadContext(CacheConfiguration.class);
 
         MemcachedCacheManager memcachedCacheManager = this.applicationContext.getBean(MemcachedCacheManager.class);
@@ -154,7 +154,7 @@ public class MemcachedAutoConfigurationTest {
     }
 
     @Test
-    public void thatMemcachedWithNonCustomConfigurationIsLoadedWhenCacheManagerBeanAlreadyInContext() {
+    public void whenCacheManagerBeanAlreadyInContextThenMemcachedWithNonCustomConfigurationLoaded() {
         // add cache manager to the context before triggering auto-configuration on context load
         ConstructorArgumentValues constructorArgumentValues = new ConstructorArgumentValues();
         constructorArgumentValues.addGenericArgumentValue(mock(MemcachedClient.class));
@@ -177,7 +177,7 @@ public class MemcachedAutoConfigurationTest {
     }
 
     @Test
-    public void thatMemcachedWithDynamicModeAndMultipleServerListIsNotLoaded() {
+    public void whenDynamicModeAndMultipleServerListThenMemcachedNotLoaded() {
         thrown.expect(BeanCreationException.class);
         thrown.expectMessage("Only one configuration endpoint is valid with dynamic client mode.");
         thrown.expectCause(isA(BeanInstantiationException.class));
@@ -187,7 +187,7 @@ public class MemcachedAutoConfigurationTest {
     }
 
     @Test
-    public void thatMemcachedWithStaticModeAndMultipleServerListIsLoaded() {
+    public void whenStaticModeAndMultipleServerListThenMemcachedLoaded() {
         loadContext(CacheConfiguration.class, "memcached.cache.servers=192.168.99.100:11212,192.168.99.101:11211",
                 "memcached.cache.mode=static");
 
@@ -200,7 +200,7 @@ public class MemcachedAutoConfigurationTest {
     }
 
     @Test
-    public void thatMemcachedWithStaticModeAndEmptyServerListIsNotLoaded() {
+    public void whenStaticModeAndEmptyServerListThenMemcachedNotLoaded() {
         thrown.expect(UnsatisfiedDependencyException.class);
         thrown.expectMessage("Server list is empty");
         thrown.expectCause(isA(BeanCreationException.class));
@@ -210,7 +210,7 @@ public class MemcachedAutoConfigurationTest {
     }
 
     @Test
-    public void thatMemcachedWithCustomConfigurationIsLoaded() {
+    public void whenCustomConfigurationThenMemcachedLoaded() {
         loadContext(CacheConfiguration.class, "memcached.cache.servers=192.168.99.100:11212",
                 "memcached.cache.mode=dynamic",
                 "memcached.cache.expiration=3600",
@@ -226,7 +226,7 @@ public class MemcachedAutoConfigurationTest {
     }
 
     @Test
-    public void thatMemcachedWithMissingConfigurationValuesIsLoaded() {
+    public void whenPartialConfigurationValuesThenMemcachedLoaded() {
         loadContext(CacheConfiguration.class, "memcached.cache.servers=192.168.99.100:12345",
                 "memcached.cache.prefix=custom:prefix");
 

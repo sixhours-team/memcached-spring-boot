@@ -59,6 +59,9 @@ public class MemcachedCacheIT {
     MemcachedClient memcachedClient;
 
     @Autowired
+    AuthorService authorService;
+
+    @Autowired
     BookService bookService;
 
     @Before
@@ -68,7 +71,7 @@ public class MemcachedCacheIT {
     }
 
     @Test
-    public void thatBooksAreCached() {
+    public void whenFindAllThenBooksCached() {
         List<Book> books = bookService.findAll();
 
         assertThat(books).isNotNull();
@@ -83,7 +86,7 @@ public class MemcachedCacheIT {
     }
 
     @Test
-    public void thatBooksWithYearAreNotCached() {
+    public void whenFindByYearThenBooksWithYearNotCached() {
         List<Book> books = bookService.findByYear(2016);
 
         assertThat(books).isNotNull();
@@ -98,7 +101,7 @@ public class MemcachedCacheIT {
     }
 
     @Test
-    public void thatBookWithTitleHasBeenCached() {
+    public void whenFindByTitleThenBookWithTitleCached() {
         Book book = bookService.findByTitle("Kotlin");
 
         assertThat(book).isNotNull();
@@ -115,7 +118,7 @@ public class MemcachedCacheIT {
     }
 
     @Test
-    public void thatBookCacheHasExpired() throws InterruptedException {
+    public void whenTimeoutThenBookCacheExpired() throws InterruptedException {
         Book book = bookService.findByTitle("Kotlin");
 
         assertThat(book).isNotNull();
@@ -138,7 +141,7 @@ public class MemcachedCacheIT {
     }
 
     @Test
-    public void thatBookWithTitleAndYearHasBeenCachedWhenUnlessNotMet() {
+    public void whenUnlessNotMetThenBookWithTitleAndYearCached() {
         Book book = bookService.findByTitleAndYear("Programming Kotlin", 2017);
         Book cachedBook = bookService.findByTitleAndYear("Programming Kotlin", 2017);
 
@@ -153,7 +156,7 @@ public class MemcachedCacheIT {
     }
 
     @Test
-    public void thatBookWithTitleAndYearHasBeenNotBeenCachedWhenUnlessMet() {
+    public void whenUnlessMetThenBookWithTitleAndYearNotCached() {
         Book book = bookService.findByTitleAndYear("Spring Boot in Action", 2016);
         Book cachedBook = bookService.findByTitleAndYear("Spring Boot in Action", 2016);
 
@@ -168,7 +171,7 @@ public class MemcachedCacheIT {
     }
 
     @Test
-    public void thatBookWithTitleHasBeenEvicted() {
+    public void whenUpdateThenBookWithTitleEvicted() {
         Book book = bookService.findByTitle("Spring Boot in Action");
         assertThat(book).isNotNull();
 
@@ -187,25 +190,16 @@ public class MemcachedCacheIT {
     }
 
     @Test
-    public void thatBooksHaveBeenReCached() {
+    public void whenClearThenOnlyBooksEvicted() {
         bookService.findAll();
-        assertThat(bookService.getCounterFindAll()).isEqualTo(1);
+        authorService.findAll();
 
-        List<Book> books = bookService.deleteAndReCache("Kotlin");
-
-        assertThat(books.size()).isEqualTo(3);
-        assertThat(books).contains(new Book(1, "Kotlin in Action", 2017));
-        assertThat(books).doesNotContain(new Book(4, "Kotlin", 2017));
+        bookService.clear();
 
         Object value = cacheManager.getCache("books").get(SimpleKey.EMPTY);
+        assertThat(value).isNull();
+        value = cacheManager.getCache("authors").get(SimpleKey.EMPTY);
         assertThat(value).isNotNull();
-
-        List<Book> cachedBooks = bookService.findAll();
-
-        assertThat(bookService.getCounterFindAll()).isEqualTo(1);
-        assertThat(cachedBooks.size()).isEqualTo(3);
-        assertThat(cachedBooks).contains(new Book(1, "Kotlin in Action", 2017));
-        assertThat(cachedBooks).doesNotContain(new Book(4, "Kotlin", 2017));
     }
 
     @Configuration
