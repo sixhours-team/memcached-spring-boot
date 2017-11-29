@@ -53,7 +53,7 @@ public class MemcachedCache extends AbstractValueAdaptingCache {
 
     @Override
     protected Object lookup(Object key) {
-        return memcachedClient.get(new MemcachedKey(key).value());
+        return memcachedClient.get(memcachedKey(key));
     }
 
     @Override
@@ -80,7 +80,7 @@ public class MemcachedCache extends AbstractValueAdaptingCache {
             if (value != null) {
                 return (T) fromStoreValue(value);
             } else {
-                return loadValue(key, valueLoader);
+                return (T) fromStoreValue(loadValue(key, valueLoader));
             }
         } finally {
             lock.unlock();
@@ -100,7 +100,7 @@ public class MemcachedCache extends AbstractValueAdaptingCache {
 
     @Override
     public void put(Object key, Object value) {
-        this.memcachedClient.set(new MemcachedKey(key).value(), this.memcacheCacheMetadata.expiration(), value);
+        this.memcachedClient.set(memcachedKey(key), this.memcacheCacheMetadata.expiration(), toStoreValue(value));
     }
 
     @Override
@@ -116,7 +116,7 @@ public class MemcachedCache extends AbstractValueAdaptingCache {
 
     @Override
     public void evict(Object key) {
-        this.memcachedClient.delete(new MemcachedKey(key).value());
+        this.memcachedClient.delete(memcachedKey(key));
     }
 
     @Override
@@ -125,41 +125,36 @@ public class MemcachedCache extends AbstractValueAdaptingCache {
     }
 
     /**
-     * Wrapper class for the Memcached key value.
+     * Gets Memcached key value.
      * <p>
-     * All whitespace characters will be stripped from the key value, for Memcached
-     * key to be valid.
+     * Prepends cache prefix and namespace value to the given {@code key}. All whitespace characters will be stripped from
+     * the {@code key} value, for Memcached key to be valid.
+     *
+     * @param key The key
+     * @return Memcached key
      */
-    class MemcachedKey {
-        private final StringBuilder value;
+    private String memcachedKey(Object key) {
+        return memcacheCacheMetadata.keyPrefix() +
+                namespaceValue() +
+                KEY_DELIMITER +
+                String.valueOf(key).replaceAll("\\s", "");
+    }
 
-        public MemcachedKey(Object key) {
-            this.value = new StringBuilder(memcacheCacheMetadata.keyPrefix())
-                    .append(namespaceValue())
-                    .append(KEY_DELIMITER)
-                    .append(String.valueOf(key).replaceAll("\\s", ""));
+    /**
+     * Gets namespace value from the cache. The value is used for invalidation of the cache data
+     * by incrementing current namespace value by 1.
+     *
+     * @return Namespace integer value returned as {@code String}
+     */
+    private String namespaceValue() {
+        String value = (String) this.memcachedClient.get(this.memcacheCacheMetadata.namespaceKey());
+        if (value == null) {
+            value = String.valueOf(System.currentTimeMillis());
+            this.memcachedClient.set(this.memcacheCacheMetadata.namespaceKey(),
+                    this.memcacheCacheMetadata.expiration(), value);
         }
 
-        String value() {
-            return this.value.toString();
-        }
-
-        /**
-         * Gets namespace value from the cache. The value is used for invalidation of the cache data
-         * by incrementing current namespace value by 1.
-         *
-         * @return Namespace integer value returned as {@code String}
-         */
-        private String namespaceValue() {
-            String value = (String) MemcachedCache.this.memcachedClient.get(MemcachedCache.this.memcacheCacheMetadata.namespaceKey());
-            if (value == null) {
-                value = String.valueOf(System.currentTimeMillis());
-                MemcachedCache.this.memcachedClient.set(MemcachedCache.this.memcacheCacheMetadata.namespaceKey(),
-                        MemcachedCache.this.memcacheCacheMetadata.expiration(), value);
-            }
-
-            return value;
-        }
+        return value;
     }
 
     class MemcacheCacheMetadata {

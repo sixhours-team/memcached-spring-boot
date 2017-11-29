@@ -17,10 +17,8 @@ package io.sixhours.memcached.cache;
 
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Repository;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -75,14 +73,9 @@ public class BookService {
         // do nothing
     }
 
-    @Caching(evict = {@CacheEvict(value = "books", allEntries = true, beforeInvocation = true)},
-            cacheable = {@Cacheable(value = "books", key = "T(org.springframework.cache.interceptor.SimpleKey).EMPTY")})
-    public List<Book> deleteAndReCache(String title) {
-        // delete book with title & return
-        final List<Book> result = new ArrayList<>(books);
-        result.removeIf(b -> b.getTitle().equals(title));
-
-        return result;
+    @CacheEvict(value = "books", allEntries = true)
+    public void clear() {
+        // do nothing
     }
 
     public void resetCounters() {

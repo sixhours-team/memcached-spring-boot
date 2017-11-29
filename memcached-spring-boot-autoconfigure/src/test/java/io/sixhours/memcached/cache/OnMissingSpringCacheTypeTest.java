@@ -41,14 +41,14 @@ public class OnMissingSpringCacheTypeTest {
     }
 
     @Test
-    public void thatOutcomeShouldNotMatchWhenSpringCacheTypeIsPresent() {
+    public void whenSpringCacheTypeIsPresentThenOutcomeShouldNotMatch() {
         loadContext(MissingSpringCacheTypeConfig.class, "spring.cache.type=none");
 
         assertThat(this.applicationContext.containsBean("foo")).isFalse();
     }
 
     @Test
-    public void thatOutcomeShouldMatchWhenSpringCacheTypeIsNotPresent() {
+    public void whenSpringCacheTypeIsNotPresentThenOutcomeShouldMatch() {
         loadContext(MissingSpringCacheTypeConfig.class);
 
         assertThat(this.applicationContext.containsBean("foo")).isTrue();

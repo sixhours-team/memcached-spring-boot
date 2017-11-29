@@ -35,7 +35,7 @@ public class DefaultTest {
     public final ExpectedException thrown = ExpectedException.none();
 
     @Test
-    public void thatConstructorThrowsException() throws Exception {
+    public void whenInstantiatedThenException() throws Exception {
         Constructor constructor = Default.class.getDeclaredConstructors()[0];
         constructor.setAccessible(true);
 
