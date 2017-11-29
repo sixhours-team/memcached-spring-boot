@@ -106,13 +106,13 @@ public class MemcachedCacheTest {
 
         assertThat(actual).isEqualTo(cachedValue);
 
-        verify(memcachedClient).get(memcachedKey);
         verify(memcachedClient).get(namespaceKey);
+        verify(memcachedClient).get(memcachedKey);
         verifyNoMoreInteractions(memcachedClient);
     }
 
     @Test
-    public void whenGetWithValueLoaderAndCachedValueNullThenReturnNullValue() {
+    public void whenGetWithValueLoaderAndNullCachedValueThenReturnNull() {
         when(memcachedClient.get(anyString()))
                 .thenReturn(NAMESPACE_KEY_VALUE)
                 .thenReturn(nullCachedValue);
@@ -121,13 +121,41 @@ public class MemcachedCacheTest {
 
         assertThat(actual).isEqualTo(null);
 
-        verify(memcachedClient).get(memcachedKey);
         verify(memcachedClient).get(namespaceKey);
+        verify(memcachedClient).get(memcachedKey);
         verifyNoMoreInteractions(memcachedClient);
     }
 
     @Test
-    public void whenGetWithValueLoaderAndCachedValueMissingThenReturnValueLoaderNullValue() {
+    public void whenGetWithValueLoaderAndCachedValueFromSecondLookupThenReturnCachedValue() {
+        when(memcachedClient.get(namespaceKey)).thenReturn(NAMESPACE_KEY_VALUE);
+        when(memcachedClient.get(memcachedKey)).thenReturn(null).thenReturn(cachedValue);
+
+        Object actual = memcachedCache.get(CACHED_OBJECT_KEY, () -> valueLoaderValue);
+
+        assertThat(actual).isEqualTo(cachedValue);
+
+        verify(memcachedClient, times(2)).get(namespaceKey);
+        verify(memcachedClient, times(2)).get(memcachedKey);
+        verifyNoMoreInteractions(memcachedClient);
+    }
+
+    @Test
+    public void whenGetWithValueLoaderAndNullCachedValueFromSecondLookupThenReturnNull() {
+        when(memcachedClient.get(namespaceKey)).thenReturn(NAMESPACE_KEY_VALUE);
+        when(memcachedClient.get(memcachedKey)).thenReturn(null).thenReturn(nullCachedValue);
+
+        Object actual = memcachedCache.get(CACHED_OBJECT_KEY, () -> valueLoaderValue);
+
+        assertThat(actual).isEqualTo(null);
+
+        verify(memcachedClient, times(2)).get(namespaceKey);
+        verify(memcachedClient, times(2)).get(memcachedKey);
+        verifyNoMoreInteractions(memcachedClient);
+    }
+
+    @Test
+    public void whenGetWithValueLoaderAndCachedValueMissingThenReturnValueLoaderNull() {
         when(memcachedClient.get(namespaceKey)).thenReturn(NAMESPACE_KEY_VALUE);
         when(memcachedClient.get(memcachedKey)).thenReturn(null);
 
@@ -135,8 +163,8 @@ public class MemcachedCacheTest {
 
         assertThat(actual).isEqualTo(null);
 
-        verify(memcachedClient, times(2)).get(memcachedKey);
         verify(memcachedClient, times(3)).get(namespaceKey);
+        verify(memcachedClient, times(2)).get(memcachedKey);
         verify(memcachedClient).set(memcachedKey, CACHE_EXPIRATION, valueLoaderNullValue);
         verifyNoMoreInteractions(memcachedClient);
     }
@@ -150,8 +178,8 @@ public class MemcachedCacheTest {
 
         assertThat(actual).isEqualTo(valueLoaderValue);
 
-        verify(memcachedClient, times(2)).get(memcachedKey);
         verify(memcachedClient, times(3)).get(namespaceKey);
+        verify(memcachedClient, times(2)).get(memcachedKey);
         verify(memcachedClient).set(memcachedKey, CACHE_EXPIRATION, valueLoaderValue);
         verifyNoMoreInteractions(memcachedClient);
     }
@@ -201,8 +229,8 @@ public class MemcachedCacheTest {
 
         assertThat(actual.get()).isEqualTo(cachedValue);
 
-        verify(memcachedClient).get(memcachedKey);
         verify(memcachedClient).get(namespaceKey);
+        verify(memcachedClient).get(memcachedKey);
         verifyNoMoreInteractions(memcachedClient);
     }
 
