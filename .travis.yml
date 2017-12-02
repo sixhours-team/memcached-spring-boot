@@ -7,6 +7,8 @@ jdk:
 addons:
   sonarcloud:
     organization: "sixhours"
+    token:
+      secure: "PO/XEvx1xXfhLIp7LU01sx36aKNUpEslqjRCSvg3149CrLj8ER8jl+/QeNtgbQ9wKQXSoqyLUuRK8dY0GyPzfGSJF7QH9t7bfz1Wca0ZiVtKTqyzSrgL2Wo6a+PDouDGRt7TW4POqNEj+rXI+TiBc9npknr9eyV2xrv0ONsq62sfQQ6QASnJtvXsK1bTTYfwF1pQMpcq50qUhUvmSoUHmIY88psiGUJ4y68bzveVDGvDHJI+yS/mjzOO65Q3NUqHDOygek/+79h1v69zx9IjcqZSPhiksPNRbcr5Q7ZB6kz+01EOPpDDxbY/A6+kyHjf7SpeHbC4IDEfQpCL3otP9h0Y9yHjhdCqF4++B1G0ToS5V3dbYekKnWke5oE34xmmscldrgfiJ0FqcCyedi9JA1emSjEXgeMIhrXg3iUMtysjypJUKg5bDaWDzb1vM/oqwKvWv3/FfExvybzCc3aiOYZpQ0F9jheSHQONnisgR8SDK1TnlwZoODzHCKemL8FuoIByuZfaL1pkuL1Fo9mYcxTLoRE62V56JRTSIU8zpKpkZwfL/jeIb2Yr999yAd+RN3obcM+wk7gcJdIwYK0rySmuzSTKbR+EWliqRH43HRAXsflKKpXIxX84OeAp9tL8Gtlfh46pHPUAB/ZXGTEPUC9HeGaRhnrIIeqI0Rqh+lk="
 script: ./travisBuild.sh
 after_success:
   - bash <(curl -s https://codecov.io/bash)
