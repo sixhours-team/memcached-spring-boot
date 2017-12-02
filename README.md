@@ -1,5 +1,6 @@
 [![Build Status](https://travis-ci.org/sixhours-team/memcached-spring-boot.svg?branch=master)](https://travis-ci.org/sixhours-team/memcached-spring-boot) 
 [![codecov](https://codecov.io/gh/sixhours-team/memcached-spring-boot/branch/master/graph/badge.svg)](https://codecov.io/gh/sixhours-team/memcached-spring-boot)
+[![Quality Gate](https://sonarcloud.io/api/badges/gate?key=memcached-spring-boot%3Amemcached-spring-boot-autoconfigure)](https://sonarcloud.io/dashboard/index/memcached-spring-boot%3Amemcached-spring-boot-autoconfigure)
 [![Join the chat at gitter.im/six-hours/memcached-spring-boot](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/six-hours/memcached-spring-boot?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 # Memcached Spring Boot
