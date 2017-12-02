@@ -4,6 +4,9 @@ services:
   - docker
 jdk:
   - oraclejdk8
+addons:
+  sonarcloud:
+    organization: "sixhours"
 script: ./travisBuild.sh
 after_success:
   - bash <(curl -s https://codecov.io/bash)
@@ -14,3 +17,4 @@ cache:
   directories:
     - $HOME/.gradle/caches/
     - $HOME/.gradle/wrapper/
+
