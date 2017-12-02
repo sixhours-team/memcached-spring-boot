@@ -1,0 +1,12 @@
+apply plugin: 'org.sonarqube'
+apply plugin: 'jacoco'
+
+jacocoTestReport {
+    reports {
+        xml.enabled true
+        html.enabled true
+    }
+}
+
+build.dependsOn jacocoTestReport
+
