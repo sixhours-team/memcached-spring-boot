@@ -16,7 +16,8 @@ buildscript {
 }
 
 ext.JAVA_GRADLE = "$rootDir/gradle/java.gradle"
-ext.RELEASE_GRADE = "$rootDir/gradle/release.gradle"
+ext.RELEASE_GRADLE = "$rootDir/gradle/release.gradle"
+ext.SONAR_GRADLE = "$rootDir/gradle/sonar.gradle"
 
 subprojects {
     apply plugin: 'org.springframework.boot'
@@ -24,10 +25,8 @@ subprojects {
     apply plugin: 'propdeps-maven'
     apply plugin: 'propdeps-idea'
     apply plugin: 'propdeps-eclipse'
-    apply plugin: 'org.sonarqube'
-    apply plugin: 'jacoco'
     apply from: JAVA_GRADLE
-    apply from: RELEASE_GRADE
+    apply from: RELEASE_GRADLE
 
     def gitVersion = { ->
         def stdout = new ByteArrayOutputStream()
@@ -80,13 +79,4 @@ subprojects {
             dependency "commons-logging:commons-logging:$commons_logging_version"
         }
     }
-
-    jacocoTestReport {
-        reports {
-            xml.enabled true
-            html.enabled true
-        }
-    }
-
-    build.dependsOn jacocoTestReport
 }
