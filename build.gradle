@@ -1,6 +1,6 @@
 buildscript {
     ext {
-        spring_boot_version = '1.5.8.RELEASE'
+        spring_boot_version = '1.5.9.RELEASE'
         elasticache_client_version = '1.1.1'
         commons_logging_version = '1.2'
     }
@@ -19,15 +19,7 @@ ext.JAVA_GRADLE = "$rootDir/gradle/java.gradle"
 ext.RELEASE_GRADLE = "$rootDir/gradle/release.gradle"
 ext.SONAR_GRADLE = "$rootDir/gradle/sonar.gradle"
 
-subprojects {
-    apply plugin: 'org.springframework.boot'
-    apply plugin: 'propdeps'
-    apply plugin: 'propdeps-maven'
-    apply plugin: 'propdeps-idea'
-    apply plugin: 'propdeps-eclipse'
-    apply from: JAVA_GRADLE
-    apply from: RELEASE_GRADLE
-
+allprojects {
     def gitVersion = { ->
         def stdout = new ByteArrayOutputStream()
         exec {
@@ -41,6 +33,16 @@ subprojects {
 
     group = "io.sixhours"
     version = gitVersion()
+}
+
+subprojects {
+    apply from: JAVA_GRADLE
+    apply from: RELEASE_GRADLE
+    apply plugin: 'org.springframework.boot'
+    apply plugin: 'propdeps'
+    apply plugin: 'propdeps-maven'
+    apply plugin: 'propdeps-idea'
+    apply plugin: 'propdeps-eclipse'
 
     bootRepackage {
         enabled false
