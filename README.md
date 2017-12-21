@@ -1,6 +1,6 @@
 [![Build Status](https://travis-ci.org/sixhours-team/memcached-spring-boot.svg?branch=master)](https://travis-ci.org/sixhours-team/memcached-spring-boot) 
 [![codecov](https://codecov.io/gh/sixhours-team/memcached-spring-boot/branch/master/graph/badge.svg)](https://codecov.io/gh/sixhours-team/memcached-spring-boot)
-[![Quality Gate](https://sonarcloud.io/api/badges/gate?key=memcached-spring-boot%3Amemcached-spring-boot-autoconfigure)](https://sonarcloud.io/dashboard/index/memcached-spring-boot%3Amemcached-spring-boot-autoconfigure)
+[![Quality Gate](https://sonarcloud.io/api/badges/gate?key=io.sixhours%3Amemcached-spring-boot-autoconfigure)](https://sonarcloud.io/dashboard/index/io.sixhours%3Amemcached-spring-boot-autoconfigure)
 [![Join the chat at gitter.im/six-hours/memcached-spring-boot](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/six-hours/memcached-spring-boot?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0.html)
 
