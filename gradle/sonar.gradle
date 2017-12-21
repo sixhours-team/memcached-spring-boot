@@ -1,6 +1,12 @@
 apply plugin: 'org.sonarqube'
 apply plugin: 'jacoco'
 
+sonarqube {
+    properties {
+        property "sonar.projectKey", "${project.group}:${project.name}"
+    }
+}
+
 jacocoTestReport {
     reports {
         xml.enabled true
