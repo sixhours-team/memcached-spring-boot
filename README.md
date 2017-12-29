@@ -19,7 +19,7 @@ To plug-in Memcached cache in your application follow the steps below:
    * **Gradle**
    
       ```groovy
-      compile('io.sixhours:memcached-spring-boot-starter:1.0.1') 
+      compile('io.sixhours:memcached-spring-boot-starter:1.0.2') 
       ```
    * **Maven**
    
@@ -27,7 +27,7 @@ To plug-in Memcached cache in your application follow the steps below:
       <dependency>
           <groupId>io.sixhours</groupId>
           <artifactId>memcached-spring-boot-starter</artifactId>
-          <version>1.0.1</version>
+          <version>1.0.2</version>
       </dependency>
       ```
    Binaries are available from **Maven Central** and **JCenter**.
