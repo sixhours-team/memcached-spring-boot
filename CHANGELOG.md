@@ -2,8 +2,8 @@
 
 ### Version 1.0.2 ###
 
-* [Pull 24](https://github.com/sixhours-team/memcached-spring-boot/pull/23) Add project key for Sonar Cloud
-* [Pull 22](https://github.com/sixhours-team/memcached-spring-boot/pull/23) Bintray organization
+* [Pull 24](https://github.com/sixhours-team/memcached-spring-boot/pull/24) Add project key for Sonar Cloud
+* [Pull 23](https://github.com/sixhours-team/memcached-spring-boot/pull/23) Bintray organization
 * [Pull 22](https://github.com/sixhours-team/memcached-spring-boot/pull/22) Make server list read-only
 * [Pull 21](https://github.com/sixhours-team/memcached-spring-boot/pull/21) Sonarqube
 * [Pull 20](https://github.com/sixhours-team/memcached-spring-boot/pull/20) Store null values
