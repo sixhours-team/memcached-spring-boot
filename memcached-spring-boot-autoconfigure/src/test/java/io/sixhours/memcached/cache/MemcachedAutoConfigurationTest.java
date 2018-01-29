@@ -251,7 +251,7 @@ public class MemcachedAutoConfigurationTest {
         MemcachedClient memcachedClient = (MemcachedClient) ReflectionTestUtils.getField(memcachedCacheManager, "memcachedClient");
 
         assertMemcachedClient(memcachedClient, ClientMode.Static, Default.PROTOCOL, new InetSocketAddress("192.168.99.100", 11212));
-        assertMemcachedCacheManager(memcachedCacheManager, 3600, "custom:prefix", "custom_namespace");
+        assertMemcachedCacheManager(memcachedCacheManager, 3600, "custom:prefix", Default.NAMESPACE);
     }
 
     @Test
@@ -263,7 +263,7 @@ public class MemcachedAutoConfigurationTest {
 
         MemcachedClient memcachedClient = (MemcachedClient) ReflectionTestUtils.getField(memcachedCacheManager, "memcachedClient");
 
-        assertMemcachedClient(memcachedClient, Default.CLIENT_MODE,  Default.PROTOCOL, new InetSocketAddress("192.168.99.100", 12345));
+        assertMemcachedClient(memcachedClient, Default.CLIENT_MODE, Default.PROTOCOL, new InetSocketAddress("192.168.99.100", 12345));
         assertMemcachedCacheManager(memcachedCacheManager, Default.EXPIRATION, "custom:prefix", Default.NAMESPACE);
     }
 

@@ -19,6 +19,7 @@ import net.spy.memcached.AddrUtil;
 import net.spy.memcached.ClientMode;
 import net.spy.memcached.ConnectionFactoryBuilder;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
 import org.springframework.util.StringUtils;
 
 import java.net.InetSocketAddress;
@@ -57,6 +58,7 @@ public class MemcachedCacheProperties {
     /**
      * Namespace key value used for invalidation of cached values. The default value is 'namespace'.
      */
+    @Deprecated
     private String namespace = Default.NAMESPACE;
 
     /**
@@ -105,12 +107,16 @@ public class MemcachedCacheProperties {
         this.prefix = prefix;
     }
 
+    @DeprecatedConfigurationProperty(reason = "As of release {@code 1.1.0}. To be removed in next major release. This " +
+            "value is expected to be retained only as a private value for the cache namespace. The namespace value used is 'namespace'")
     public String getNamespace() {
         return namespace;
     }
 
     public void setNamespace(String namespace) {
-        this.namespace = namespace;
+        if (namespace != null) {
+            this.namespace = Default.NAMESPACE;
+        }
     }
 
     public Protocol getProtocol() {
