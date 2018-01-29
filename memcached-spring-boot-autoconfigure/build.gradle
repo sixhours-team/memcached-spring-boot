@@ -3,6 +3,11 @@ ext.projectDesc = 'Memcached Spring Boot AutoConfiguration'
 
 apply from: SONAR_GRADLE
 
+artifacts {
+    archives sourcesJar
+    archives javadocJar
+}
+
 dependencies {
     compile('org.springframework.boot:spring-boot-autoconfigure')
 
@@ -12,7 +17,7 @@ dependencies {
     testCompile('org.springframework.boot:spring-boot-starter-test')
     testCompile('commons-logging:commons-logging')
 
-    integrationTestCompile('org.testcontainers:testcontainers:1.4.3')
+    integrationTestCompile('org.testcontainers:testcontainers')
 }
 
 compileJava.dependsOn(processResources)

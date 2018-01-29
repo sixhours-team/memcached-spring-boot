@@ -1,48 +1,32 @@
 apply plugin: 'com.jfrog.bintray'
-apply plugin: 'maven-publish'
+apply plugin: 'propdeps-maven'
 
-ext.pomConfig = {
-    licenses {
-        license {
-            name "The Apache Software License, Version 2.0"
-            url "http://www.apache.org/licenses/LICENSE-2.0.txt"
-            distribution "repo"
-        }
-    }
+install {
+    repositories.mavenInstaller {
+        pom {
+            project {
+                licenses {
+                    license {
+                        name "The Apache Software License, Version 2.0"
+                        url "http://www.apache.org/licenses/LICENSE-2.0.txt"
+                        distribution "repo"
+                    }
+                }
 
-    scm {
-        url "https://github.com/sixhours-team/memcached-spring-boot.git"
-    }
+                scm {
+                    url "https://github.com/sixhours-team/memcached-spring-boot.git"
+                }
 
-    developers {
-        developer {
-            name 'Igor Bolic'
-            email 'igor.bolic@sixhours.io'
-        }
-        developer {
-            name 'Sasa Bolic'
-            email 'sasa.bolic@sixhours.io'
-        }
-    }
-}
-
-publishing {
-    publications {
-        mavenJava(MavenPublication) {
-            from components.java
-
-            artifact sourcesJar
-
-            if (file('src/main').exists()) {
-                artifact javadocJar
-            }
-
-            pom.withXml {
-                def root = asNode()
-                root.appendNode('name', "${project.projectName}")
-                root.appendNode('description', "${project.projectDesc}")
-                root.appendNode('url', 'https://github.com/sixhours-team/memcached-spring-boot')
-                root.children().last() + pomConfig
+                developers {
+                    developer {
+                        name 'Igor Bolic'
+                        email 'igor.bolic@sixhours.io'
+                    }
+                    developer {
+                        name 'Sasa Bolic'
+                        email 'sasa.bolic@sixhours.io'
+                    }
+                }
             }
         }
     }
@@ -51,7 +35,7 @@ publishing {
 bintray {
     user = System.getenv('BINTRAY_USER')
     key = System.getenv('BINTRAY_KEY')
-    publications = ['mavenJava']
+    configurations = ['archives']
     pkg {
         repo = 'maven'
         userOrg = 'sixhours-team'

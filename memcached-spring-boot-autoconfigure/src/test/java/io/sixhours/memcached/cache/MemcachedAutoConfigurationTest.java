@@ -212,7 +212,7 @@ public class MemcachedAutoConfigurationTest {
     @Test
     public void whenCustomConfigurationThenMemcachedLoaded() {
         loadContext(CacheConfiguration.class, "memcached.cache.servers=192.168.99.100:11212",
-                "memcached.cache.mode=dynamic",
+                "memcached.cache.mode=static",
                 "memcached.cache.expiration=3600",
                 "memcached.cache.prefix=custom:prefix",
                 "memcached.cache.namespace=custom_namespace");
@@ -221,7 +221,7 @@ public class MemcachedAutoConfigurationTest {
 
         MemcachedClient memcachedClient = (MemcachedClient) ReflectionTestUtils.getField(memcachedCacheManager, "memcachedClient");
 
-        assertMemcachedClient(memcachedClient, ClientMode.Dynamic, new InetSocketAddress("192.168.99.100", 11212));
+        assertMemcachedClient(memcachedClient, ClientMode.Static, new InetSocketAddress("192.168.99.100", 11212));
         assertMemcachedCacheManager(memcachedCacheManager, 3600, "custom:prefix", "custom_namespace");
     }
 
