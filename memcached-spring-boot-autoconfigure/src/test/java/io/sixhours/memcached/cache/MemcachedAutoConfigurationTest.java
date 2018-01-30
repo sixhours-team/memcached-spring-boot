@@ -149,7 +149,7 @@ public class MemcachedAutoConfigurationTest {
 
         MemcachedClient memcachedClient = (MemcachedClient) ReflectionTestUtils.getField(memcachedCacheManager, "memcachedClient");
 
-        assertMemcachedClient(memcachedClient, Default.CLIENT_MODE, Default.SERVERS.toArray(new InetSocketAddress[Default.SERVERS.size()]));
+        assertMemcachedClient(memcachedClient, Default.CLIENT_MODE, Default.SERVERS.toArray(new InetSocketAddress[0]));
         assertMemcachedCacheManager(memcachedCacheManager, Default.EXPIRATION, Default.PREFIX, Default.NAMESPACE);
     }
 

@@ -68,7 +68,7 @@ public class MemcachedCacheManagerTest {
     @Test
     public void whenGetCacheNamesThenReturnExistingCacheNames() {
         Collection<String> cacheNames = cacheManager.getCacheNames();
-        String[] cacheNamesArray = cacheNames.toArray(new String[cacheNames.size()]);
+        String[] cacheNamesArray = cacheNames.toArray(new String[0]);
 
         assertThat(cacheNamesArray).hasSize(1);
         assertThat(cacheNamesArray[0]).isEqualTo(EXISTING_CACHE);
