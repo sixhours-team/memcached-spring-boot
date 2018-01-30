@@ -68,6 +68,7 @@ public class MemcachedCacheIT {
     public void setUp() {
         memcachedClient.flush();
         bookService.resetCounters();
+        authorService.resetCounters();
     }
 
     @Test
@@ -82,6 +83,21 @@ public class MemcachedCacheIT {
         assertThat(bookService.getCounterFindAll()).isEqualTo(1);
 
         Object value = cacheManager.getCache("books").get(SimpleKey.EMPTY);
+        assertThat(value).isNotNull();
+    }
+
+    @Test
+    public void whenFindAllThenAuthorsCached() {
+        List<Author> authors = authorService.findAll();
+
+        assertThat(authors).isNotNull();
+        assertThat(authorService.getCounterFindAll()).isEqualTo(1);
+
+        authorService.findAll();
+        authorService.findAll();
+        assertThat(authorService.getCounterFindAll()).isEqualTo(1);
+
+        Object value = cacheManager.getCache("authors").get(SimpleKey.EMPTY);
         assertThat(value).isNotNull();
     }
 
@@ -204,7 +220,7 @@ public class MemcachedCacheIT {
 
     @Configuration
     @EnableCaching
-    @ComponentScan(basePackageClasses = BookService.class)
+    @ComponentScan(basePackageClasses = {AuthorService.class, BookService.class})
     static class CacheConfig {
 
         @Bean

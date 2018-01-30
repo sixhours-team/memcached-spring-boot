@@ -115,7 +115,7 @@ To build the project invoke the following command:
     
 To install the modules in the local Maven repository:
 
-    ./gradlew clean build publishToMavenLocal
+    ./gradlew clean build install
     
 ## License
 
