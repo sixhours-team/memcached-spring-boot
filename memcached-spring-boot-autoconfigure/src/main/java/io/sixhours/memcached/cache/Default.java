@@ -21,6 +21,8 @@ import java.net.InetSocketAddress;
 import java.util.Collections;
 import java.util.List;
 
+import static io.sixhours.memcached.cache.MemcachedCacheProperties.Protocol;
+
 /**
  * Default cache configuration values.
  *
@@ -38,6 +40,8 @@ public final class Default {
     public static final String PREFIX = "memcached:spring-boot";
 
     public static final String NAMESPACE = "namespace";
+
+    public static final Protocol PROTOCOL = Protocol.TEXT;
 
     private Default() {
         throw new AssertionError("Suppress default constructor");
