@@ -17,6 +17,7 @@ package io.sixhours.memcached.cache;
 
 import net.spy.memcached.AddrUtil;
 import net.spy.memcached.ClientMode;
+import net.spy.memcached.ConnectionFactoryBuilder;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.util.StringUtils;
 
@@ -57,6 +58,12 @@ public class MemcachedCacheProperties {
      * Namespace key value used for invalidation of cached values. The default value is 'namespace'.
      */
     private String namespace = Default.NAMESPACE;
+
+    /**
+     * Memcached client protocol. Supports two main protocols: the classic text (ascii), and the newer binary protocol.
+     * The default is 'text' protocol.
+     */
+    private Protocol protocol = Default.PROTOCOL;
 
     public List<InetSocketAddress> getServers() {
         return servers;
@@ -106,4 +113,19 @@ public class MemcachedCacheProperties {
         this.namespace = namespace;
     }
 
+    public Protocol getProtocol() {
+        return protocol;
+    }
+
+    public void setProtocol(Protocol protocol) {
+        this.protocol = protocol;
+    }
+
+    public enum Protocol {
+        TEXT, BINARY;
+
+        public ConnectionFactoryBuilder.Protocol value() {
+            return ConnectionFactoryBuilder.Protocol.valueOf(this.name());
+        }
+    }
 }

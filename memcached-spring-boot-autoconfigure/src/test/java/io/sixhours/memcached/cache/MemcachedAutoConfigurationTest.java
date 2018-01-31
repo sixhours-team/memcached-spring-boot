@@ -15,10 +15,13 @@
  */
 package io.sixhours.memcached.cache;
 
+import io.sixhours.memcached.cache.MemcachedCacheProperties.Protocol;
 import net.spy.memcached.ClientMode;
 import net.spy.memcached.ConnectionFactory;
 import net.spy.memcached.MemcachedClient;
 import net.spy.memcached.config.NodeEndPoint;
+import net.spy.memcached.protocol.ascii.AsciiOperationFactory;
+import net.spy.memcached.protocol.binary.BinaryOperationFactory;
 import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
@@ -149,7 +152,7 @@ public class MemcachedAutoConfigurationTest {
 
         MemcachedClient memcachedClient = (MemcachedClient) ReflectionTestUtils.getField(memcachedCacheManager, "memcachedClient");
 
-        assertMemcachedClient(memcachedClient, Default.CLIENT_MODE, Default.SERVERS.toArray(new InetSocketAddress[0]));
+        assertMemcachedClient(memcachedClient, Default.CLIENT_MODE, Default.PROTOCOL, Default.SERVERS.toArray(new InetSocketAddress[0]));
         assertMemcachedCacheManager(memcachedCacheManager, Default.EXPIRATION, Default.PREFIX, Default.NAMESPACE);
     }
 
@@ -195,7 +198,33 @@ public class MemcachedAutoConfigurationTest {
 
         MemcachedClient memcachedClient = (MemcachedClient) ReflectionTestUtils.getField(memcachedCacheManager, "memcachedClient");
 
-        assertMemcachedClient(memcachedClient, ClientMode.Static, new InetSocketAddress("192.168.99.100", 11212), new InetSocketAddress("192.168.99.101", 11211));
+        assertMemcachedClient(memcachedClient, ClientMode.Static, Default.PROTOCOL, new InetSocketAddress("192.168.99.100", 11212), new InetSocketAddress("192.168.99.101", 11211));
+        assertMemcachedCacheManager(memcachedCacheManager, Default.EXPIRATION, Default.PREFIX, Default.NAMESPACE);
+    }
+
+    @Test
+    public void whenTextProtocolAndMultipleServerListThenMemcachedLoaded() {
+        loadContext(CacheConfiguration.class, "memcached.cache.servers=192.168.99.100:11212,192.168.99.101:11211",
+                "memcached.cache.protocol=text");
+
+        MemcachedCacheManager memcachedCacheManager = this.applicationContext.getBean(MemcachedCacheManager.class);
+
+        MemcachedClient memcachedClient = (MemcachedClient) ReflectionTestUtils.getField(memcachedCacheManager, "memcachedClient");
+
+        assertMemcachedClient(memcachedClient, Default.CLIENT_MODE, Protocol.TEXT, new InetSocketAddress("192.168.99.100", 11212), new InetSocketAddress("192.168.99.101", 11211));
+        assertMemcachedCacheManager(memcachedCacheManager, Default.EXPIRATION, Default.PREFIX, Default.NAMESPACE);
+    }
+
+    @Test
+    public void whenBinaryProtocolAndMultipleServerListThenMemcachedLoaded() {
+        loadContext(CacheConfiguration.class, "memcached.cache.servers=192.168.99.100:11212,192.168.99.101:11211",
+                "memcached.cache.protocol=binary");
+
+        MemcachedCacheManager memcachedCacheManager = this.applicationContext.getBean(MemcachedCacheManager.class);
+
+        MemcachedClient memcachedClient = (MemcachedClient) ReflectionTestUtils.getField(memcachedCacheManager, "memcachedClient");
+
+        assertMemcachedClient(memcachedClient, Default.CLIENT_MODE, Protocol.BINARY, new InetSocketAddress("192.168.99.100", 11212), new InetSocketAddress("192.168.99.101", 11211));
         assertMemcachedCacheManager(memcachedCacheManager, Default.EXPIRATION, Default.PREFIX, Default.NAMESPACE);
     }
 
@@ -221,7 +250,7 @@ public class MemcachedAutoConfigurationTest {
 
         MemcachedClient memcachedClient = (MemcachedClient) ReflectionTestUtils.getField(memcachedCacheManager, "memcachedClient");
 
-        assertMemcachedClient(memcachedClient, ClientMode.Static, new InetSocketAddress("192.168.99.100", 11212));
+        assertMemcachedClient(memcachedClient, ClientMode.Static, Default.PROTOCOL, new InetSocketAddress("192.168.99.100", 11212));
         assertMemcachedCacheManager(memcachedCacheManager, 3600, "custom:prefix", "custom_namespace");
     }
 
@@ -234,11 +263,11 @@ public class MemcachedAutoConfigurationTest {
 
         MemcachedClient memcachedClient = (MemcachedClient) ReflectionTestUtils.getField(memcachedCacheManager, "memcachedClient");
 
-        assertMemcachedClient(memcachedClient, Default.CLIENT_MODE, new InetSocketAddress("192.168.99.100", 12345));
+        assertMemcachedClient(memcachedClient, Default.CLIENT_MODE,  Default.PROTOCOL, new InetSocketAddress("192.168.99.100", 12345));
         assertMemcachedCacheManager(memcachedCacheManager, Default.EXPIRATION, "custom:prefix", Default.NAMESPACE);
     }
 
-    private void assertMemcachedClient(MemcachedClient memcachedClient, ClientMode clientMode, InetSocketAddress... servers) {
+    private void assertMemcachedClient(MemcachedClient memcachedClient, ClientMode clientMode, Protocol protocol, InetSocketAddress... servers) {
         List<NodeEndPoint> nodeEndPoints = (List<NodeEndPoint>) memcachedClient.getAllNodeEndPoints();
 
         assertThat(nodeEndPoints)
@@ -261,9 +290,14 @@ public class MemcachedAutoConfigurationTest {
                     .as("Memcached node endpoint port is incorrect")
                     .isEqualTo(port);
         }
+
         assertThat(cf.getClientMode())
                 .as("Memcached node endpoint mode is incorrect")
                 .isEqualTo(clientMode);
+
+        assertThat(cf.getOperationFactory())
+                .as("Memcached node endpoint protocol is incorrect")
+                .isInstanceOf(protocol == Protocol.TEXT ? AsciiOperationFactory.class : BinaryOperationFactory.class);
     }
 
     private void assertMemcachedCacheManager(MemcachedCacheManager memcachedCacheManager, int expiration, String prefix, String namespace) {

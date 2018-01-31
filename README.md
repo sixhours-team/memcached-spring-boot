@@ -9,7 +9,7 @@
 Library that provides support for auto-configuration of Memcached cache in a Spring Boot application.
 
 It provides implementation for the [Spring Cache Abstraction](https://docs.spring.io/spring/docs/4.3.x/spring-framework-reference/html/cache.html), backed by the [Amazon's ElastiCache Clustered Client](https://github.com/awslabs/aws-elasticache-cluster-client-memcached-for-java).
-Supports cache eviction per key, as well as clearing out of the entire cache region.
+Supports cache eviction per key, as well as clearing out of the entire cache region. Binaries are available from **Maven Central** and **JCenter**.
 
 ## Usage
 
@@ -30,8 +30,6 @@ To plug-in Memcached cache in your application follow the steps below:
           <version>1.0.2</version>
       </dependency>
       ```
-   Binaries are available from **Maven Central** and **JCenter**.
-      
 2. Configure `Memcached` key-value store in your properties file (`application.yml`).
 
     **Example**
@@ -58,12 +56,17 @@ To plug-in Memcached cache in your application follow the steps below:
 3. Enable caching support by adding `@EnableCaching` annotation to one of your `@Configuration` classes.
 
     ```java
+    import org.springframework.boot.SpringApplication;
+    import org.springframework.boot.autoconfigure.SpringBootApplication;
     import org.springframework.cache.annotation.EnableCaching;
-    import org.springframework.context.annotation.Configuration;   
- 
-    @Configuration
+    
+    @SpringBootApplication
     @EnableCaching
-    public class CacheConfiguration {
+    public class Application {
+    
+    	public static void main(String[] args) {
+    		SpringApplication.run(Application.class, args);
+    	}
     }
     ```
 
@@ -98,13 +101,14 @@ memcached.cache.mode: # Memcached client mode (use one of following: "static", "
 memcached.cache.expiration: # Cache expiration in seconds (default "60")
 memcached.cache.prefix: # Cache key prefix (default "memcached:spring-boot")
 memcached.cache.namespace: # Cache eviction namespace key name (default "namespace")
+memcached.cache.protocol: # Memcached client protocol. Supports "text" and "binary" protocols (default is "text" protocol)
 ```
 
 All of the values have sensible defaults and are bound to [MemcachedCacheProperties](https://github.com/sixhours-team/memcached-spring-boot/blob/master/memcached-spring-boot-autoconfigure/src/main/java/io/sixhours/memcached/cache/MemcachedCacheProperties.java) class.
 
 **Notice:** 
->If multiple applications are sharing the same Memcached server, make sure to specify unique cache `prefix` for each application 
-in order to avoid cache book conflicts.
+>If different applications are sharing the same Memcached server, make sure to specify unique cache `prefix` for each application 
+in order to avoid cache conflicts.
 
 ## Build
 

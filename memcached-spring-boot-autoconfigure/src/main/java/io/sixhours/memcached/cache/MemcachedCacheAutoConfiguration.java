@@ -16,7 +16,7 @@
 package io.sixhours.memcached.cache;
 
 import net.spy.memcached.ClientMode;
-import net.spy.memcached.DefaultConnectionFactory;
+import net.spy.memcached.ConnectionFactoryBuilder;
 import net.spy.memcached.MemcachedClient;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,8 +63,13 @@ public class MemcachedCacheAutoConfiguration {
     private MemcachedClient memcachedClient() throws IOException {
         final List<InetSocketAddress> servers = cacheProperties.getServers();
         final ClientMode mode = cacheProperties.getMode();
+        final MemcachedCacheProperties.Protocol protocol = cacheProperties.getProtocol();
 
-        return new MemcachedClient(new DefaultConnectionFactory(mode), servers);
+        final ConnectionFactoryBuilder connectionFactoryBuilder = new ConnectionFactoryBuilder()
+                .setClientMode(mode)
+                .setProtocol(protocol.value());
+
+        return new MemcachedClient(connectionFactoryBuilder.build(), servers);
     }
 
     @Bean
