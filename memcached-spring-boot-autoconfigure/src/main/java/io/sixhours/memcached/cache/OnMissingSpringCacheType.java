@@ -34,6 +34,5 @@ class OnMissingSpringCacheType extends NoneNestedConditions {
 
     @ConditionalOnProperty("spring.cache.type")
     static class SpringCacheType {
-
     }
 }
