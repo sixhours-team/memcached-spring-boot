@@ -1,5 +1,14 @@
 # Memcached Spring Boot Releases #
 
+### Version 1.1.0 ###
+
+* [Pull 32](https://github.com/sixhours-team/memcached-spring-boot/pull/32) Deprecate namespace configuration property; use default value instead
+* [Pull 31](https://github.com/sixhours-team/memcached-spring-boot/pull/31) Update springboot version to 1.5.10
+* [Pull 29](https://github.com/sixhours-team/memcached-spring-boot/pull/29) Add client protocol configuration property
+* [Pull 28](https://github.com/sixhours-team/memcached-spring-boot/pull/28) Add author service integration test
+* [Pull 27](https://github.com/sixhours-team/memcached-spring-boot/pull/27) Upgrade gradle wrapper to 4.5
+* [Pull 26](https://github.com/sixhours-team/memcached-spring-boot/pull/26) Replace mvn publish with mvn plugin to fix optional scope in pom file      
+
 ### Version 1.0.2 ###
 
 * [Pull 24](https://github.com/sixhours-team/memcached-spring-boot/pull/24) Add project key for Sonar Cloud
