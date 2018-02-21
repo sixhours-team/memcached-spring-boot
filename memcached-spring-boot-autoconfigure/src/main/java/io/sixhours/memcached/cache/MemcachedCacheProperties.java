@@ -57,6 +57,8 @@ public class MemcachedCacheProperties {
 
     /**
      * Namespace key value used for invalidation of cached values. The default value is 'namespace'.
+     *
+     * @deprecated As of release {@code 1.1.0}. To be removed in next major release.
      */
     @Deprecated
     private String namespace = Default.NAMESPACE;
@@ -110,13 +112,11 @@ public class MemcachedCacheProperties {
     @DeprecatedConfigurationProperty(reason = "As of release {@code 1.1.0}. To be removed in next major release. This " +
             "value is expected to be retained only as a private value for the cache namespace. The namespace value used is 'namespace'")
     public String getNamespace() {
-        return namespace;
+        return Default.NAMESPACE;
     }
 
     public void setNamespace(String namespace) {
-        if (namespace != null) {
-            this.namespace = Default.NAMESPACE;
-        }
+        // do nothing
     }
 
     public Protocol getProtocol() {
