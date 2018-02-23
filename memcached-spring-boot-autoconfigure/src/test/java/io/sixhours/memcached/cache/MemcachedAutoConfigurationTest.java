@@ -38,9 +38,11 @@ import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cache.concurrent.ConcurrentMapCacheManager;
 import org.springframework.cache.support.NoOpCacheManager;
+import org.springframework.cloud.autoconfigure.RefreshAutoConfiguration;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.net.InetSocketAddress;
@@ -70,7 +72,7 @@ public class MemcachedAutoConfigurationTest {
     }
 
     @Test
-    public void whenCachingNotEnableThenMemcachedNotLoaded() {
+    public void whenCachingNotEnabledThenMemcachedNotLoaded() {
         loadContext(EmptyConfiguration.class);
 
         thrown.expect(NoSuchBeanDefinitionException.class);
@@ -80,7 +82,7 @@ public class MemcachedAutoConfigurationTest {
     }
 
     @Test
-    public void whenSpringCacheTypeIsNoneThenMemcachedNotLoaded() {
+    public void whenCacheTypeIsNoneThenMemcachedNotLoaded() {
         loadContext(CacheConfiguration.class, "spring.cache.type=none");
 
         thrown.expect(NoSuchBeanDefinitionException.class);
@@ -90,7 +92,7 @@ public class MemcachedAutoConfigurationTest {
     }
 
     @Test
-    public void whenSpringCacheTypeIsNoneThenNoOpCacheLoaded() {
+    public void whenCacheTypeIsNoneThenNoOpCacheLoaded() {
         loadContext(CacheConfiguration.class, "spring.cache.type=none");
 
         CacheManager cacheManager = this.applicationContext.getBean(CacheManager.class);
@@ -99,7 +101,7 @@ public class MemcachedAutoConfigurationTest {
     }
 
     @Test
-    public void whenSpringCacheTypeIsSimpleThenMemcachedNotLoaded() {
+    public void whenCacheTypeIsSimpleThenMemcachedNotLoaded() {
         loadContext(CacheConfiguration.class, "spring.cache.type=simple");
 
         thrown.expect(NoSuchBeanDefinitionException.class);
@@ -109,7 +111,7 @@ public class MemcachedAutoConfigurationTest {
     }
 
     @Test
-    public void whenSpringCacheTypeIsSimpleThenSimpleCacheLoaded() {
+    public void whenCacheTypeIsSimpleThenSimpleCacheLoaded() {
         loadContext(CacheConfiguration.class, "spring.cache.type=simple");
 
         CacheManager cacheManager = this.applicationContext.getBean(CacheManager.class);
@@ -118,7 +120,7 @@ public class MemcachedAutoConfigurationTest {
     }
 
     @Test
-    public void whenSpringCacheTypeIsInvalidThenContextNotLoaded() {
+    public void whenCacheTypeIsInvalidThenContextNotLoaded() {
         thrown.expect(BeanCreationException.class);
         thrown.expectMessage(containsString("Field error in object 'spring.cache' on field 'type': rejected value [invalid-type]"));
 
@@ -145,7 +147,7 @@ public class MemcachedAutoConfigurationTest {
     }
 
     @Test
-    public void whenCachingEnabledThenMemcachedWithDefaultConfigurationLoaded() {
+    public void whenCachingThenMemcachedWithDefaultConfigurationLoaded() {
         loadContext(CacheConfiguration.class);
 
         MemcachedCacheManager memcachedCacheManager = this.applicationContext.getBean(MemcachedCacheManager.class);
@@ -154,6 +156,14 @@ public class MemcachedAutoConfigurationTest {
 
         assertMemcachedClient(memcachedClient, Default.CLIENT_MODE, Default.PROTOCOL, Default.SERVERS.toArray(new InetSocketAddress[0]));
         assertMemcachedCacheManager(memcachedCacheManager, Default.EXPIRATION, Default.PREFIX, Default.NAMESPACE);
+    }
+
+    @Test
+    public void whenCachingWithRefreshAutoConfigurationThenRefreshConfigurationIsLoaded() {
+        loadContext(CachedWithRefreshAutoConfiguration.class);
+
+        assertThat(this.applicationContext
+                .getBeanDefinition("scopedTarget.cacheManager").getScope()).isEqualTo("refresh");
     }
 
     @Test
@@ -175,7 +185,7 @@ public class MemcachedAutoConfigurationTest {
 
         assertThat(memcachedCacheManager)
                 .as("Auto-configured disposable instance should not be loaded in context")
-                .isNotInstanceOf(MemcachedCacheAutoConfiguration.DisposableMemcachedCacheManager.class);
+                .isNotInstanceOf(MemcachedCacheManagerFactory.DisposableMemcachedCacheManager.class);
         assertMemcachedCacheManager(memcachedCacheManager, Default.EXPIRATION, Default.PREFIX, Default.NAMESPACE);
     }
 
@@ -330,13 +340,17 @@ public class MemcachedAutoConfigurationTest {
     }
 
     @Configuration
-    @EnableCaching
-    static class CacheWithCustomCacheManagerConfiguration {
+    static class CacheWithCustomCacheManagerConfiguration extends CacheConfiguration {
 
         @Bean
         public CacheManager cacheManager() {
             return new ConcurrentMapCacheManager();
         }
+    }
+
+    @Configuration
+    @Import(RefreshAutoConfiguration.class)
+    static class CachedWithRefreshAutoConfiguration extends CacheConfiguration {
     }
 
 }

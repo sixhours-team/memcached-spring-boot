@@ -31,6 +31,7 @@ import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cache.interceptor.CacheAspectSupport;
 import org.springframework.cache.interceptor.CacheResolver;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -55,43 +56,76 @@ public class MemcachedCacheAutoConfiguration {
 
     private final MemcachedCacheProperties cacheProperties;
 
+    @Configuration
+    @ConditionalOnRefreshScope
+    static class RefreshableMemcachedCacheConfiguration {
+
+        private final MemcachedCacheProperties properties;
+
+        RefreshableMemcachedCacheConfiguration(MemcachedCacheProperties properties) {
+            this.properties = properties;
+        }
+
+        @Bean
+        @RefreshScope
+        public MemcachedCacheManager cacheManager() throws IOException {
+            return new MemcachedCacheManagerFactory(properties).create();
+        }
+    }
+
+    @Configuration
+    @ConditionalOnMissingRefreshScope
+    static class MemcachedCacheConfiguration {
+
+        private final MemcachedCacheProperties properties;
+
+        MemcachedCacheConfiguration(MemcachedCacheProperties properties) {
+            this.properties = properties;
+        }
+
+        @Bean
+        public MemcachedCacheManager cacheManager() throws IOException {
+            return new MemcachedCacheManagerFactory(properties).create();
+        }
+    }
+
     @Autowired
     public MemcachedCacheAutoConfiguration(MemcachedCacheProperties cacheProperties) {
         this.cacheProperties = cacheProperties;
     }
 
-    private MemcachedClient memcachedClient() throws IOException {
-        final List<InetSocketAddress> servers = cacheProperties.getServers();
-        final ClientMode mode = cacheProperties.getMode();
-        final MemcachedCacheProperties.Protocol protocol = cacheProperties.getProtocol();
-
-        final ConnectionFactoryBuilder connectionFactoryBuilder = new ConnectionFactoryBuilder()
-                .setClientMode(mode)
-                .setProtocol(protocol.value());
-
-        return new MemcachedClient(connectionFactoryBuilder.build(), servers);
-    }
-
-    @Bean
-    public MemcachedCacheManager cacheManager() throws IOException {
-        final DisposableMemcachedCacheManager cacheManager = new DisposableMemcachedCacheManager(memcachedClient());
-
-        cacheManager.setExpiration(cacheProperties.getExpiration());
-        cacheManager.setPrefix(cacheProperties.getPrefix());
-        cacheManager.setNamespace(cacheProperties.getNamespace());
-
-        return cacheManager;
-    }
-
-    protected class DisposableMemcachedCacheManager extends MemcachedCacheManager implements DisposableBean {
-
-        public DisposableMemcachedCacheManager(MemcachedClient memcachedClient) {
-            super(memcachedClient);
-        }
-
-        @Override
-        public void destroy() {
-            this.memcachedClient.shutdown();
-        }
-    }
+//    private MemcachedClient memcachedClient() throws IOException {
+//        final List<InetSocketAddress> servers = cacheProperties.getServers();
+//        final ClientMode mode = cacheProperties.getMode();
+//        final MemcachedCacheProperties.Protocol protocol = cacheProperties.getProtocol();
+//
+//        final ConnectionFactoryBuilder connectionFactoryBuilder = new ConnectionFactoryBuilder()
+//                .setClientMode(mode)
+//                .setProtocol(protocol.value());
+//
+//        return new MemcachedClient(connectionFactoryBuilder.build(), servers);
+//    }
+//
+//    @Bean
+//    public MemcachedCacheManager cacheManager() throws IOException {
+//        final DisposableMemcachedCacheManager cacheManager = new DisposableMemcachedCacheManager(memcachedClient());
+//
+//        cacheManager.setExpiration(cacheProperties.getExpiration());
+//        cacheManager.setPrefix(cacheProperties.getPrefix());
+//        cacheManager.setNamespace(cacheProperties.getNamespace());
+//
+//        return cacheManager;
+//    }
+//
+//    protected class DisposableMemcachedCacheManager extends MemcachedCacheManager implements DisposableBean {
+//
+//        public DisposableMemcachedCacheManager(MemcachedClient memcachedClient) {
+//            super(memcachedClient);
+//        }
+//
+//        @Override
+//        public void destroy() {
+//            this.memcachedClient.shutdown();
+//        }
+//    }
 }
