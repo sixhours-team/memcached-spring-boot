@@ -27,43 +27,51 @@ import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Condition {@link OnMissingSpringCacheTypeTest} tests.
+ * Condition {@link ConditionalOnMissingSpringCacheTypeTest} tests.
  *
  * @author Sasa Bolic
  */
-public class OnMissingSpringCacheTypeTest {
+public class ConditionalOnMissingSpringCacheTypeTest {
 
-    private final AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext();
+    private final AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 
     @After
     public void tearDown() {
-        applicationContext.close();
+        context.close();
+    }
+
+    @Test
+    public void whenSpringCacheTypeIsEmptyThenOutcomeShouldNotMatch() {
+        loadContext(OnMissingSpringCacheTypeConfig.class, "spring.cache.type=");
+
+        assertThat(this.context.containsBean("foo")).isFalse();
     }
 
     @Test
     public void whenSpringCacheTypeIsPresentThenOutcomeShouldNotMatch() {
-        loadContext(MissingSpringCacheTypeConfig.class, "spring.cache.type=none");
+        loadContext(OnMissingSpringCacheTypeConfig.class, "spring.cache.type=none");
 
-        assertThat(this.applicationContext.containsBean("foo")).isFalse();
+        assertThat(this.context.containsBean("foo")).isFalse();
     }
 
     @Test
     public void whenSpringCacheTypeIsNotPresentThenOutcomeShouldMatch() {
-        loadContext(MissingSpringCacheTypeConfig.class);
+        loadContext(OnMissingSpringCacheTypeConfig.class);
 
-        assertThat(this.applicationContext.containsBean("foo")).isTrue();
+        assertThat(this.context.containsBean("foo")).isTrue();
+        assertThat((String) this.context.getBean("foo")).startsWith("foo");
     }
 
     private void loadContext(Class<?> configuration, String... environment) {
-        EnvironmentTestUtils.addEnvironment(applicationContext, environment);
+        EnvironmentTestUtils.addEnvironment(context, environment);
 
-        applicationContext.register(configuration);
-        applicationContext.refresh();
+        context.register(configuration);
+        context.refresh();
     }
 
     @Configuration
     @ConditionalOnMissingSpringCacheType
-    static class MissingSpringCacheTypeConfig {
+    static class OnMissingSpringCacheTypeConfig {
 
         @Bean
         public String foo() {
