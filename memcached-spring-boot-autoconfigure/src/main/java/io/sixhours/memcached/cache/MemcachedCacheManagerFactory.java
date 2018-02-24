@@ -3,7 +3,6 @@ package io.sixhours.memcached.cache;
 import net.spy.memcached.ClientMode;
 import net.spy.memcached.ConnectionFactoryBuilder;
 import net.spy.memcached.MemcachedClient;
-import org.springframework.beans.factory.DisposableBean;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -37,17 +36,5 @@ public class MemcachedCacheManagerFactory {
                 .setProtocol(protocol.value());
 
         return new MemcachedClient(connectionFactoryBuilder.build(), servers);
-    }
-
-    protected class DisposableMemcachedCacheManager extends MemcachedCacheManager implements DisposableBean {
-
-        public DisposableMemcachedCacheManager(MemcachedClient memcachedClient) {
-            super(memcachedClient);
-        }
-
-        @Override
-        public void destroy() {
-            this.memcachedClient.shutdown();
-        }
     }
 }

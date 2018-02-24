@@ -15,11 +15,8 @@
  */
 package io.sixhours.memcached.cache;
 
-import net.spy.memcached.ClientMode;
-import net.spy.memcached.ConnectionFactoryBuilder;
 import net.spy.memcached.MemcachedClient;
-import org.springframework.beans.factory.DisposableBean;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.cache.CacheAutoConfiguration;
@@ -36,8 +33,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import java.io.IOException;
-import java.net.InetSocketAddress;
-import java.util.List;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for the Memcached cache.
@@ -52,9 +47,8 @@ import java.util.List;
 @ConditionalOnMissingBean({CacheManager.class, CacheResolver.class})
 @EnableConfigurationProperties(MemcachedCacheProperties.class)
 @AutoConfigureBefore(CacheAutoConfiguration.class)
+@AutoConfigureAfter(name = "org.springframework.cloud.autoconfigure.RefreshAutoConfiguration")
 public class MemcachedCacheAutoConfiguration {
-
-    private final MemcachedCacheProperties cacheProperties;
 
     @Configuration
     @ConditionalOnRefreshScope
@@ -88,44 +82,4 @@ public class MemcachedCacheAutoConfiguration {
             return new MemcachedCacheManagerFactory(properties).create();
         }
     }
-
-    @Autowired
-    public MemcachedCacheAutoConfiguration(MemcachedCacheProperties cacheProperties) {
-        this.cacheProperties = cacheProperties;
-    }
-
-//    private MemcachedClient memcachedClient() throws IOException {
-//        final List<InetSocketAddress> servers = cacheProperties.getServers();
-//        final ClientMode mode = cacheProperties.getMode();
-//        final MemcachedCacheProperties.Protocol protocol = cacheProperties.getProtocol();
-//
-//        final ConnectionFactoryBuilder connectionFactoryBuilder = new ConnectionFactoryBuilder()
-//                .setClientMode(mode)
-//                .setProtocol(protocol.value());
-//
-//        return new MemcachedClient(connectionFactoryBuilder.build(), servers);
-//    }
-//
-//    @Bean
-//    public MemcachedCacheManager cacheManager() throws IOException {
-//        final DisposableMemcachedCacheManager cacheManager = new DisposableMemcachedCacheManager(memcachedClient());
-//
-//        cacheManager.setExpiration(cacheProperties.getExpiration());
-//        cacheManager.setPrefix(cacheProperties.getPrefix());
-//        cacheManager.setNamespace(cacheProperties.getNamespace());
-//
-//        return cacheManager;
-//    }
-//
-//    protected class DisposableMemcachedCacheManager extends MemcachedCacheManager implements DisposableBean {
-//
-//        public DisposableMemcachedCacheManager(MemcachedClient memcachedClient) {
-//            super(memcachedClient);
-//        }
-//
-//        @Override
-//        public void destroy() {
-//            this.memcachedClient.shutdown();
-//        }
-//    }
 }

@@ -17,11 +17,7 @@ package io.sixhours.memcached.cache;
 
 import io.sixhours.memcached.cache.MemcachedCacheProperties.Protocol;
 import net.spy.memcached.ClientMode;
-import net.spy.memcached.ConnectionFactory;
 import net.spy.memcached.MemcachedClient;
-import net.spy.memcached.config.NodeEndPoint;
-import net.spy.memcached.protocol.ascii.AsciiOperationFactory;
-import net.spy.memcached.protocol.binary.BinaryOperationFactory;
 import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
@@ -30,8 +26,6 @@ import org.springframework.beans.BeanInstantiationException;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.UnsatisfiedDependencyException;
-import org.springframework.beans.factory.config.ConstructorArgumentValues;
-import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.boot.autoconfigure.cache.CacheAutoConfiguration;
 import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.cache.CacheManager;
@@ -46,8 +40,9 @@ import org.springframework.context.annotation.Import;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.net.InetSocketAddress;
-import java.util.List;
 
+import static io.sixhours.memcached.cache.MemcachedAssertions.assertMemcachedCacheManager;
+import static io.sixhours.memcached.cache.MemcachedAssertions.assertMemcachedClient;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.isA;
@@ -147,7 +142,16 @@ public class MemcachedAutoConfigurationTest {
     }
 
     @Test
-    public void whenCachingThenMemcachedWithDefaultConfigurationLoaded() {
+    public void whenNoCustomCacheManagerThenMemcachedCacheManagerLoaded() {
+        loadContext(CacheConfiguration.class);
+
+        CacheManager cacheManager = this.applicationContext.getBean(CacheManager.class);
+
+        assertThat(cacheManager).isInstanceOf(MemcachedCacheManager.class);
+    }
+
+    @Test
+    public void whenNoCustomCacheManagerThenMemcachedWithDefaultConfigurationLoaded() {
         loadContext(CacheConfiguration.class);
 
         MemcachedCacheManager memcachedCacheManager = this.applicationContext.getBean(MemcachedCacheManager.class);
@@ -159,25 +163,28 @@ public class MemcachedAutoConfigurationTest {
     }
 
     @Test
-    public void whenCachingWithRefreshAutoConfigurationThenRefreshConfigurationIsLoaded() {
-        loadContext(CachedWithRefreshAutoConfiguration.class);
+    public void whenRefreshAutoConfigurationThenRefreshConfigurationLoaded() {
+        loadContext(CacheWithRefreshAutoConfiguration.class);
 
         assertThat(this.applicationContext
                 .getBeanDefinition("scopedTarget.cacheManager").getScope()).isEqualTo("refresh");
     }
 
     @Test
-    public void whenCacheManagerBeanAlreadyInContextThenMemcachedWithNonCustomConfigurationLoaded() {
-        // add cache manager to the context before triggering auto-configuration on context load
-        ConstructorArgumentValues constructorArgumentValues = new ConstructorArgumentValues();
-        constructorArgumentValues.addGenericArgumentValue(mock(MemcachedClient.class));
-        RootBeanDefinition cacheManagerBeanDefinition = new RootBeanDefinition(
-                MemcachedCacheManager.class,
-                constructorArgumentValues,
-                null);
-        applicationContext.registerBeanDefinition("cacheManager", cacheManagerBeanDefinition);
+    public void whenRefreshAutoConfigurationThenDefaultConfigurationLoaded() {
+        loadContext(CacheWithRefreshAutoConfiguration.class);
 
-        loadContext(CacheConfiguration.class, "memcached.cache.expiration=3600",
+        MemcachedCacheManager cacheManager = this.applicationContext.getBean(MemcachedCacheManager.class);
+
+        MemcachedClient memcachedClient = (MemcachedClient) ReflectionTestUtils.getField(cacheManager, "memcachedClient");
+
+        assertMemcachedClient(memcachedClient, Default.CLIENT_MODE, Default.PROTOCOL, Default.SERVERS.toArray(new InetSocketAddress[0]));
+        assertMemcachedCacheManager(cacheManager, Default.EXPIRATION, Default.PREFIX, Default.NAMESPACE);
+    }
+
+    @Test
+    public void whenCacheManagerBeanAlreadyInContextThenMemcachedWithNonCustomConfigurationLoaded() {
+        loadContext(CacheWithMemcachedCacheManagerConfiguration.class, "memcached.cache.expiration=3600",
                 "memcached.cache.prefix=custom:prefix",
                 "memcached.cache.namespace=custom_namespace");
 
@@ -185,7 +192,7 @@ public class MemcachedAutoConfigurationTest {
 
         assertThat(memcachedCacheManager)
                 .as("Auto-configured disposable instance should not be loaded in context")
-                .isNotInstanceOf(MemcachedCacheManagerFactory.DisposableMemcachedCacheManager.class);
+                .isNotInstanceOf(DisposableMemcachedCacheManager.class);
         assertMemcachedCacheManager(memcachedCacheManager, Default.EXPIRATION, Default.PREFIX, Default.NAMESPACE);
     }
 
@@ -277,50 +284,6 @@ public class MemcachedAutoConfigurationTest {
         assertMemcachedCacheManager(memcachedCacheManager, Default.EXPIRATION, "custom:prefix", Default.NAMESPACE);
     }
 
-    private void assertMemcachedClient(MemcachedClient memcachedClient, ClientMode clientMode, Protocol protocol, InetSocketAddress... servers) {
-        List<NodeEndPoint> nodeEndPoints = (List<NodeEndPoint>) memcachedClient.getAllNodeEndPoints();
-
-        assertThat(nodeEndPoints)
-                .as("The number of memcached node endpoints should match server list size")
-                .hasSize(servers.length);
-
-        ConnectionFactory cf = (ConnectionFactory) ReflectionTestUtils.getField(memcachedClient, "connFactory");
-
-        for (int i = 0; i < nodeEndPoints.size(); i++) {
-            NodeEndPoint nodeEndPoint = nodeEndPoints.get(i);
-            InetSocketAddress server = servers[i];
-
-            String host = server.getHostString();
-            int port = server.getPort();
-
-            assertThat(host.matches("\\w+") ? nodeEndPoint.getHostName() : nodeEndPoint.getIpAddress())
-                    .as("Memcached node endpoint host is incorrect")
-                    .isEqualTo(host);
-            assertThat(nodeEndPoint.getPort())
-                    .as("Memcached node endpoint port is incorrect")
-                    .isEqualTo(port);
-        }
-
-        assertThat(cf.getClientMode())
-                .as("Memcached node endpoint mode is incorrect")
-                .isEqualTo(clientMode);
-
-        assertThat(cf.getOperationFactory())
-                .as("Memcached node endpoint protocol is incorrect")
-                .isInstanceOf(protocol == Protocol.TEXT ? AsciiOperationFactory.class : BinaryOperationFactory.class);
-    }
-
-    private void assertMemcachedCacheManager(MemcachedCacheManager memcachedCacheManager, int expiration, String prefix, String namespace) {
-        int actualExpiration = (int) ReflectionTestUtils.getField(memcachedCacheManager, "expiration");
-        assertThat(actualExpiration).isEqualTo(expiration);
-
-        String actualPrefix = (String) ReflectionTestUtils.getField(memcachedCacheManager, "prefix");
-        assertThat(actualPrefix).isEqualTo(prefix);
-
-        String actualNamespace = (String) ReflectionTestUtils.getField(memcachedCacheManager, "namespace");
-        assertThat(actualNamespace).isEqualTo(namespace);
-    }
-
     private void loadContext(Class<?> configuration, String... environment) {
         EnvironmentTestUtils.addEnvironment(applicationContext, environment);
 
@@ -349,8 +312,19 @@ public class MemcachedAutoConfigurationTest {
     }
 
     @Configuration
+    static class CacheWithMemcachedCacheManagerConfiguration extends CacheConfiguration {
+
+        @Bean
+        public MemcachedCacheManager cacheManager() {
+            MemcachedClient memcachedClient = mock(MemcachedClient.class);
+
+            return new MemcachedCacheManager(memcachedClient);
+        }
+    }
+
+    @Configuration
     @Import(RefreshAutoConfiguration.class)
-    static class CachedWithRefreshAutoConfiguration extends CacheConfiguration {
+    static class CacheWithRefreshAutoConfiguration extends CacheConfiguration {
     }
 
 }
