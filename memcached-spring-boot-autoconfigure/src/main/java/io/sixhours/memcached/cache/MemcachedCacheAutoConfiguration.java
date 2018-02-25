@@ -24,6 +24,7 @@ import org.springframework.boot.autoconfigure.cache.CacheAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.SearchStrategy;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
@@ -55,15 +56,10 @@ public class MemcachedCacheAutoConfiguration {
     @ConditionalOnRefreshScope
     static class RefreshableMemcachedCacheConfiguration {
 
-        private final MemcachedCacheProperties properties;
-
-        RefreshableMemcachedCacheConfiguration(MemcachedCacheProperties properties) {
-            this.properties = properties;
-        }
-
         @Bean
         @RefreshScope
-        public MemcachedCacheManager cacheManager() throws IOException {
+        @ConditionalOnMissingBean(value = MemcachedCacheManager.class, search = SearchStrategy.CURRENT)
+        public MemcachedCacheManager cacheManager(MemcachedCacheProperties properties) throws IOException {
             return new MemcachedCacheManagerFactory(properties).create();
         }
     }
@@ -72,14 +68,9 @@ public class MemcachedCacheAutoConfiguration {
     @ConditionalOnMissingRefreshScope
     static class MemcachedCacheConfiguration {
 
-        private final MemcachedCacheProperties properties;
-
-        MemcachedCacheConfiguration(MemcachedCacheProperties properties) {
-            this.properties = properties;
-        }
-
         @Bean
-        public MemcachedCacheManager cacheManager() throws IOException {
+        @ConditionalOnMissingBean(value = MemcachedCacheManager.class, search = SearchStrategy.CURRENT)
+        public MemcachedCacheManager cacheManager(MemcachedCacheProperties properties) throws IOException {
             return new MemcachedCacheManagerFactory(properties).create();
         }
     }
