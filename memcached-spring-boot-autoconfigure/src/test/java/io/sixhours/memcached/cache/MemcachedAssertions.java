@@ -24,18 +24,17 @@ import net.spy.memcached.protocol.ascii.AsciiOperationFactory;
 import net.spy.memcached.protocol.binary.BinaryOperationFactory;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import java.lang.annotation.Annotation;
 import java.net.InetSocketAddress;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Assertion methods for tests.
+ * Assertion methods for {@link MemcachedCacheManager} and {@link MemcachedClient}.
  *
  * @author Igor Bolic
  */
-public final class TestAssertions {
+public final class MemcachedAssertions {
 
     /**
      * Asserts {@link MemcachedCacheManager} against the expected values.
@@ -104,30 +103,5 @@ public final class TestAssertions {
         assertThat(cf.getOperationFactory())
                 .as("Memcached node endpoint protocol is incorrect")
                 .isInstanceOf(protocol == MemcachedCacheProperties.Protocol.TEXT ? AsciiOperationFactory.class : BinaryOperationFactory.class);
-    }
-
-    /**
-     * Asserts that object is annotated with given {@code annotationClass}.
-     *
-     * @param object          {@code java.lang.Object}
-     * @param annotationClass The class object of the annotation type
-     * @param <T>             The type of the annotation to query for
-     */
-    public static <T extends Annotation> void assertAnnotation(Object object, Class<T> annotationClass) {
-        assertAnnotation(object.getClass(), annotationClass);
-    }
-
-    /**
-     * Asserts that class is annotated with given {@code annotationClass}.
-     *
-     * @param clazz           {@code java.lang.Class}
-     * @param annotationClass The class object of the annotation type
-     * @param <T>             The type of the annotation to query for
-     */
-    public static <T extends Annotation> void assertAnnotation(Class<?> clazz, Class<T> annotationClass) {
-        Annotation[] annotations = clazz.getDeclaredAnnotations();
-        assertThat(annotations).isNotEmpty();
-        assertThat(annotations).hasSize(1);
-        assertThat(annotations[0].annotationType()).isEqualTo(annotationClass);
     }
 }

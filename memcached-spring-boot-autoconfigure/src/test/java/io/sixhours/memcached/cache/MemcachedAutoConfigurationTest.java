@@ -42,8 +42,8 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 import java.net.InetSocketAddress;
 
-import static io.sixhours.memcached.cache.TestAssertions.assertMemcachedCacheManager;
-import static io.sixhours.memcached.cache.TestAssertions.assertMemcachedClient;
+import static io.sixhours.memcached.cache.MemcachedAssertions.assertMemcachedCacheManager;
+import static io.sixhours.memcached.cache.MemcachedAssertions.assertMemcachedClient;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.isA;
@@ -184,7 +184,7 @@ public class MemcachedAutoConfigurationTest {
     }
 
     @Test
-    public void whenCacheManagerBeanAlreadyInContextThenMemcachedWithNonCustomConfigurationLoaded() {
+    public void whenMemcachedCacheManagerBeanAlreadyInContextThenMemcachedWithNonCustomConfigurationLoaded() {
         loadContext(CacheWithMemcachedCacheManagerConfiguration.class, "memcached.cache.expiration=3600",
                 "memcached.cache.prefix=custom:prefix",
                 "memcached.cache.namespace=custom_namespace");
