@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package io.sixhours.memcached.cache;
 
 import org.junit.After;
@@ -27,7 +28,7 @@ import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Condition {@link ConditionalOnMissingSpringCacheTypeTest} tests.
+ * {@link ConditionalOnMissingSpringCacheType} tests.
  *
  * @author Sasa Bolic
  */
@@ -37,36 +38,34 @@ public class ConditionalOnMissingSpringCacheTypeTest {
 
     @After
     public void tearDown() {
-        context.close();
+        this.context.close();
     }
 
     @Test
     public void whenSpringCacheTypeIsEmptyThenOutcomeShouldNotMatch() {
-        loadContext(OnMissingSpringCacheTypeConfig.class, "spring.cache.type=");
+        EnvironmentTestUtils.addEnvironment(this.context, "spring.cache.type=");
+        this.context.register(OnMissingSpringCacheTypeConfig.class);
+        this.context.refresh();
 
         assertThat(this.context.containsBean("foo")).isFalse();
     }
 
     @Test
     public void whenSpringCacheTypeIsPresentThenOutcomeShouldNotMatch() {
-        loadContext(OnMissingSpringCacheTypeConfig.class, "spring.cache.type=none");
+        EnvironmentTestUtils.addEnvironment(this.context, "spring.cache.type=none");
+        this.context.register(OnMissingSpringCacheTypeConfig.class);
+        this.context.refresh();
 
         assertThat(this.context.containsBean("foo")).isFalse();
     }
 
     @Test
     public void whenSpringCacheTypeIsNotPresentThenOutcomeShouldMatch() {
-        loadContext(OnMissingSpringCacheTypeConfig.class);
+        this.context.register(OnMissingSpringCacheTypeConfig.class);
+        this.context.refresh();
 
         assertThat(this.context.containsBean("foo")).isTrue();
         assertThat((String) this.context.getBean("foo")).startsWith("foo");
-    }
-
-    private void loadContext(Class<?> configuration, String... environment) {
-        EnvironmentTestUtils.addEnvironment(context, environment);
-
-        context.register(configuration);
-        context.refresh();
     }
 
     @Configuration
