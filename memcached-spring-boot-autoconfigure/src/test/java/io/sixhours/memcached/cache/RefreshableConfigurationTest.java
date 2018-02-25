@@ -32,7 +32,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import static io.sixhours.memcached.cache.MemcachedAssertions.assertMemcachedClient;
+import static io.sixhours.memcached.cache.TestAssertions.assertMemcachedClient;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**

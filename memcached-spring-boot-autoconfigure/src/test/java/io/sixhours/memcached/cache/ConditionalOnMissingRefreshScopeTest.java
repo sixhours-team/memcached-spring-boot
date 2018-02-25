@@ -18,6 +18,8 @@ package io.sixhours.memcached.cache;
 
 import org.junit.After;
 import org.junit.Test;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingClass;
 import org.springframework.cloud.autoconfigure.RefreshAutoConfiguration;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -25,6 +27,7 @@ import org.springframework.context.annotation.Configuration;
 
 import java.util.UUID;
 
+import static io.sixhours.memcached.cache.TestAssertions.assertAnnotation;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -39,6 +42,15 @@ public class ConditionalOnMissingRefreshScopeTest {
     @After
     public void tearDown() {
         this.context.close();
+    }
+
+    @Test
+    public void thatConditionHasAnnotations() {
+        Object innerClass = new OnMissingRefreshScopeCondition.MissingRefreshScope();
+        assertAnnotation(innerClass, ConditionalOnMissingClass.class);
+
+        innerClass = new OnMissingRefreshScopeCondition.MissingRefreshAutoConfiguration();
+        assertAnnotation(innerClass, ConditionalOnMissingBean.class);
     }
 
     @Test
