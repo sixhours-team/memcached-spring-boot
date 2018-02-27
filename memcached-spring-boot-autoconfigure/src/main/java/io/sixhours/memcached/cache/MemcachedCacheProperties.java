@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package io.sixhours.memcached.cache;
 
 import net.spy.memcached.AddrUtil;
@@ -112,7 +113,10 @@ public class MemcachedCacheProperties {
     @DeprecatedConfigurationProperty(reason = "As of release {@code 1.1.0}. To be removed in next major release. This " +
             "value is expected to be retained only as a private value for the cache namespace. The namespace value used is 'namespace'")
     public String getNamespace() {
-        return Default.NAMESPACE;
+        if (namespace != null) {
+            namespace = Default.NAMESPACE;
+        }
+        return namespace;
     }
 
     public void setNamespace(String namespace) {

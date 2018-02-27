@@ -13,11 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package io.sixhours.memcached.cache;
 
 import org.junit.After;
 import org.junit.Test;
-import org.springframework.boot.test.util.EnvironmentTestUtils;
+import org.springframework.cloud.autoconfigure.RefreshAutoConfiguration;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -27,48 +28,44 @@ import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Condition {@link OnMissingSpringCacheTypeTest} tests.
+ * {@link ConditionalOnMissingRefreshScope} tests.
  *
- * @author Sasa Bolic
+ * @author Igor Bolic
  */
-public class OnMissingSpringCacheTypeTest {
+public class ConditionalOnMissingRefreshScopeTest {
 
-    private final AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext();
+    private final AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 
     @After
     public void tearDown() {
-        applicationContext.close();
+        this.context.close();
     }
 
     @Test
-    public void whenSpringCacheTypeIsPresentThenOutcomeShouldNotMatch() {
-        loadContext(MissingSpringCacheTypeConfig.class, "spring.cache.type=none");
+    public void whenMissingRefreshAutoConfigurationThenOutcomeShouldMatch() {
+        this.context.register(OnMissingRefreshScopeConfig.class);
+        this.context.refresh();
 
-        assertThat(this.applicationContext.containsBean("foo")).isFalse();
+        assertThat(this.context.containsBean("foo")).isTrue();
+        assertThat((String) this.context.getBean("foo")).startsWith("foo");
     }
 
     @Test
-    public void whenSpringCacheTypeIsNotPresentThenOutcomeShouldMatch() {
-        loadContext(MissingSpringCacheTypeConfig.class);
+    public void whenHavingRefreshAutoConfigurationThenOutcomeShouldNotMatch() {
+        this.context.register(OnMissingRefreshScopeConfig.class, RefreshAutoConfiguration.class);
+        this.context.refresh();
 
-        assertThat(this.applicationContext.containsBean("foo")).isTrue();
-    }
-
-    private void loadContext(Class<?> configuration, String... environment) {
-        EnvironmentTestUtils.addEnvironment(applicationContext, environment);
-
-        applicationContext.register(configuration);
-        applicationContext.refresh();
+        assertThat(this.context.getBean(org.springframework.cloud.context.scope.refresh.RefreshScope.class)).isNotNull();
+        assertThat(this.context.containsBean("foo")).isFalse();
     }
 
     @Configuration
-    @ConditionalOnMissingSpringCacheType
-    static class MissingSpringCacheTypeConfig {
+    @ConditionalOnMissingRefreshScope
+    static class OnMissingRefreshScopeConfig {
 
         @Bean
         public String foo() {
             return "foo-" + UUID.randomUUID();
         }
     }
-
 }

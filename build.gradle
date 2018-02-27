@@ -1,19 +1,18 @@
 buildscript {
     ext {
-        spring_boot_version = '1.5.10.RELEASE'
-        depedency_management_version = '1.0.4.RELEASE'
-        elasticache_client_version = '1.1.1'
-        commons_logging_version = '1.2'
-        testcontainers_version = '1.6.0'
+        depedencyManagementVersion = '1.0.4.RELEASE'
+        propdepsVersion = '0.0.9.RELEASE'
+        gradleBintrayVersion = '1.7.3'
+        sonarqubeGradleVersion = '2.6.1'
     }
     repositories {
         maven { url 'https://repo.spring.io/plugins-release' }
     }
     dependencies {
-        classpath("io.spring.gradle:dependency-management-plugin:$depedency_management_version")
-        classpath("io.spring.gradle:propdeps-plugin:0.0.9.RELEASE")
-        classpath("com.jfrog.bintray.gradle:gradle-bintray-plugin:1.7.3")
-        classpath("org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:2.6.1")
+        classpath("io.spring.gradle:dependency-management-plugin:$depedencyManagementVersion")
+        classpath("io.spring.gradle:propdeps-plugin:${propdepsVersion}")
+        classpath("com.jfrog.bintray.gradle:gradle-bintray-plugin:${gradleBintrayVersion}")
+        classpath("org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:${sonarqubeGradleVersion}")
     }
 }
 
@@ -66,14 +65,23 @@ subprojects {
         jcenter()
     }
 
+    ext {
+        springBootVersion = '1.5.10.RELEASE'
+        springCloudVersion = 'Edgware.SR2'
+        elasticacheClientVersion = '1.1.1'
+        commonsLoggingVersion = '1.2'
+        testcontainersVersion = '1.6.0'
+    }
+
     dependencyManagement {
         imports {
-            mavenBom "org.springframework.boot:spring-boot-dependencies:${spring_boot_version}"
+            mavenBom "org.springframework.boot:spring-boot-dependencies:${springBootVersion}"
+            mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
         }
         dependencies {
-            dependency "com.amazonaws:elasticache-java-cluster-client:$elasticache_client_version"
-            dependency "commons-logging:commons-logging:$commons_logging_version"
-            dependency "org.testcontainers:testcontainers:$testcontainers_version"
+            dependency "com.amazonaws:elasticache-java-cluster-client:$elasticacheClientVersion"
+            dependency "commons-logging:commons-logging:$commonsLoggingVersion"
+            dependency "org.testcontainers:testcontainers:$testcontainersVersion"
         }
     }
 }

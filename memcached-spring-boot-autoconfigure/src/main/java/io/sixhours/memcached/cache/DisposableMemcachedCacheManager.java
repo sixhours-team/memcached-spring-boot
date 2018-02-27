@@ -16,24 +16,22 @@
 
 package io.sixhours.memcached.cache;
 
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.boot.autoconfigure.condition.NoneNestedConditions;
-import org.springframework.context.annotation.Condition;
-import org.springframework.core.env.Environment;
+import net.spy.memcached.MemcachedClient;
+import org.springframework.beans.factory.DisposableBean;
 
 /**
- * {@link Condition} that checks that {@code spring.cache.type} property is
- * not defined in the {@link Environment}.
+ * Disposable {@link MemcachedCacheManager} bean.
  *
- * @author Sasa Bolic
+ * @author Igor Bolic
  */
-class OnMissingSpringCacheType extends NoneNestedConditions {
+class DisposableMemcachedCacheManager extends MemcachedCacheManager implements DisposableBean {
 
-    OnMissingSpringCacheType() {
-        super(ConfigurationPhase.PARSE_CONFIGURATION);
+    public DisposableMemcachedCacheManager(MemcachedClient memcachedClient) {
+        super(memcachedClient);
     }
 
-    @ConditionalOnProperty("spring.cache.type")
-    static class SpringCacheType {
+    @Override
+    public void destroy() {
+        this.memcachedClient.shutdown();
     }
 }

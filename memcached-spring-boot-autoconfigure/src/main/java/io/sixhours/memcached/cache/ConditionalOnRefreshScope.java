@@ -16,21 +16,24 @@
 
 package io.sixhours.memcached.cache;
 
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.cloud.autoconfigure.RefreshAutoConfiguration;
+import org.springframework.cloud.context.scope.refresh.RefreshScope;
 import org.springframework.context.annotation.Conditional;
-import org.springframework.core.env.Environment;
 
 import java.lang.annotation.*;
 
 /**
- * {@link Conditional} that only matches when the {@code spring.cache.type} property is
- * not defined in the {@link Environment}.
+ * {@link Conditional} that only matches when the {@link org.springframework.cloud.context.scope.refresh.RefreshScope} class is
+ * defined in the {@link org.springframework.core.env.Environment}.
  *
- * @author Sasa Bolic
+ * @author Igor Bolic
  */
 @Target({ElementType.TYPE, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@Conditional(OnMissingSpringCacheType.class)
-@interface ConditionalOnMissingSpringCacheType {
-
+@ConditionalOnClass(RefreshScope.class)
+@ConditionalOnBean(RefreshAutoConfiguration.class)
+@interface ConditionalOnRefreshScope {
 }

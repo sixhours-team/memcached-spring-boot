@@ -16,28 +16,19 @@
 
 package io.sixhours.memcached.cache;
 
-import org.springframework.cache.annotation.Cacheable;
-import org.springframework.stereotype.Repository;
+import org.springframework.context.annotation.Conditional;
 
-import java.util.Arrays;
-import java.util.List;
+import java.lang.annotation.*;
 
-@Repository
-public class AuthorService {
-
-    private int counterFindAll = 0;
-
-    @Cacheable(cacheNames = "authors")
-    public List<Author> findAll() {
-        counterFindAll++;
-        return Arrays.asList(new Author("John"), new Author("David"));
-    }
-
-    public int getCounterFindAll() {
-        return counterFindAll;
-    }
-
-    public void resetCounters() {
-        counterFindAll = 0;
-    }
+/**
+ * {@link Conditional} that only matches when the {@link org.springframework.cloud.context.scope.refresh.RefreshScope} class is
+ * not defined in the {@link org.springframework.core.env.Environment}.
+ *
+ * @author Igor Bolic
+ */
+@Target({ ElementType.TYPE, ElementType.METHOD })
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+@Conditional(OnMissingRefreshScopeCondition.class)
+@interface ConditionalOnMissingRefreshScope {
 }
