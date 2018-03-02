@@ -1,1 +1,3 @@
-org.springframework.boot.autoconfigure.EnableAutoConfiguration=io.sixhours.memcached.cache.MemcachedCacheAutoConfiguration
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+io.sixhours.memcached.cache.MemcachedCacheAutoConfiguration,\
+io.sixhours.memcached.cache.MemcachedCacheStatisticsAutoConfiguration

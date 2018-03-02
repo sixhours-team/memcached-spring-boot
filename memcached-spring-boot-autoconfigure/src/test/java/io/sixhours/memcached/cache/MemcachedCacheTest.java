@@ -84,6 +84,40 @@ public class MemcachedCacheTest {
     }
 
     @Test
+    public void whenLookupThenIncrementHits() {
+        when(memcachedClient.get(any())).thenReturn(NAMESPACE_KEY_VALUE).thenReturn(cachedValue);
+
+        assertThat(memcachedCache.hits()).isEqualTo(0);
+        assertThat(memcachedCache.misses()).isEqualTo(0);
+
+        memcachedCache.lookup(CACHED_OBJECT_KEY);
+
+        assertThat(memcachedCache.hits()).isEqualTo(1);
+        assertThat(memcachedCache.misses()).isEqualTo(0);
+
+        verify(memcachedClient).get(memcachedKey);
+        verify(memcachedClient).get(namespaceKey);
+        verifyNoMoreInteractions(memcachedClient);
+    }
+
+    @Test
+    public void whenLookupAndCacheValueMissingThenIncrementMisses() {
+        when(memcachedClient.get(any())).thenReturn(NAMESPACE_KEY_VALUE).thenReturn(null);
+
+        assertThat(memcachedCache.hits()).isEqualTo(0);
+        assertThat(memcachedCache.misses()).isEqualTo(0);
+
+        memcachedCache.lookup(CACHED_OBJECT_KEY);
+
+        assertThat(memcachedCache.hits()).isEqualTo(0);
+        assertThat(memcachedCache.misses()).isEqualTo(1);
+
+        verify(memcachedClient).get(memcachedKey);
+        verify(memcachedClient).get(namespaceKey);
+        verifyNoMoreInteractions(memcachedClient);
+    }
+
+    @Test
     public void whenGetNameThenReturnCacheName() {
         String actual = memcachedCache.getName();
 
@@ -92,7 +126,7 @@ public class MemcachedCacheTest {
 
     @Test
     public void whenGetNativeThenReturnMemcachedClient() {
-        Object actual = memcachedCache.getNativeCache();
+        MemcachedClient actual = memcachedCache.getNativeCache();
 
         assertThat(actual).isSameAs(memcachedClient);
     }

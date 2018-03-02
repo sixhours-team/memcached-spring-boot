@@ -26,7 +26,7 @@ import java.lang.annotation.*;
  *
  * @author Igor Bolic
  */
-@Target({ ElementType.TYPE, ElementType.METHOD })
+@Target({ElementType.TYPE, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Conditional(OnMissingRefreshScopeCondition.class)
