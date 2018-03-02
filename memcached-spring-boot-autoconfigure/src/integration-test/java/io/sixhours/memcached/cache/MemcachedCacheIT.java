@@ -24,11 +24,17 @@ import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.actuate.cache.CacheStatistics;
+import org.springframework.boot.actuate.cache.CacheStatisticsProvider;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.cache.Cache;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cache.interceptor.SimpleKey;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.testcontainers.containers.GenericContainer;
@@ -39,6 +45,7 @@ import java.util.Collections;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.offset;
 
 /**
  * Memcached cache integration tests.
@@ -65,6 +72,10 @@ public class MemcachedCacheIT {
     @Autowired
     BookService bookService;
 
+    @Autowired
+    @Qualifier("memcachedCacheStatisticsProvider")
+    CacheStatisticsProvider provider;
+
     @Before
     public void setUp() {
         memcachedClient.flush();
@@ -83,7 +94,9 @@ public class MemcachedCacheIT {
         bookService.findAll();
         assertThat(bookService.getCounterFindAll()).isEqualTo(1);
 
-        Object value = cacheManager.getCache("books").get(SimpleKey.EMPTY);
+        Cache booksCache = cacheManager.getCache("books");
+        Object value = booksCache.get(SimpleKey.EMPTY);
+
         assertThat(value).isNotNull();
     }
 
@@ -219,7 +232,39 @@ public class MemcachedCacheIT {
         assertThat(value).isNotNull();
     }
 
+    @Test
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.BEFORE_METHOD)
+    public void whenGettingBooksFromCacheThenReturnCorrectStatistics() {
+        bookService.findAll();
+        bookService.findAll();
+        bookService.findAll();
+
+        bookService.findByTitle("Spring Boot in Action");
+        bookService.findByTitle("Spring Boot in Action");
+        bookService.findByTitle("Kotlin");
+        bookService.findByTitle("Kotlin");
+        bookService.findByTitle("Kotlin");
+
+        Cache books = cacheManager.getCache("books");
+
+        CacheStatistics statistics = provider.getCacheStatistics(cacheManager, books);
+
+        assertThat(statistics).isNotNull();
+        assertThat(statistics.getHitRatio()).isEqualTo(0.625d, offset(0.01D));
+        assertThat(statistics.getMissRatio()).isEqualTo(0.375d, offset(0.01D));
+
+        bookService.findAll();
+        bookService.findByTitle("Kotlin");
+
+        CacheStatistics updatedStatistics = provider.getCacheStatistics(cacheManager, books);
+
+        assertThat(updatedStatistics).isNotNull();
+        assertThat(updatedStatistics.getHitRatio()).isEqualTo(0.7d, offset(0.01D));
+        assertThat(updatedStatistics.getMissRatio()).isEqualTo(0.3d, offset(0.01D));
+    }
+
     @Configuration
+    @EnableAutoConfiguration
     @EnableCaching
     @ComponentScan(basePackageClasses = {AuthorService.class, BookService.class})
     static class CacheConfig {

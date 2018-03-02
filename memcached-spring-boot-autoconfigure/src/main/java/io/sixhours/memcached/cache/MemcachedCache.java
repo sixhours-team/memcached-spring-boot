@@ -20,6 +20,7 @@ import net.spy.memcached.MemcachedClient;
 import org.springframework.cache.support.AbstractValueAdaptingCache;
 
 import java.util.concurrent.Callable;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -36,6 +37,9 @@ public class MemcachedCache extends AbstractValueAdaptingCache {
     private final MemcacheCacheMetadata memcacheCacheMetadata;
 
     private final Lock lock = new ReentrantLock();
+
+    private final AtomicLong hits = new AtomicLong();
+    private final AtomicLong misses = new AtomicLong();
 
     /**
      * Create an {@code MemcachedCache} with the given settings.
@@ -54,7 +58,7 @@ public class MemcachedCache extends AbstractValueAdaptingCache {
 
     @Override
     protected Object lookup(Object key) {
-        return memcachedClient.get(memcachedKey(key));
+        return trackHitsMisses(memcachedClient.get(memcachedKey(key)));
     }
 
     @Override
@@ -63,7 +67,7 @@ public class MemcachedCache extends AbstractValueAdaptingCache {
     }
 
     @Override
-    public Object getNativeCache() {
+    public net.spy.memcached.MemcachedClient getNativeCache() {
         return this.memcachedClient;
     }
 
@@ -123,6 +127,29 @@ public class MemcachedCache extends AbstractValueAdaptingCache {
     @Override
     public void clear() {
         this.memcachedClient.incr(this.memcacheCacheMetadata.namespaceKey(), 1);
+    }
+
+    public long hits() {
+        return hits.get();
+    }
+
+    public long misses() {
+        return misses.get();
+    }
+
+    /**
+     * Tracks number of hits and misses per {@code MemcachedCache} instance.
+     *
+     * @param value Value returned from the underlying cache store.
+     * @return The value
+     */
+    private Object trackHitsMisses(Object value) {
+        if (value != null) {
+            hits.incrementAndGet();
+        } else {
+            misses.incrementAndGet();
+        }
+        return value;
     }
 
     /**
