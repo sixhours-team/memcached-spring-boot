@@ -1,5 +1,13 @@
 # Memcached Spring Boot Releases #
 
+### Version 1.2.0 ###
+
+* [Pull 39](https://github.com/sixhours-team/memcached-spring-boot/pull/39) Update gradle wrapper to 4.6
+* [Pull 38](https://github.com/sixhours-team/memcached-spring-boot/pull/38) Add author service integration test
+* [Pull 36](https://github.com/sixhours-team/memcached-spring-boot/pull/36) Add support for Spring Cloud refresh scope beans
+* [Pull 34](https://github.com/sixhours-team/memcached-spring-boot/pull/34) Add deprecated javadoc for namespace configuration
+* [Pull 33](https://github.com/sixhours-team/memcached-spring-boot/pull/33) Add name, description and url to the generated pom files
+
 ### Version 1.1.0 ###
 
 * [Pull 32](https://github.com/sixhours-team/memcached-spring-boot/pull/32) Deprecate namespace configuration property; use default value instead
