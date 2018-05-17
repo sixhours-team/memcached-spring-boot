@@ -120,7 +120,7 @@ public class MemcachedCacheIT {
         List<Author> authors = authorService.findAll();
 
         assertThat(authors).isNotNull();
-        assertThat(authorService.getCounterFindAll()).isEqualTo(1);
+        assertThat(authorService.getCounterFindAll()).isEqualTo(1); // first time read from DB
 
         authorService.findAll();
         assertThat(authorService.getCounterFindAll()).isEqualTo(1);
@@ -133,7 +133,7 @@ public class MemcachedCacheIT {
         authors = authorService.findAll();
 
         assertThat(authors).isNotNull();
-        assertThat(authorService.getCounterFindAll()).isEqualTo(1);
+        assertThat(authorService.getCounterFindAll()).isEqualTo(2); // second time read from DB
 
         value = cacheManager.getCache("authors").get(SimpleKey.EMPTY);
         assertThat(value).isNotNull();
