@@ -125,7 +125,7 @@ public class MemcachedCacheIT {
         authorService.findAll();
         assertThat(authorService.getCounterFindAll()).isEqualTo(1);
 
-        Thread.sleep(1000 * 2L);
+        Thread.sleep(1000 * 5L);
 
         Object value = cacheManager.getCache("authors").get(SimpleKey.EMPTY);
         assertThat(value).isNull();
@@ -181,7 +181,7 @@ public class MemcachedCacheIT {
         bookService.findByTitle("Kotlin");
         assertThat(bookService.getCounterFindByTitle()).isEqualTo(1);
 
-        Thread.sleep(1000 * 5L);
+        Thread.sleep(1000 * 7L);
 
         Object value = cacheManager.getCache("books").get("Kotlin");
         assertThat(value).isNull();
@@ -296,8 +296,8 @@ public class MemcachedCacheIT {
         @Bean
         public MemcachedCacheManager cacheManager() throws IOException {
             final MemcachedCacheManager memcachedCacheManager = new MemcachedCacheManager(memcachedClient());
-            memcachedCacheManager.setExpiration(3);
-            memcachedCacheManager.setExpirations(Collections.singletonMap("authors", 1));
+            memcachedCacheManager.setExpiration(5);
+            memcachedCacheManager.setExpirations(Collections.singletonMap("authors", 3));
 
             return memcachedCacheManager;
         }
