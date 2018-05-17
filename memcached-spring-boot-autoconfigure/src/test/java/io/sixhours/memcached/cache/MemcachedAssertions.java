@@ -26,6 +26,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 import java.net.InetSocketAddress;
 import java.util.List;
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -44,9 +45,13 @@ public final class MemcachedAssertions {
      * @param prefix                Expected prefix
      * @param namespace             Expected namespace
      */
-    public static void assertMemcachedCacheManager(MemcachedCacheManager memcachedCacheManager, int expiration, String prefix, String namespace) {
+    public static void assertMemcachedCacheManager(MemcachedCacheManager memcachedCacheManager, int expiration, Map<String, Integer> expirations, String prefix, String namespace) {
         int actualExpiration = (int) ReflectionTestUtils.getField(memcachedCacheManager, "expiration");
         assertThat(actualExpiration).isEqualTo(expiration);
+
+        Map<String, Integer> actualExpirations = (Map<String, Integer>) ReflectionTestUtils.getField(memcachedCacheManager, "expirations");
+        System.out.println("ACTUAL EXPIRATIONS: " + actualExpirations);
+        assertThat(actualExpirations).isEqualTo(expirations);
 
         String actualPrefix = (String) ReflectionTestUtils.getField(memcachedCacheManager, "prefix");
         assertThat(actualPrefix).isEqualTo(prefix);

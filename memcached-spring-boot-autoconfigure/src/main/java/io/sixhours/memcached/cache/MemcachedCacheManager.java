@@ -22,6 +22,8 @@ import org.springframework.cache.CacheManager;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -48,6 +50,7 @@ public class MemcachedCacheManager implements CacheManager {
     private int expiration = Default.EXPIRATION;
     private String prefix = Default.PREFIX;
     private String namespace = Default.NAMESPACE;
+    private Map<String, Integer> expirations;
 
     /**
      * Construct a {@link MemcachedCacheManager}
@@ -63,7 +66,7 @@ public class MemcachedCacheManager implements CacheManager {
         Cache cache = this.cacheMap.get(name);
         if (cache == null) {
 
-            cache = new MemcachedCache(name, memcachedClient, expiration, prefix, namespace);
+            cache = createCache(name);
             final Cache currentCache = cacheMap.putIfAbsent(name, cache);
 
             if (currentCache != null) {
@@ -78,6 +81,27 @@ public class MemcachedCacheManager implements CacheManager {
         return Collections.unmodifiableSet(cacheMap.keySet());
     }
 
+    private MemcachedCache createCache(String name) {
+        int expiration = determineExpiration(name);
+        return new MemcachedCache(name, memcachedClient, expiration, prefix, namespace);
+    }
+
+    private int determineExpiration(String name) {
+        Integer expiration = null;
+
+        if (expirations != null) {
+            expiration = expirations.get(name);
+        }
+
+        return Optional.ofNullable(expiration).orElse(this.expiration);
+    }
+
+    /**
+     * Sets global expiration for all cache names.
+     * Custom expiration is used in case it is defined by {@code expirations} {@link Map} property.
+     *
+     * @param expiration the expiration
+     */
     public void setExpiration(int expiration) {
         this.expiration = expiration;
     }
@@ -88,5 +112,14 @@ public class MemcachedCacheManager implements CacheManager {
 
     public void setNamespace(String namespace) {
         this.namespace = namespace;
+    }
+
+    /**
+     * Sets expiration time for cache keys.
+     *
+     * @param expirations {@link Map} of expiration times per cache key
+     */
+    public void setExpirations(Map<String, Integer> expirations) {
+        this.expirations = (expirations != null ? new ConcurrentHashMap<>(expirations) : null);
     }
 }
