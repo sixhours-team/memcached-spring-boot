@@ -1,5 +1,9 @@
 # Memcached Spring Boot Releases #
 
+### Version 1.3.0 ###
+
+* [Pull 41](https://github.com/sixhours-team/memcached-spring-boot/pull/41) Expiration per cache name
+
 ### Version 1.2.0 ###
 
 * [Pull 39](https://github.com/sixhours-team/memcached-spring-boot/pull/39) Update gradle wrapper to 4.6
