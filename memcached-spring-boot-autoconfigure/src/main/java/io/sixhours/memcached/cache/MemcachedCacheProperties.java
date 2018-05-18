@@ -25,7 +25,10 @@ import org.springframework.util.StringUtils;
 
 import java.net.InetSocketAddress;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Stream;
 
 /**
  * Configuration properties for Memcached cache.
@@ -50,6 +53,8 @@ public class MemcachedCacheProperties {
      * Cache expiration in seconds. The default is 60 seconds.
      */
     private Integer expiration = Default.EXPIRATION;
+
+    private Map<String, Integer> expirations;
 
     /**
      * Cached object key prefix. The default is 'memcached:spring-boot'.
@@ -94,12 +99,43 @@ public class MemcachedCacheProperties {
         this.mode = mode;
     }
 
+    @DeprecatedConfigurationProperty(reason = "As of release {@code 1.3.0}. To be removed in next major release. This " +
+            "value is expected to be extracted from property 'expirations'.", replacement = "memcached.cache.expirations")
     public Integer getExpiration() {
         return expiration;
     }
 
     public void setExpiration(Integer expiration) {
         this.expiration = expiration;
+    }
+
+    public Map<String, Integer> getExpirations() {
+        return expirations;
+    }
+
+    public void setExpirations(String value) {
+        this.expirations = new HashMap<>();
+
+        if (StringUtils.isEmpty(value)) {
+            throw new IllegalArgumentException("Expiration list is empty");
+        }
+
+        final String[] expirations = value.split("(?:\\s|,)+");
+
+        Stream.of(expirations).forEach(v -> {
+            final int colonIndex = v.lastIndexOf(':');
+
+            if (colonIndex < 1) {
+                // global expiration (without colon in value)
+                this.expiration = Integer.valueOf(v);
+            } else {
+                // expiration per cache name
+                final String cacheName = v.substring(0, colonIndex);
+                final String expiration = v.substring(colonIndex + 1);
+
+                this.expirations.put(cacheName, Integer.valueOf(expiration));
+            }
+        });
     }
 
     public String getPrefix() {

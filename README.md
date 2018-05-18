@@ -40,7 +40,7 @@ To plug-in Memcached cache in your application follow the steps below:
      memcached.cache:
        servers: example1.com:11211,example2.com:11211
        mode: static
-       expiration: 86400
+       expirations: 86400, cache_name1:3600, cache_name2:108000 # global expiration is '86400' and custom ones for cache_name1 and cache_name2
      ```
 
     To connect to a cluster with AWS [Auto Discovery](http://docs.aws.amazon.com/AmazonElastiCache/latest/UserGuide/AutoDiscovery.html), specify
@@ -50,7 +50,7 @@ To plug-in Memcached cache in your application follow the steps below:
     memcached.cache:
         servers: mycluster.example.com:11211
         mode: dynamic
-        expiration: 86400
+        expiration: 86400 # global expiration set to '86400'
     ```
    
 3. Enable caching support by adding `@EnableCaching` annotation to one of your `@Configuration` classes.
@@ -98,7 +98,7 @@ full list of supported properties:
 # MEMCACHED CACHE 
 memcached.cache.servers: # Comma-separated list of hostname:port for memcached servers (default "localhost:11211")
 memcached.cache.mode: # Memcached client mode (use one of following: "static", "dynamic"). Default mode is "static", use "dynamic" for AWS node auto discovery
-memcached.cache.expiration: # Cache expiration in seconds (default "60")
+memcached.cache.expirations: # Cache expirations in seconds (default "60"). To set new global expiration use value without colon: {number} e.g. "86400". To set value per cache name use format: {cache_name}:{number} e.g. "authors:3600"
 memcached.cache.prefix: # Cache key prefix (default "memcached:spring-boot")
 memcached.cache.namespace: # Cache eviction namespace key name (default "namespace")
 memcached.cache.protocol: # Memcached client protocol. Supports "text" and "binary" protocols (default is "text" protocol)

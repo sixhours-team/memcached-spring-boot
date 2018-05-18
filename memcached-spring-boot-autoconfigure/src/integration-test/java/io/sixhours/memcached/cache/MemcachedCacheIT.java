@@ -116,6 +116,30 @@ public class MemcachedCacheIT {
     }
 
     @Test
+    public void whenTimeoutThenAuthorCacheExpired() throws InterruptedException {
+        List<Author> authors = authorService.findAll();
+
+        assertThat(authors).isNotNull();
+        assertThat(authorService.getCounterFindAll()).isEqualTo(1); // first time read from DB
+
+        authorService.findAll();
+        assertThat(authorService.getCounterFindAll()).isEqualTo(1);
+
+        Thread.sleep(1000 * 5L);
+
+        Object value = cacheManager.getCache("authors").get(SimpleKey.EMPTY);
+        assertThat(value).isNull();
+
+        authors = authorService.findAll();
+
+        assertThat(authors).isNotNull();
+        assertThat(authorService.getCounterFindAll()).isEqualTo(2); // second time read from DB
+
+        value = cacheManager.getCache("authors").get(SimpleKey.EMPTY);
+        assertThat(value).isNotNull();
+    }
+
+    @Test
     public void whenFindByYearThenBooksWithYearNotCached() {
         List<Book> books = bookService.findByYear(2016);
 
@@ -157,7 +181,7 @@ public class MemcachedCacheIT {
         bookService.findByTitle("Kotlin");
         assertThat(bookService.getCounterFindByTitle()).isEqualTo(1);
 
-        Thread.sleep(1000 * 5L);
+        Thread.sleep(1000 * 7L);
 
         Object value = cacheManager.getCache("books").get("Kotlin");
         assertThat(value).isNull();
@@ -272,7 +296,8 @@ public class MemcachedCacheIT {
         @Bean
         public MemcachedCacheManager cacheManager() throws IOException {
             final MemcachedCacheManager memcachedCacheManager = new MemcachedCacheManager(memcachedClient());
-            memcachedCacheManager.setExpiration(3);
+            memcachedCacheManager.setExpiration(5);
+            memcachedCacheManager.setExpirations(Collections.singletonMap("authors", 3));
 
             return memcachedCacheManager;
         }
