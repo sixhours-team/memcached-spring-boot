@@ -50,7 +50,7 @@ To plug-in Memcached cache in your application follow the steps below:
     memcached.cache:
         servers: mycluster.example.com:11211
         mode: dynamic
-        expiration: 86400 # global expiration set to '86400'
+        expirations: 86400 # global expiration set to '86400'
     ```
    
 3. Enable caching support by adding `@EnableCaching` annotation to one of your `@Configuration` classes.
