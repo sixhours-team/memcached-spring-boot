@@ -11,7 +11,8 @@ artifacts {
 dependencies {
     compile('org.springframework.boot:spring-boot-autoconfigure')
 
-    optional('org.springframework.boot:spring-boot-configuration-processor')
+    annotationProcessor('org.springframework.boot:spring-boot-configuration-processor')
+
     optional('org.springframework.boot:spring-boot-actuator')
     optional('org.springframework.cloud:spring-cloud-context')
     optional('com.amazonaws:elasticache-java-cluster-client')
