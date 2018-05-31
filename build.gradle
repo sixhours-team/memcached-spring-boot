@@ -21,12 +21,6 @@ ext.RELEASE_GRADLE = "$rootDir/gradle/release.gradle"
 ext.SONAR_GRADLE = "$rootDir/gradle/sonar.gradle"
 
 allprojects {
-    gradle.projectsEvaluated {
-        tasks.withType(JavaCompile) {
-            options.compilerArgs << "-Xlint:unchecked" << "-Xlint:deprecation"
-        }
-    }
-
     def gitVersion = { ->
         def stdout = new ByteArrayOutputStream()
         exec {
