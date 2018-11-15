@@ -18,9 +18,7 @@ package io.sixhours.memcached.cache;
 
 import net.spy.memcached.MemcachedClient;
 import org.junit.After;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.boot.actuate.cache.CacheStatistics;
 import org.springframework.boot.actuate.cache.CacheStatisticsProvider;
@@ -34,8 +32,7 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.offset;
+import static org.assertj.core.api.Assertions.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
@@ -47,12 +44,7 @@ import static org.mockito.Mockito.mock;
  */
 public class MemcachedCacheStatisticsAutoConfigurationTest {
 
-    @Rule
-    public ExpectedException thrown = ExpectedException.none();
-
     private final AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
-
-    private CacheManager cacheManager;
 
     @After
     public void tearDown() {
@@ -63,20 +55,22 @@ public class MemcachedCacheStatisticsAutoConfigurationTest {
     public void whenCachingNotEnabledThenCacheStatisticsNotLoaded() {
         loadContext(EmptyConfiguration.class);
 
-        thrown.expect(NoSuchBeanDefinitionException.class);
-        thrown.expectMessage("No bean named 'memcachedCacheStatisticsProvider' available");
-
-        this.context.getBean("memcachedCacheStatisticsProvider", CacheStatisticsProvider.class);
+        assertThatThrownBy(() ->
+                this.context.getBean("memcachedCacheStatisticsProvider", CacheStatisticsProvider.class)
+        )
+                .isInstanceOf(NoSuchBeanDefinitionException.class)
+                .hasMessage("No bean named 'memcachedCacheStatisticsProvider' available");
     }
 
     @Test
     public void whenCacheTypeIsNoneThenCacheStatisticsNotLoaded() {
         loadContext(CacheConfiguration.class, "spring.cache.type=none");
 
-        thrown.expect(NoSuchBeanDefinitionException.class);
-        thrown.expectMessage("No bean named 'memcachedCacheStatisticsProvider' available");
-
-        this.context.getBean("memcachedCacheStatisticsProvider", CacheStatisticsProvider.class);
+        assertThatThrownBy(() ->
+                this.context.getBean("memcachedCacheStatisticsProvider", CacheStatisticsProvider.class)
+        )
+                .isInstanceOf(NoSuchBeanDefinitionException.class)
+                .hasMessage("No bean named 'memcachedCacheStatisticsProvider' available");
     }
 
     @Test
@@ -97,15 +91,15 @@ public class MemcachedCacheStatisticsAutoConfigurationTest {
 
         assertThat(provider).isNotNull();
 
-        this.cacheManager = this.context.getBean(CacheManager.class);
-        Cache books = this.cacheManager.getCache("books");
+        CacheManager cacheManager = this.context.getBean(CacheManager.class);
+        Cache books = cacheManager.getCache("books");
 
-        CacheStatistics cacheStatistics = provider.getCacheStatistics(this.cacheManager, books);
+        CacheStatistics cacheStatistics = provider.getCacheStatistics(cacheManager, books);
 
         assertCacheStatistics(cacheStatistics, null, null);
         getCacheKeyValues(books, "a", "b", "b", "c", "d", "c", "a", "a", "a", "d");
 
-        cacheStatistics = provider.getCacheStatistics(this.cacheManager, books);
+        cacheStatistics = provider.getCacheStatistics(cacheManager, books);
         assertCacheStatistics(cacheStatistics, 0.6d, 0.4d);
     }
 

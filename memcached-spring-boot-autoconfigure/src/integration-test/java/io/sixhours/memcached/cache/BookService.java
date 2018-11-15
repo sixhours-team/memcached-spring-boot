@@ -56,7 +56,7 @@ public class BookService {
         counterFindByTitle++;
         return books.stream()
                 .filter(b -> b.getTitle().equals(title))
-                .reduce((a, b) -> null)
+                .findFirst()
                 .orElseThrow(IllegalArgumentException::new);
     }
 
@@ -65,7 +65,7 @@ public class BookService {
         counterFindByTitleAndYear++;
         return books.stream()
                 .filter(b -> b.getTitle().equals(title) && b.getYear().equals(year))
-                .reduce((a, b) -> null)
+                .findFirst()
                 .orElseThrow(IllegalArgumentException::new);
     }
 

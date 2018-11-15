@@ -155,10 +155,6 @@ public class MemcachedCacheProperties {
         return namespace;
     }
 
-    public void setNamespace(String namespace) {
-        // do nothing
-    }
-
     public Protocol getProtocol() {
         return protocol;
     }

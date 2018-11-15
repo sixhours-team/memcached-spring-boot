@@ -20,9 +20,7 @@ import io.sixhours.memcached.cache.MemcachedCacheProperties.Protocol;
 import net.spy.memcached.ClientMode;
 import net.spy.memcached.MemcachedClient;
 import org.junit.After;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.springframework.beans.BeanInstantiationException;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
@@ -42,13 +40,11 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 import java.net.InetSocketAddress;
 import java.util.Collections;
-import java.util.stream.Stream;
 
 import static io.sixhours.memcached.cache.MemcachedAssertions.assertMemcachedCacheManager;
 import static io.sixhours.memcached.cache.MemcachedAssertions.assertMemcachedClient;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.CoreMatchers.containsString;
-import static org.hamcrest.CoreMatchers.isA;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -58,9 +54,6 @@ import static org.mockito.Mockito.mock;
  * @author Sasa Bolic
  */
 public class MemcachedAutoConfigurationTest {
-
-    @Rule
-    public ExpectedException thrown = ExpectedException.none();
 
     private final AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext();
 
@@ -73,20 +66,22 @@ public class MemcachedAutoConfigurationTest {
     public void whenCachingNotEnabledThenMemcachedNotLoaded() {
         loadContext(EmptyConfiguration.class);
 
-        thrown.expect(NoSuchBeanDefinitionException.class);
-        thrown.expectMessage("No qualifying bean of type 'io.sixhours.memcached.cache.MemcachedCacheManager' available");
-
-        this.applicationContext.getBean(MemcachedCacheManager.class);
+        assertThatThrownBy(() ->
+                this.applicationContext.getBean(MemcachedCacheManager.class)
+        )
+                .isInstanceOf(NoSuchBeanDefinitionException.class)
+                .hasMessage("No qualifying bean of type 'io.sixhours.memcached.cache.MemcachedCacheManager' available");
     }
 
     @Test
     public void whenCacheTypeIsNoneThenMemcachedNotLoaded() {
         loadContext(CacheConfiguration.class, "spring.cache.type=none");
 
-        thrown.expect(NoSuchBeanDefinitionException.class);
-        thrown.expectMessage("No qualifying bean of type 'io.sixhours.memcached.cache.MemcachedCacheManager' available");
-
-        this.applicationContext.getBean(MemcachedCacheManager.class);
+        assertThatThrownBy(() ->
+                this.applicationContext.getBean(MemcachedCacheManager.class)
+        )
+                .isInstanceOf(NoSuchBeanDefinitionException.class)
+                .hasMessage("No qualifying bean of type 'io.sixhours.memcached.cache.MemcachedCacheManager' available");
     }
 
     @Test
@@ -102,10 +97,11 @@ public class MemcachedAutoConfigurationTest {
     public void whenCacheTypeIsSimpleThenMemcachedNotLoaded() {
         loadContext(CacheConfiguration.class, "spring.cache.type=simple");
 
-        thrown.expect(NoSuchBeanDefinitionException.class);
-        thrown.expectMessage("No qualifying bean of type 'io.sixhours.memcached.cache.MemcachedCacheManager' available");
-
-        this.applicationContext.getBean(MemcachedCacheManager.class);
+        assertThatThrownBy(() ->
+                this.applicationContext.getBean(MemcachedCacheManager.class)
+        )
+                .isInstanceOf(NoSuchBeanDefinitionException.class)
+                .hasMessage("No qualifying bean of type 'io.sixhours.memcached.cache.MemcachedCacheManager' available");
     }
 
     @Test
@@ -119,20 +115,22 @@ public class MemcachedAutoConfigurationTest {
 
     @Test
     public void whenCacheTypeIsInvalidThenContextNotLoaded() {
-        thrown.expect(BeanCreationException.class);
-        thrown.expectMessage(containsString("Field error in object 'spring.cache' on field 'type': rejected value [invalid-type]"));
-
-        loadContext(CacheConfiguration.class, "spring.cache.type=invalid-type");
+        assertThatThrownBy(() ->
+                loadContext(CacheConfiguration.class, "spring.cache.type=invalid-type")
+        )
+                .isInstanceOf(BeanCreationException.class)
+                .hasMessageContaining("Field error in object 'spring.cache' on field 'type': rejected value [invalid-type]");
     }
 
     @Test
     public void whenUsingCustomCacheManagerThenMemcachedNotLoaded() {
         loadContext(CacheWithCustomCacheManagerConfiguration.class);
 
-        thrown.expect(NoSuchBeanDefinitionException.class);
-        thrown.expectMessage("No qualifying bean of type 'io.sixhours.memcached.cache.MemcachedCacheManager' available");
-
-        this.applicationContext.getBean(MemcachedCacheManager.class);
+        assertThatThrownBy(() ->
+                this.applicationContext.getBean(MemcachedCacheManager.class)
+        )
+                .isInstanceOf(NoSuchBeanDefinitionException.class)
+                .hasMessage("No qualifying bean of type 'io.sixhours.memcached.cache.MemcachedCacheManager' available");
     }
 
     @Test
@@ -201,12 +199,13 @@ public class MemcachedAutoConfigurationTest {
 
     @Test
     public void whenDynamicModeAndMultipleServerListThenMemcachedNotLoaded() {
-        thrown.expect(BeanCreationException.class);
-        thrown.expectMessage("Only one configuration endpoint is valid with dynamic client mode.");
-        thrown.expectCause(isA(BeanInstantiationException.class));
-
-        loadContext(CacheConfiguration.class, "memcached.cache.servers=192.168.99.100:11212, 192.168.99.101:11211",
-                "memcached.cache.mode=dynamic");
+        assertThatThrownBy(() ->
+                loadContext(CacheConfiguration.class, "memcached.cache.servers=192.168.99.100:11212, 192.168.99.101:11211",
+                        "memcached.cache.mode=dynamic")
+        )
+                .isInstanceOf(BeanCreationException.class)
+                .hasCauseInstanceOf(BeanInstantiationException.class)
+                .hasMessageContaining("Only one configuration endpoint is valid with dynamic client mode.");
     }
 
     @Test
@@ -250,12 +249,13 @@ public class MemcachedAutoConfigurationTest {
 
     @Test
     public void whenStaticModeAndEmptyServerListThenMemcachedNotLoaded() {
-        thrown.expect(UnsatisfiedDependencyException.class);
-        thrown.expectMessage("Server list is empty");
-        thrown.expectCause(isA(BeanCreationException.class));
-
-        loadContext(CacheConfiguration.class, "memcached.cache.servers=",
-                "memcached.cache.mode=static");
+        assertThatThrownBy(() ->
+                loadContext(CacheConfiguration.class, "memcached.cache.servers=",
+                        "memcached.cache.mode=static")
+        )
+                .isInstanceOf(UnsatisfiedDependencyException.class)
+                .hasCauseInstanceOf(BeanCreationException.class)
+                .hasMessageContaining("Server list is empty");
     }
 
     @Test

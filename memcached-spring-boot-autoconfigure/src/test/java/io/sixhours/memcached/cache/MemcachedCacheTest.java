@@ -17,16 +17,14 @@
 package io.sixhours.memcached.cache;
 
 import net.spy.memcached.MemcachedClient;
+import org.junit.After;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.springframework.cache.Cache;
 import org.springframework.cache.support.NullValue;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.hasProperty;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.*;
 
 /**
@@ -41,6 +39,8 @@ public class MemcachedCacheTest {
     private static final String CACHE_NAME = "cache";
     private static final String CACHE_PREFIX = Default.PREFIX;
     private static final int CACHE_EXPIRATION = Default.EXPIRATION;
+
+    private static final String CACHED_KEY_REGEX = String.format("%s:.+:%s", CACHE_PREFIX, CACHED_OBJECT_KEY);
 
     private static final String NAMESPACE_KEY = Default.NAMESPACE;
     private static final String NAMESPACE_KEY_VALUE = String.valueOf(System.currentTimeMillis());
@@ -58,9 +58,6 @@ public class MemcachedCacheTest {
     private String memcachedKey;
     private String namespaceKey;
 
-    @Rule
-    public final ExpectedException thrown = ExpectedException.none();
-
     @Before
     public void setUp() {
         memcachedClient = mock(MemcachedClient.class);
@@ -68,6 +65,11 @@ public class MemcachedCacheTest {
 
         memcachedKey = String.format("%s:%s:%s:%s", CACHE_PREFIX, CACHE_NAME, NAMESPACE_KEY_VALUE, CACHED_OBJECT_KEY);
         namespaceKey = String.format("%s:%s:%s", CACHE_PREFIX, CACHE_NAME, NAMESPACE_KEY);
+    }
+
+    @After
+    public void tearDown() {
+        verifyNoMoreInteractions(memcachedClient);
     }
 
     @Test
@@ -80,7 +82,6 @@ public class MemcachedCacheTest {
 
         verify(memcachedClient).get(memcachedKey);
         verify(memcachedClient).get(namespaceKey);
-        verifyNoMoreInteractions(memcachedClient);
     }
 
     @Test
@@ -97,7 +98,6 @@ public class MemcachedCacheTest {
 
         verify(memcachedClient).get(memcachedKey);
         verify(memcachedClient).get(namespaceKey);
-        verifyNoMoreInteractions(memcachedClient);
     }
 
     @Test
@@ -114,7 +114,6 @@ public class MemcachedCacheTest {
 
         verify(memcachedClient).get(memcachedKey);
         verify(memcachedClient).get(namespaceKey);
-        verifyNoMoreInteractions(memcachedClient);
     }
 
     @Test
@@ -143,7 +142,6 @@ public class MemcachedCacheTest {
 
         verify(memcachedClient).get(namespaceKey);
         verify(memcachedClient).get(memcachedKey);
-        verifyNoMoreInteractions(memcachedClient);
     }
 
     @Test
@@ -158,7 +156,6 @@ public class MemcachedCacheTest {
 
         verify(memcachedClient).get(namespaceKey);
         verify(memcachedClient).get(memcachedKey);
-        verifyNoMoreInteractions(memcachedClient);
     }
 
     @Test
@@ -172,7 +169,6 @@ public class MemcachedCacheTest {
 
         verify(memcachedClient, times(2)).get(namespaceKey);
         verify(memcachedClient, times(2)).get(memcachedKey);
-        verifyNoMoreInteractions(memcachedClient);
     }
 
     @Test
@@ -186,7 +182,6 @@ public class MemcachedCacheTest {
 
         verify(memcachedClient, times(2)).get(namespaceKey);
         verify(memcachedClient, times(2)).get(memcachedKey);
-        verifyNoMoreInteractions(memcachedClient);
     }
 
     @Test
@@ -201,7 +196,7 @@ public class MemcachedCacheTest {
         verify(memcachedClient, times(3)).get(namespaceKey);
         verify(memcachedClient, times(2)).get(memcachedKey);
         verify(memcachedClient).set(memcachedKey, CACHE_EXPIRATION, valueLoaderNullValue);
-        verifyNoMoreInteractions(memcachedClient);
+        verify(memcachedClient).touch(namespaceKey, CACHE_EXPIRATION);
     }
 
     @Test
@@ -216,7 +211,7 @@ public class MemcachedCacheTest {
         verify(memcachedClient, times(3)).get(namespaceKey);
         verify(memcachedClient, times(2)).get(memcachedKey);
         verify(memcachedClient).set(memcachedKey, CACHE_EXPIRATION, valueLoaderValue);
-        verifyNoMoreInteractions(memcachedClient);
+        verify(memcachedClient).touch(namespaceKey, CACHE_EXPIRATION);
     }
 
     @Test
@@ -225,12 +220,16 @@ public class MemcachedCacheTest {
                 .thenReturn(NAMESPACE_KEY_VALUE)
                 .thenReturn(null);
 
-        thrown.expect(Cache.ValueRetrievalException.class);
-        thrown.expect(hasProperty("key", is(CACHED_OBJECT_KEY)));
+        assertThatThrownBy(() ->
+                memcachedCache.get(CACHED_OBJECT_KEY, () -> {
+                    throw new Exception("exception to be wrapped");
+                }))
+                .isInstanceOf(Cache.ValueRetrievalException.class)
+                .hasFieldOrPropertyWithValue("key", CACHED_OBJECT_KEY);
 
-        memcachedCache.get(CACHED_OBJECT_KEY, () -> {
-            throw new Exception("exception to be wrapped");
-        });
+        verify(memcachedClient, times(2)).get(namespaceKey);
+        verify(memcachedClient, times(2)).get(matches(CACHED_KEY_REGEX));
+        verify(memcachedClient).set(eq(namespaceKey), eq(CACHE_EXPIRATION), anyString());
     }
 
     @Test
@@ -241,7 +240,7 @@ public class MemcachedCacheTest {
 
         verify(memcachedClient).get(namespaceKey);
         verify(memcachedClient).set(memcachedKey, CACHE_EXPIRATION, NullValue.INSTANCE);
-        verifyNoMoreInteractions(memcachedClient);
+        verify(memcachedClient).touch(namespaceKey, CACHE_EXPIRATION);
     }
 
     @Test
@@ -253,7 +252,7 @@ public class MemcachedCacheTest {
         verify(memcachedClient).get(namespaceKey);
         verify(memcachedClient).set(eq(namespaceKey), eq(CACHE_EXPIRATION), anyString());
         verify(memcachedClient).set(endsWith(CACHED_OBJECT_KEY), eq(CACHE_EXPIRATION), eq(cachedValue));
-        verifyNoMoreInteractions(memcachedClient);
+        verify(memcachedClient).touch(namespaceKey, CACHE_EXPIRATION);
     }
 
     @Test
@@ -266,7 +265,6 @@ public class MemcachedCacheTest {
 
         verify(memcachedClient).get(namespaceKey);
         verify(memcachedClient).get(memcachedKey);
-        verifyNoMoreInteractions(memcachedClient);
     }
 
     @Test
@@ -283,7 +281,7 @@ public class MemcachedCacheTest {
         verify(memcachedClient, times(2)).get(namespaceKey);
         verify(memcachedClient).get(memcachedKey);
         verify(memcachedClient).set(eq(memcachedKey), anyInt(), eq(newCachedValue));
-        verifyNoMoreInteractions(memcachedClient);
+        verify(memcachedClient).touch(namespaceKey, CACHE_EXPIRATION);
     }
 
     @Test
@@ -292,6 +290,7 @@ public class MemcachedCacheTest {
 
         memcachedCache.evict(CACHED_OBJECT_KEY);
 
+        verify(memcachedClient).get(namespaceKey);
         verify(memcachedClient).delete(memcachedKey);
     }
 
