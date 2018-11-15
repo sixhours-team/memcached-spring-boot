@@ -31,10 +31,6 @@ public class Book implements Serializable {
         this.year = year;
     }
 
-    public Integer getId() {
-        return id;
-    }
-
     public String getTitle() {
         return title;
     }

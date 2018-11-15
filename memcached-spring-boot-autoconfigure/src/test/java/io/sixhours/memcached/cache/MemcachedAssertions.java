@@ -50,7 +50,6 @@ public final class MemcachedAssertions {
         assertThat(actualExpiration).isEqualTo(expiration);
 
         Map<String, Integer> actualExpirations = (Map<String, Integer>) ReflectionTestUtils.getField(memcachedCacheManager, "expirations");
-        System.out.println("ACTUAL EXPIRATIONS: " + actualExpirations);
         assertThat(actualExpirations).isEqualTo(expirations);
 
         String actualPrefix = (String) ReflectionTestUtils.getField(memcachedCacheManager, "prefix");

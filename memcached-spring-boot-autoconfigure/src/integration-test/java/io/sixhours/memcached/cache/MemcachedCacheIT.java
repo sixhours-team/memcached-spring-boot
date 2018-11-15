@@ -195,6 +195,49 @@ public class MemcachedCacheIT {
     }
 
     @Test
+    public void whenTimeoutAndNewValueAddedThenBookCacheNotExpired() throws InterruptedException {
+        Book kotlin = bookService.findByTitle("Kotlin");
+
+        assertThat(kotlin).isNotNull();
+        assertThat(bookService.getCounterFindByTitle()).isEqualTo(1);
+
+        bookService.findByTitle("Kotlin");
+        assertThat(bookService.getCounterFindByTitle()).isEqualTo(1);
+
+        Thread.sleep(1000 * 3L);
+
+        Book spring = bookService.findByTitle("Spring Boot in Action");
+        assertThat(bookService.getCounterFindByTitle()).isEqualTo(2);
+
+        bookService.findByTitle("Spring Boot in Action");
+        assertThat(bookService.getCounterFindByTitle()).isEqualTo(2);
+
+        Thread.sleep(1000 * 3L);
+
+        // first value expired
+        Object value = cacheManager.getCache("books").get("Kotlin");
+        assertThat(value).isNull();
+
+        // second value did not expire
+        value = cacheManager.getCache("books").get("Spring Boot in Action");
+        assertThat(value).isNotNull();
+
+        Book expectKotlin = bookService.findByTitle("Kotlin");
+        assertThat(expectKotlin).isEqualTo(kotlin);
+        assertThat(bookService.getCounterFindByTitle()).isEqualTo(3);
+
+        Book expectSpring = bookService.findByTitle("Spring Boot in Action");
+        assertThat(expectSpring).isEqualTo(spring);
+        assertThat(bookService.getCounterFindByTitle()).isEqualTo(3);
+
+        value = cacheManager.getCache("books").get("Kotlin");
+        assertThat(value).isNotNull();
+
+        value = cacheManager.getCache("books").get("Spring Boot in Action");
+        assertThat(value).isNotNull();
+    }
+
+    @Test
     public void whenUnlessNotMetThenBookWithTitleAndYearCached() {
         Book book = bookService.findByTitleAndYear("Programming Kotlin", 2017);
         Book cachedBook = bookService.findByTitleAndYear("Programming Kotlin", 2017);
