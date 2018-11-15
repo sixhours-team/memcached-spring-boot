@@ -1,5 +1,12 @@
 # Memcached Spring Boot Releases #
 
+### Version 1.3.1 ###
+
+* [Pull 47](https://github.com/sixhours-team/memcached-spring-boot/pull/47) Reset namespace key expiration on every new value addition to the same cache region
+* [Pull 45](https://github.com/sixhours-team/memcached-spring-boot/pull/45) Upgrade gradle wrapper to 4.10.2
+* [Pull 43](https://github.com/sixhours-team/memcached-spring-boot/pull/43) Upgrade to Gradle 4.7 
+* [Pull 42](https://github.com/sixhours-team/memcached-spring-boot/pull/42) Fix SonarCloud status display in README.md 
+
 ### Version 1.3.0 ###
 
 * [Pull 41](https://github.com/sixhours-team/memcached-spring-boot/pull/41) Expiration per cache name
