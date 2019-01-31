@@ -9,7 +9,7 @@ artifacts {
 }
 
 dependencies {
-    compile('org.springframework.boot:spring-boot-autoconfigure')
+    implementation('org.springframework.boot:spring-boot-autoconfigure')
 
     annotationProcessor('org.springframework.boot:spring-boot-configuration-processor')
 
@@ -17,8 +17,8 @@ dependencies {
     optional('org.springframework.cloud:spring-cloud-context')
     optional('com.amazonaws:elasticache-java-cluster-client')
 
-    testCompile('org.springframework.boot:spring-boot-starter-test')
-    testCompile('commons-logging:commons-logging')
+    testImplementation('org.springframework.boot:spring-boot-starter-test')
+    testImplementation('commons-logging:commons-logging')
 
     integrationTestCompile('org.testcontainers:testcontainers')
 }

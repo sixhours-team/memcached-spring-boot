@@ -6,6 +6,6 @@ artifacts {
 }
 
 dependencies {
-    compile project(':memcached-spring-boot-autoconfigure')
-    compile('com.amazonaws:elasticache-java-cluster-client')
+    implementation project(':memcached-spring-boot-autoconfigure')
+    implementation('com.amazonaws:elasticache-java-cluster-client')
 }

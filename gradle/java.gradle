@@ -30,10 +30,10 @@ idea {
 
 configurations {
     integrationTestCompile {
-        extendsFrom testCompile, optional, provided
+        extendsFrom testImplementation, optional, provided
     }
     integrationTestRuntime {
-        extendsFrom integrationTestCompile, testRuntime
+        extendsFrom integrationTestCompile, testRuntimeOnly
     }
 }
 

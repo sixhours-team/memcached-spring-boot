@@ -1,9 +1,9 @@
 buildscript {
     ext {
-        depedencyManagementVersion = '1.0.4.RELEASE'
+        depedencyManagementVersion = '1.0.6.RELEASE'
         propdepsVersion = '0.0.9.RELEASE'
         gradleBintrayVersion = '1.7.3'
-        sonarqubeGradleVersion = '2.6.1'
+        sonarqubeGradleVersion = '2.7'
     }
     repositories {
         maven { url 'https://repo.spring.io/plugins-release' }
@@ -66,11 +66,11 @@ subprojects {
     }
 
     ext {
-        springBootVersion = '1.5.10.RELEASE'
+        springBootVersion = '1.5.19.RELEASE'
         springCloudVersion = 'Edgware.SR2'
         elasticacheClientVersion = '1.1.1'
         commonsLoggingVersion = '1.2'
-        testcontainersVersion = '1.6.0'
+        testcontainersVersion = '1.10.6'
     }
 
     dependencyManagement {
