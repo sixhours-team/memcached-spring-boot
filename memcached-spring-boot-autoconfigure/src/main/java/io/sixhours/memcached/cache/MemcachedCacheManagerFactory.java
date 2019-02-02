@@ -55,6 +55,7 @@ public class MemcachedCacheManagerFactory {
 
         final ConnectionFactoryBuilder connectionFactoryBuilder = new ConnectionFactoryBuilder()
                 .setClientMode(mode)
+                .setOpTimeout(properties.getOperationTimeout())
                 .setProtocol(protocol.value());
 
         return new MemcachedClient(connectionFactoryBuilder.build(), servers);

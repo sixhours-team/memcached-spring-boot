@@ -75,6 +75,11 @@ public class MemcachedCacheProperties {
      */
     private Protocol protocol = Default.PROTOCOL;
 
+    /**
+     * Memcached client operation timeout in milliseconds. The default is 2500 milliseconds.
+     */
+    private Long operationTimeout = Default.OPERATION_TIMEOUT;
+
     public List<InetSocketAddress> getServers() {
         return servers;
     }
@@ -161,6 +166,17 @@ public class MemcachedCacheProperties {
 
     public void setProtocol(Protocol protocol) {
         this.protocol = protocol;
+    }
+
+    public Long getOperationTimeout() {
+        return operationTimeout;
+    }
+
+    public void setOperationTimeout(Long operationTimeout) {
+        if (operationTimeout <= 0) {
+            throw new IllegalArgumentException("Operation timeout must be greater then zero");
+        }
+        this.operationTimeout = operationTimeout;
     }
 
     public enum Protocol {

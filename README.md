@@ -102,6 +102,7 @@ memcached.cache.expirations: # Cache expirations in seconds (default "60"). To s
 memcached.cache.prefix: # Cache key prefix (default "memcached:spring-boot")
 memcached.cache.namespace: # Cache eviction namespace key name (default "namespace")
 memcached.cache.protocol: # Memcached client protocol. Supports "text" and "binary" protocols (default is "text" protocol)
+memcached.cache.operation-timeout: # Memcached client operation timeout in milliseconds (default "2500").
 ```
 
 All of the values have sensible defaults and are bound to [MemcachedCacheProperties](https://github.com/sixhours-team/memcached-spring-boot/blob/master/memcached-spring-boot-autoconfigure/src/main/java/io/sixhours/memcached/cache/MemcachedCacheProperties.java) class.

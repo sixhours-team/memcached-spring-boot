@@ -87,7 +87,7 @@ public class RefreshableConfigurationTest {
         assertThat(prefix).isNotNull();
         assertThat(prefix).isEqualTo("test-prefix");
         assertMemcachedClient((MemcachedClient) afterRefresh,
-                Default.CLIENT_MODE, MemcachedCacheProperties.Protocol.BINARY, Default.SERVERS.get(0));
+                Default.CLIENT_MODE, MemcachedCacheProperties.Protocol.BINARY, Default.OPERATION_TIMEOUT, Default.SERVERS.get(0));
     }
 
     @Configuration
