@@ -65,7 +65,7 @@ public final class MemcachedAssertions {
      * @param memcachedClient {@link MemcachedClient}
      */
     public static void assertMemcachedClient(MemcachedClient memcachedClient) {
-        assertMemcachedClient(memcachedClient, Default.CLIENT_MODE, Default.PROTOCOL, Default.SERVERS.get(0));
+        assertMemcachedClient(memcachedClient, Default.CLIENT_MODE, Default.PROTOCOL, Default.OPERATION_TIMEOUT, Default.SERVERS.get(0));
     }
 
     /**
@@ -76,7 +76,7 @@ public final class MemcachedAssertions {
      * @param protocol        Expected protocol
      * @param servers         Expected server list
      */
-    public static void assertMemcachedClient(MemcachedClient memcachedClient, ClientMode clientMode, MemcachedCacheProperties.Protocol protocol, InetSocketAddress... servers) {
+    public static void assertMemcachedClient(MemcachedClient memcachedClient, ClientMode clientMode, MemcachedCacheProperties.Protocol protocol, long operationTimeout, InetSocketAddress... servers) {
         List<NodeEndPoint> nodeEndPoints = (List<NodeEndPoint>) memcachedClient.getAllNodeEndPoints();
 
         assertThat(nodeEndPoints)
@@ -107,5 +107,9 @@ public final class MemcachedAssertions {
         assertThat(cf.getOperationFactory())
                 .as("Memcached node endpoint protocol is incorrect")
                 .isInstanceOf(protocol == MemcachedCacheProperties.Protocol.TEXT ? AsciiOperationFactory.class : BinaryOperationFactory.class);
+
+        assertThat(cf.getOperationTimeout())
+                .as("Memcached operation timeout is incorrect")
+                .isEqualTo(operationTimeout);
     }
 }

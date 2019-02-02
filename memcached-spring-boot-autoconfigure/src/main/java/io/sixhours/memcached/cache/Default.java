@@ -44,6 +44,8 @@ public final class Default {
 
     public static final Protocol PROTOCOL = Protocol.TEXT;
 
+    public static final long OPERATION_TIMEOUT = 2500L;
+
     private Default() {
         throw new AssertionError("Suppress default constructor");
     }
