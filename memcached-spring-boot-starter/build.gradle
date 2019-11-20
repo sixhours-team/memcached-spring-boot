@@ -1,10 +1,6 @@
 ext.projectName = 'Memcached Spring Boot Starter'
 ext.projectDesc = 'Starter for the Memcached Spring Boot Cache'
 
-artifacts {
-    archives sourcesJar
-}
-
 dependencies {
     implementation project(':memcached-spring-boot-autoconfigure')
     implementation 'com.amazonaws:elasticache-java-cluster-client'
