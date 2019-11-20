@@ -13,10 +13,10 @@ dependencies {
 
     annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
 
-    optional 'org.springframework.boot:spring-boot-actuator'
-    optional 'io.micrometer:micrometer-core'
-    optional 'org.springframework.cloud:spring-cloud-context'
-    optional 'com.amazonaws:elasticache-java-cluster-client'
+    compileOnly 'org.springframework.boot:spring-boot-actuator'
+    compileOnly 'org.springframework.cloud:spring-cloud-context'
+    compileOnly 'io.micrometer:micrometer-core'
+    compileOnly 'com.amazonaws:elasticache-java-cluster-client'
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'commons-logging:commons-logging'
