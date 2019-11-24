@@ -16,22 +16,15 @@
 
 package io.sixhours.memcached.cache;
 
-import org.springframework.boot.actuate.cache.CacheStatistics;
-import org.springframework.boot.actuate.cache.CacheStatisticsProvider;
-import org.springframework.boot.actuate.cache.DefaultCacheStatistics;
-import org.springframework.cache.CacheManager;
+import org.springframework.boot.actuate.metrics.cache.CacheMeterBinderProvider;
 
 /**
- * Memcached {@link CacheStatisticsProvider}.
+ * Memcached {@link CacheMeterBinderProvider}.
  */
-public class MemcachedCacheStatisticsProvider implements CacheStatisticsProvider<MemcachedCache> {
+public class MemcachedCacheStatisticsProvider implements CacheMeterBinderProvider<MemcachedCache> {
 
     @Override
-    public CacheStatistics getCacheStatistics(CacheManager cacheManager, MemcachedCache memcachedCache) {
-        DefaultCacheStatistics statistics = new DefaultCacheStatistics();
-
-        statistics.setGetCacheCounts(memcachedCache.hits(), memcachedCache.misses());
-
-        return statistics;
+    public io.micrometer.core.instrument.binder.MeterBinder getMeterBinder(MemcachedCache cache, Iterable<io.micrometer.core.instrument.Tag> tags) {
+        return new MemcachedMetrics(cache, cache.getName(), tags);
     }
 }

@@ -23,7 +23,7 @@ import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.boot.actuate.cache.CacheStatistics;
 import org.springframework.boot.actuate.cache.CacheStatisticsProvider;
 import org.springframework.boot.autoconfigure.cache.CacheAutoConfiguration;
-import org.springframework.boot.test.util.EnvironmentTestUtils;
+import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
@@ -56,7 +56,7 @@ public class MemcachedCacheStatisticsAutoConfigurationTest {
         loadContext(EmptyConfiguration.class);
 
         assertThatThrownBy(() ->
-                this.context.getBean("memcachedCacheStatisticsProvider", CacheStatisticsProvider.class)
+                this.context.getBean("memcachedCacheStatisticsProvider", MemcachedCacheStatisticsProvider.class)
         )
                 .isInstanceOf(NoSuchBeanDefinitionException.class)
                 .hasMessage("No bean named 'memcachedCacheStatisticsProvider' available");
@@ -67,7 +67,7 @@ public class MemcachedCacheStatisticsAutoConfigurationTest {
         loadContext(CacheConfiguration.class, "spring.cache.type=none");
 
         assertThatThrownBy(() ->
-                this.context.getBean("memcachedCacheStatisticsProvider", CacheStatisticsProvider.class)
+                this.context.getBean("memcachedCacheStatisticsProvider", MemcachedCacheStatisticsProvider.class)
         )
                 .isInstanceOf(NoSuchBeanDefinitionException.class)
                 .hasMessage("No bean named 'memcachedCacheStatisticsProvider' available");
@@ -77,7 +77,7 @@ public class MemcachedCacheStatisticsAutoConfigurationTest {
     public void whenNoCustomCacheManagerThenCacheStatisticsLoaded() {
         loadContext(MemcachedAutoConfigurationTest.CacheConfiguration.class);
 
-        CacheStatisticsProvider provider = this.context.getBean("memcachedCacheStatisticsProvider", CacheStatisticsProvider.class);
+        MemcachedCacheStatisticsProvider provider = this.context.getBean("memcachedCacheStatisticsProvider", MemcachedCacheStatisticsProvider.class);
 
         assertThat(provider).isNotNull();
     }
@@ -86,8 +86,8 @@ public class MemcachedCacheStatisticsAutoConfigurationTest {
     public void whenMemcachedCacheManagerBeanThenCacheStatisticsLoaded() {
         loadContext(CacheWithMemcachedCacheManagerConfiguration.class);
 
-        CacheStatisticsProvider provider = this.context.getBean(
-                "memcachedCacheStatisticsProvider", CacheStatisticsProvider.class);
+        MemcachedCacheStatisticsProvider provider = this.context.getBean(
+                "memcachedCacheStatisticsProvider", MemcachedCacheStatisticsProvider.class);
 
         assertThat(provider).isNotNull();
 
@@ -124,7 +124,7 @@ public class MemcachedCacheStatisticsAutoConfigurationTest {
     }
 
     private void loadContext(Class<?> configuration, String... environment) {
-        EnvironmentTestUtils.addEnvironment(context, environment);
+        TestPropertyValues.of(environment).applyTo(context);
 
         context.register(configuration);
         context.register(MemcachedCacheAutoConfiguration.class);

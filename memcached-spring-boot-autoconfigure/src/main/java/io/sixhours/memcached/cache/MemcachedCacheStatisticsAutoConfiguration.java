@@ -16,7 +16,7 @@
 
 package io.sixhours.memcached.cache;
 
-import org.springframework.boot.actuate.cache.CacheStatisticsProvider;
+import org.springframework.boot.actuate.metrics.cache.CacheMeterBinderProvider;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.cache.CacheAutoConfiguration;
@@ -26,14 +26,14 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * {@link EnableAutoConfiguration Auto-configuration} for the Memcached {@link CacheStatisticsProvider} bean.
+ * {@link EnableAutoConfiguration Auto-configuration} for the Memcached {@link CacheMeterBinderProvider} bean.
  *
  * @author Igor Bolic
  */
 @Configuration
 @AutoConfigureAfter(CacheAutoConfiguration.class)
 @ConditionalOnBean(MemcachedCacheManager.class)
-@ConditionalOnClass(CacheStatisticsProvider.class)
+@ConditionalOnClass(CacheMeterBinderProvider.class)
 public class MemcachedCacheStatisticsAutoConfiguration {
 
     @Bean
