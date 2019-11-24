@@ -26,7 +26,7 @@ import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.UnsatisfiedDependencyException;
 import org.springframework.boot.autoconfigure.cache.CacheAutoConfiguration;
-import org.springframework.boot.test.util.EnvironmentTestUtils;
+import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cache.concurrent.ConcurrentMapCacheManager;
@@ -300,7 +300,7 @@ public class MemcachedAutoConfigurationTest {
     }
 
     private void loadContext(Class<?> configuration, String... environment) {
-        EnvironmentTestUtils.addEnvironment(applicationContext, environment);
+        TestPropertyValues.of(environment).applyTo(applicationContext);
 
         applicationContext.register(configuration);
         applicationContext.register(MemcachedCacheAutoConfiguration.class);

@@ -18,7 +18,7 @@ package io.sixhours.memcached.cache;
 
 import org.junit.After;
 import org.junit.Test;
-import org.springframework.boot.test.util.EnvironmentTestUtils;
+import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -44,7 +44,7 @@ public class ConditionalOnMissingSpringCacheTypeTest {
 
     @Test
     public void whenSpringCacheTypeIsEmptyThenOutcomeShouldNotMatch() {
-        EnvironmentTestUtils.addEnvironment(this.context, "spring.cache.type=");
+        TestPropertyValues.of("spring.cache.type=").applyTo(context);
         this.context.register(OnMissingSpringCacheTypeConfig.class);
         this.context.refresh();
 
@@ -53,7 +53,7 @@ public class ConditionalOnMissingSpringCacheTypeTest {
 
     @Test
     public void whenSpringCacheTypeIsPresentThenOutcomeShouldNotMatch() {
-        EnvironmentTestUtils.addEnvironment(this.context, "spring.cache.type=none");
+        TestPropertyValues.of("spring.cache.type=none").applyTo(this.context);
         this.context.register(OnMissingSpringCacheTypeConfig.class);
         this.context.refresh();
 
