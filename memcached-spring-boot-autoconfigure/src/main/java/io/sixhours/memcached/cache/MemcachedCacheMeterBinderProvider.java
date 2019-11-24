@@ -21,10 +21,10 @@ import org.springframework.boot.actuate.metrics.cache.CacheMeterBinderProvider;
 /**
  * Memcached {@link CacheMeterBinderProvider}.
  */
-public class MemcachedCacheStatisticsProvider implements CacheMeterBinderProvider<MemcachedCache> {
+public class MemcachedCacheMeterBinderProvider implements CacheMeterBinderProvider<MemcachedCache> {
 
     @Override
     public io.micrometer.core.instrument.binder.MeterBinder getMeterBinder(MemcachedCache cache, Iterable<io.micrometer.core.instrument.Tag> tags) {
-        return new MemcachedMetrics(cache, cache.getName(), tags);
+        return new MemcachedCacheMeterBinder(cache, cache.getName(), tags);
     }
 }

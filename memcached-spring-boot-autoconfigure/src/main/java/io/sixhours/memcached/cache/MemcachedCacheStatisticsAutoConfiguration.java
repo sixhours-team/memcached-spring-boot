@@ -37,7 +37,7 @@ import org.springframework.context.annotation.Configuration;
 public class MemcachedCacheStatisticsAutoConfiguration {
 
     @Bean
-    public MemcachedCacheStatisticsProvider memcachedCacheStatisticsProvider() {
-        return new MemcachedCacheStatisticsProvider();
+    public MemcachedCacheMeterBinderProvider memcachedCacheMeterBinderProvider() {
+        return new MemcachedCacheMeterBinderProvider();
     }
 }

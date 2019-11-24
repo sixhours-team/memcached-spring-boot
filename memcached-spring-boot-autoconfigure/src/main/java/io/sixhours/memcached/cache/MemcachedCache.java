@@ -40,6 +40,8 @@ public class MemcachedCache extends AbstractValueAdaptingCache {
 
     private final AtomicLong hits = new AtomicLong();
     private final AtomicLong misses = new AtomicLong();
+    private final AtomicLong puts = new AtomicLong();
+    private final AtomicLong evictions = new AtomicLong();
 
     /**
      * Create an {@code MemcachedCache} with the given settings.
@@ -107,6 +109,7 @@ public class MemcachedCache extends AbstractValueAdaptingCache {
     public void put(Object key, Object value) {
         this.memcachedClient.set(memcachedKey(key), this.memcacheCacheMetadata.expiration(), toStoreValue(value));
         this.memcachedClient.touch(this.memcacheCacheMetadata.namespaceKey(), this.memcacheCacheMetadata.expiration());
+        this.puts.incrementAndGet();
     }
 
     @Override
@@ -123,6 +126,7 @@ public class MemcachedCache extends AbstractValueAdaptingCache {
     @Override
     public void evict(Object key) {
         this.memcachedClient.delete(memcachedKey(key));
+        this.evictions.incrementAndGet();
     }
 
     @Override
@@ -136,6 +140,14 @@ public class MemcachedCache extends AbstractValueAdaptingCache {
 
     public long misses() {
         return misses.get();
+    }
+
+    public long puts() {
+        return puts.get();
+    }
+
+    public long evictions() {
+        return evictions.get();
     }
 
     /**

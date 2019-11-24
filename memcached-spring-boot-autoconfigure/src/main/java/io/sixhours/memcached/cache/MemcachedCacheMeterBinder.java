@@ -4,10 +4,13 @@ import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tag;
 import io.micrometer.core.instrument.binder.cache.CacheMeterBinder;
 
-public class MemcachedMetrics extends CacheMeterBinder {
+import java.util.Map;
+import java.util.function.ToLongFunction;
+
+public class MemcachedCacheMeterBinder extends CacheMeterBinder {
   private final MemcachedCache memcachedCache;
 
-  public MemcachedMetrics(MemcachedCache cache, String cacheName, Iterable<Tag> tags) {
+  public MemcachedCacheMeterBinder(MemcachedCache cache, String cacheName, Iterable<Tag> tags) {
     super(cache, cacheName, tags);
     this.memcachedCache = cache;
   }
@@ -29,16 +32,16 @@ public class MemcachedMetrics extends CacheMeterBinder {
 
   @Override
   protected Long evictionCount() {
-    return null;
+    return memcachedCache.evictions();
   }
 
   @Override
   protected long putCount() {
-    return 0;
+    return memcachedCache.puts();
   }
 
   @Override
   protected void bindImplementationSpecificMetrics(MeterRegistry registry) {
-
+    registry.gauge("available_servers_count", memcachedCache.getNativeCache().getAvailableServers().size());
   }
 }

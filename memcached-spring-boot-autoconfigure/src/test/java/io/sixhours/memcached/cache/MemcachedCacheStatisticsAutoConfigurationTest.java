@@ -16,12 +16,14 @@
 
 package io.sixhours.memcached.cache;
 
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.MockClock;
+import io.micrometer.core.instrument.simple.SimpleConfig;
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import net.spy.memcached.MemcachedClient;
 import org.junit.After;
 import org.junit.Test;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
-import org.springframework.boot.actuate.cache.CacheStatistics;
-import org.springframework.boot.actuate.cache.CacheStatisticsProvider;
 import org.springframework.boot.autoconfigure.cache.CacheAutoConfiguration;
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.cache.Cache;
@@ -56,7 +58,7 @@ public class MemcachedCacheStatisticsAutoConfigurationTest {
         loadContext(EmptyConfiguration.class);
 
         assertThatThrownBy(() ->
-                this.context.getBean("memcachedCacheStatisticsProvider", MemcachedCacheStatisticsProvider.class)
+                this.context.getBean("memcachedCacheStatisticsProvider", MemcachedCacheMeterBinderProvider.class)
         )
                 .isInstanceOf(NoSuchBeanDefinitionException.class)
                 .hasMessage("No bean named 'memcachedCacheStatisticsProvider' available");
@@ -67,7 +69,7 @@ public class MemcachedCacheStatisticsAutoConfigurationTest {
         loadContext(CacheConfiguration.class, "spring.cache.type=none");
 
         assertThatThrownBy(() ->
-                this.context.getBean("memcachedCacheStatisticsProvider", MemcachedCacheStatisticsProvider.class)
+                this.context.getBean("memcachedCacheStatisticsProvider", MemcachedCacheMeterBinderProvider.class)
         )
                 .isInstanceOf(NoSuchBeanDefinitionException.class)
                 .hasMessage("No bean named 'memcachedCacheStatisticsProvider' available");
@@ -77,7 +79,7 @@ public class MemcachedCacheStatisticsAutoConfigurationTest {
     public void whenNoCustomCacheManagerThenCacheStatisticsLoaded() {
         loadContext(MemcachedAutoConfigurationTest.CacheConfiguration.class);
 
-        MemcachedCacheStatisticsProvider provider = this.context.getBean("memcachedCacheStatisticsProvider", MemcachedCacheStatisticsProvider.class);
+        MemcachedCacheMeterBinderProvider provider = this.context.getBean("memcachedCacheMeterBinderProvider", MemcachedCacheMeterBinderProvider.class);
 
         assertThat(provider).isNotNull();
     }
@@ -86,21 +88,22 @@ public class MemcachedCacheStatisticsAutoConfigurationTest {
     public void whenMemcachedCacheManagerBeanThenCacheStatisticsLoaded() {
         loadContext(CacheWithMemcachedCacheManagerConfiguration.class);
 
-        MemcachedCacheStatisticsProvider provider = this.context.getBean(
-                "memcachedCacheStatisticsProvider", MemcachedCacheStatisticsProvider.class);
+        MemcachedCacheMeterBinderProvider provider = this.context.getBean(
+                "memcachedCacheMeterBinderProvider", MemcachedCacheMeterBinderProvider.class);
 
         assertThat(provider).isNotNull();
 
         CacheManager cacheManager = this.context.getBean(CacheManager.class);
-        Cache books = cacheManager.getCache("books");
+        MemcachedCache books = (MemcachedCache) cacheManager.getCache("books");
 
-        CacheStatistics cacheStatistics = provider.getCacheStatistics(cacheManager, books);
+        MeterRegistry registry = new SimpleMeterRegistry(SimpleConfig.DEFAULT, new MockClock());
+        MemcachedCacheMeterBinder memcachedCacheMeterBinder = new MemcachedCacheMeterBinder(books, "books", null);
+        memcachedCacheMeterBinder.bindImplementationSpecificMetrics(registry);
 
-        assertCacheStatistics(cacheStatistics, null, null);
+        assertCacheStatistics(registry, null, null);
         getCacheKeyValues(books, "a", "b", "b", "c", "d", "c", "a", "a", "a", "d");
 
-        cacheStatistics = provider.getCacheStatistics(cacheManager, books);
-        assertCacheStatistics(cacheStatistics, 0.6d, 0.4d);
+        assertCacheStatistics(registry, 0.6d, 0.4d);
     }
 
     private void getCacheKeyValues(Cache cache, String... keys) {
@@ -109,10 +112,9 @@ public class MemcachedCacheStatisticsAutoConfigurationTest {
         }
     }
 
-    private void assertCacheStatistics(CacheStatistics cacheStatistics, Double hitRatio, Double missRatio) {
-        assertThat(cacheStatistics).isNotNull();
-        assertRatio(hitRatio, cacheStatistics.getHitRatio());
-        assertRatio(missRatio, cacheStatistics.getMissRatio());
+    private void assertCacheStatistics(MeterRegistry meterRegistry, Double hitRatio, Double missRatio) {
+        assertRatio(hitRatio, meterRegistry.get("hit_ratio").gauge().value());
+        assertRatio(missRatio, meterRegistry.get("miss_ratio").gauge().value());
     }
 
     private static void assertRatio(Double actual, Double expected) {
