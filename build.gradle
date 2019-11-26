@@ -7,6 +7,14 @@ plugins {
     id 'java'
 }
 
+ext {
+    springBootVersion = '2.2.1.RELEASE'
+    springCloudVersion = 'Hoxton.RC2'
+    elasticacheClientVersion = '1.1.1'
+    commonsLoggingVersion = '1.2'
+    testcontainersVersion = '1.12.3'
+}
+
 ext.JAVA_GRADLE = "$rootDir/gradle/java.gradle"
 ext.PUBLISH_GRADLE = "$rootDir/gradle/publish.gradle"
 ext.RELEASE_GRADLE = "$rootDir/gradle/release.gradle"
@@ -44,14 +52,6 @@ subprojects {
 
     repositories {
         jcenter()
-    }
-
-    ext {
-        springBootVersion = '2.2.1.RELEASE'
-        springCloudVersion = 'Hoxton.RELEASE'
-        elasticacheClientVersion = '1.1.1'
-        commonsLoggingVersion = '1.2'
-        testcontainersVersion = '1.12.3'
     }
 
     dependencyManagement {
