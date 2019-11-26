@@ -53,6 +53,7 @@ public class MemcachedCacheMetrics extends CacheMeterBinder {
 
     @Override
     protected void bindImplementationSpecificMetrics(MeterRegistry registry) {
-        // Nothing specific
+        registry.gauge("all_node_endpoints_count", cache.getNativeCache().getAllNodeEndPoints().size());
+        registry.gauge("available_servers_count", cache.getNativeCache().getAvailableServers().size());
     }
 }
