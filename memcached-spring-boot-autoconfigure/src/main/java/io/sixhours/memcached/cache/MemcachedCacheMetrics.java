@@ -43,8 +43,7 @@ public class MemcachedCacheMetrics extends CacheMeterBinder {
 
     @Override
     protected Long evictionCount() {
-        // MemcachedCache doesn't support evictions
-        return null;
+        return cache.evictions();
     }
 
     @Override
