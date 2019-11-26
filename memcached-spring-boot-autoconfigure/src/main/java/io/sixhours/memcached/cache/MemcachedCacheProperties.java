@@ -22,9 +22,13 @@ import net.spy.memcached.ConnectionFactoryBuilder;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
 import org.springframework.util.StringUtils;
+import org.springframework.validation.annotation.Validated;
 
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotEmpty;
 import java.net.InetSocketAddress;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,12 +39,14 @@ import java.util.stream.Stream;
  *
  * @author Igor Bolic
  */
-@ConfigurationProperties(prefix = "memcached.cache", ignoreInvalidFields = true)
+@Validated
+@ConfigurationProperties(prefix = "memcached.cache")
 public class MemcachedCacheProperties {
 
     /**
      * Comma-separated list of hostname:port for memcached servers. The default hostname:port is 'localhost:11211'.
      */
+    @NotEmpty(message = "Server list is empty")
     private List<InetSocketAddress> servers = Default.SERVERS;
 
     /**
@@ -62,14 +68,6 @@ public class MemcachedCacheProperties {
     private String prefix = Default.PREFIX;
 
     /**
-     * Namespace key value used for invalidation of cached values. The default value is 'namespace'.
-     *
-     * @deprecated As of release {@code 1.1.0}. To be removed in next major release.
-     */
-    @Deprecated
-    private String namespace = Default.NAMESPACE;
-
-    /**
      * Memcached client protocol. Supports two main protocols: the classic text (ascii), and the newer binary protocol.
      * The default is 'text' protocol.
      */
@@ -78,6 +76,7 @@ public class MemcachedCacheProperties {
     /**
      * Memcached client operation timeout in milliseconds. The default is 2500 milliseconds.
      */
+    @Min(value = 1, message = "Operation timeout must be greater then zero")
     private Long operationTimeout = Default.OPERATION_TIMEOUT;
 
     public List<InetSocketAddress> getServers() {
@@ -90,10 +89,11 @@ public class MemcachedCacheProperties {
      * @param value Comma-separated list
      */
     public void setServers(String value) {
-        if (StringUtils.isEmpty(value)) {
-            throw new IllegalArgumentException("Server list is empty");
+        if (value.isEmpty()) {
+            this.servers = Collections.emptyList();
+        } else {
+            this.servers = AddrUtil.getAddresses(Arrays.asList(value.split(",")));
         }
-        this.servers = AddrUtil.getAddresses(Arrays.asList(value.split(",")));
     }
 
     public ClientMode getMode() {
@@ -151,15 +151,6 @@ public class MemcachedCacheProperties {
         this.prefix = prefix;
     }
 
-    @DeprecatedConfigurationProperty(reason = "As of release {@code 1.1.0}. To be removed in next major release. This " +
-            "value is expected to be retained only as a private value for the cache namespace. The namespace value used is 'namespace'")
-    public String getNamespace() {
-        if (namespace != null) {
-            namespace = Default.NAMESPACE;
-        }
-        return namespace;
-    }
-
     public Protocol getProtocol() {
         return protocol;
     }
@@ -173,9 +164,6 @@ public class MemcachedCacheProperties {
     }
 
     public void setOperationTimeout(Long operationTimeout) {
-        if (operationTimeout <= 0) {
-            throw new IllegalArgumentException("Operation timeout must be greater then zero");
-        }
         this.operationTimeout = operationTimeout;
     }
 

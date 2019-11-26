@@ -1,9 +1,9 @@
 buildscript {
     ext {
-        depedencyManagementVersion = '1.0.6.RELEASE'
-        propdepsVersion = '0.0.9.RELEASE'
-        gradleBintrayVersion = '1.7.3'
-        sonarqubeGradleVersion = '2.7'
+        depedencyManagementVersion = '1.0.8.RELEASE'
+        propdepsVersion = '0.0.10.RELEASE'
+        gradleBintrayVersion = '1.8.0'
+        sonarqubeGradleVersion = '2.8'
     }
     repositories {
         maven { url 'https://repo.spring.io/plugins-release' }
@@ -63,14 +63,16 @@ subprojects {
 
     repositories {
         jcenter()
+        // Spring milestone repo for spring-cloud release candidates
+        maven { url 'https://repo.spring.io/milestone/' }
     }
 
     ext {
-        springBootVersion = '1.5.19.RELEASE'
-        springCloudVersion = 'Edgware.SR2'
+        springBootVersion = '2.2.1.RELEASE'
+        springCloudVersion = 'Hoxton.RC2'
         elasticacheClientVersion = '1.1.1'
         commonsLoggingVersion = '1.2'
-        testcontainersVersion = '1.10.6'
+        testcontainersVersion = '1.12.3'
     }
 
     dependencyManagement {

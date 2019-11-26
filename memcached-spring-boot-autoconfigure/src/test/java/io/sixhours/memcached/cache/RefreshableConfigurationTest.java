@@ -22,7 +22,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.util.EnvironmentTestUtils;
+import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cloud.context.refresh.ContextRefresher;
@@ -72,9 +72,10 @@ public class RefreshableConfigurationTest {
         Object beforeRefresh = ReflectionTestUtils.getField(cacheManager, "memcachedClient");
         assertMemcachedClient((MemcachedClient) beforeRefresh);
 
-        EnvironmentTestUtils.addEnvironment(environment,
-                "memcached.cache.prefix:test-prefix",
-                "memcached.cache.protocol:binary");
+        TestPropertyValues.of(
+            "memcached.cache.prefix:test-prefix",
+            "memcached.cache.protocol:binary"
+        ).applyTo(environment);
 
         refresher.refresh();
 

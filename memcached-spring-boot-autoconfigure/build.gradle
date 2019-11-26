@@ -10,10 +10,12 @@ artifacts {
 
 dependencies {
     implementation('org.springframework.boot:spring-boot-autoconfigure')
+    implementation('org.hibernate.validator:hibernate-validator')
 
     annotationProcessor('org.springframework.boot:spring-boot-configuration-processor')
 
     optional('org.springframework.boot:spring-boot-actuator')
+    optional('io.micrometer:micrometer-core')
     optional('org.springframework.cloud:spring-cloud-context')
     optional('com.amazonaws:elasticache-java-cluster-client')
 
