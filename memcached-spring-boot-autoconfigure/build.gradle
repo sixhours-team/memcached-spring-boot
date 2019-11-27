@@ -10,7 +10,6 @@ artifacts {
 
 dependencies {
     implementation 'org.springframework.boot:spring-boot-autoconfigure'
-    implementation 'org.hibernate.validator:hibernate-validator'
 
     annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
 

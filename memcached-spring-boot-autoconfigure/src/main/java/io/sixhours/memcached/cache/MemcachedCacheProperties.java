@@ -16,37 +16,32 @@
 
 package io.sixhours.memcached.cache;
 
-import net.spy.memcached.AddrUtil;
-import net.spy.memcached.ClientMode;
-import net.spy.memcached.ConnectionFactoryBuilder;
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
-import org.springframework.util.StringUtils;
-import org.springframework.validation.annotation.Validated;
-
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotEmpty;
 import java.net.InetSocketAddress;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
+
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
+import org.springframework.util.StringUtils;
+
+import net.spy.memcached.AddrUtil;
+import net.spy.memcached.ClientMode;
+import net.spy.memcached.ConnectionFactoryBuilder;
 
 /**
  * Configuration properties for Memcached cache.
  *
  * @author Igor Bolic
  */
-@Validated
 @ConfigurationProperties(prefix = "memcached.cache")
 public class MemcachedCacheProperties {
 
     /**
      * Comma-separated list of hostname:port for memcached servers. The default hostname:port is 'localhost:11211'.
      */
-    @NotEmpty(message = "Server list is empty")
     private List<InetSocketAddress> servers = Default.SERVERS;
 
     /**
@@ -76,7 +71,6 @@ public class MemcachedCacheProperties {
     /**
      * Memcached client operation timeout in milliseconds. The default is 2500 milliseconds.
      */
-    @Min(value = 1, message = "Operation timeout must be greater then zero")
     private Long operationTimeout = Default.OPERATION_TIMEOUT;
 
     public List<InetSocketAddress> getServers() {
@@ -89,11 +83,10 @@ public class MemcachedCacheProperties {
      * @param value Comma-separated list
      */
     public void setServers(String value) {
-        if (value.isEmpty()) {
-            this.servers = Collections.emptyList();
-        } else {
-            this.servers = AddrUtil.getAddresses(Arrays.asList(value.split(",")));
+        if (StringUtils.isEmpty(value)) {
+            throw new IllegalArgumentException("Server list is empty");
         }
+        this.servers = AddrUtil.getAddresses(Arrays.asList(value.split(",")));
     }
 
     public ClientMode getMode() {
@@ -164,6 +157,9 @@ public class MemcachedCacheProperties {
     }
 
     public void setOperationTimeout(Long operationTimeout) {
+        if (operationTimeout <= 0) {
+            throw new IllegalArgumentException("Operation timeout must be greater then zero");
+        }
         this.operationTimeout = operationTimeout;
     }
 
