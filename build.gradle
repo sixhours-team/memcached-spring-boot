@@ -69,7 +69,7 @@ subprojects {
 
     ext {
         springBootVersion = '2.2.1.RELEASE'
-        springCloudVersion = 'Hoxton.RC2'
+        springCloudVersion = 'Hoxton.RELEASE'
         elasticacheClientVersion = '1.1.1'
         commonsLoggingVersion = '1.2'
         testcontainersVersion = '1.12.3'
