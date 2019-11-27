@@ -9,20 +9,20 @@ artifacts {
 }
 
 dependencies {
-    implementation('org.springframework.boot:spring-boot-autoconfigure')
-    implementation('org.hibernate.validator:hibernate-validator')
+    implementation 'org.springframework.boot:spring-boot-autoconfigure'
+    implementation 'org.hibernate.validator:hibernate-validator'
 
-    annotationProcessor('org.springframework.boot:spring-boot-configuration-processor')
+    annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
 
-    optional('org.springframework.boot:spring-boot-actuator')
-    optional('io.micrometer:micrometer-core')
-    optional('org.springframework.cloud:spring-cloud-context')
-    optional('com.amazonaws:elasticache-java-cluster-client')
+    optional 'org.springframework.boot:spring-boot-actuator'
+    optional 'io.micrometer:micrometer-core'
+    optional 'org.springframework.cloud:spring-cloud-context'
+    optional 'com.amazonaws:elasticache-java-cluster-client'
 
-    testImplementation('org.springframework.boot:spring-boot-starter-test')
-    testImplementation('commons-logging:commons-logging')
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'commons-logging:commons-logging'
 
-    integrationTestCompile('org.testcontainers:testcontainers')
+    integrationTestImplementation 'org.testcontainers:testcontainers'
 }
 
 compileJava.dependsOn(processResources)
