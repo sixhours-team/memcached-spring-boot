@@ -9,7 +9,7 @@ plugins {
 
 ext {
     springBootVersion = '2.2.1.RELEASE'
-    springCloudVersion = 'Hoxton.RC2'
+    springCloudVersion = 'Hoxton.RELEASE'
     elasticacheClientVersion = '1.1.1'
     commonsLoggingVersion = '1.2'
     testcontainersVersion = '1.12.3'
@@ -21,7 +21,7 @@ ext.RELEASE_GRADLE = "$rootDir/gradle/release.gradle"
 ext.SONAR_GRADLE = "$rootDir/gradle/sonar.gradle"
 
 ext {
-    projectVersion = '2.0.0-SNAPSHOT'
+    projectVersion = '2.0.4-SNAPSHOT'
 }
 
 allprojects {
@@ -35,10 +35,10 @@ allprojects {
         def version = stdout.toString().trim()
         return !version.isEmpty() ? version - 'v' : projectVersion
     }
-    def useLastTag = { project.hasProperty("useLastTag") ? project.getProperty("useLastTag").toBoolean() : false }
+    def useLastTag = project.hasProperty("useLastTag") ? project.getProperty("useLastTag").toBoolean() : false
 
     group = "io.sixhours"
-    version = useLastTag() ? gitVersion() : projectVersion
+    version = useLastTag ? gitVersion() : projectVersion
 }
 
 subprojects {
@@ -64,10 +64,10 @@ subprojects {
             mavenBom "org.springframework.boot:spring-boot-dependencies:${springBootVersion}"
             mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
         }
-        dependencies {
-            dependency "com.amazonaws:elasticache-java-cluster-client:${elasticacheClientVersion}"
-            dependency "commons-logging:commons-logging:${commonsLoggingVersion}"
-            dependency "org.testcontainers:testcontainers:${testcontainersVersion}"
-        }
+//        dependencies {
+//            dependency "com.amazonaws:elasticache-java-cluster-client:${elasticacheClientVersion}"
+//            dependency "commons-logging:commons-logging:${commonsLoggingVersion}"
+//            dependency "org.testcontainers:testcontainers:${testcontainersVersion}"
+//        }
     }
 }

@@ -1,43 +1,4 @@
 apply plugin: 'com.jfrog.bintray'
-//apply plugin: 'maven'
-//apply plugin: 'propdeps-maven'
-
-//install {
-//    repositories.mavenInstaller {
-//        afterEvaluate { Project p ->
-//            pom {
-//                project {
-//                    name = "${p.projectName}"
-//                    description = "${p.projectDesc}"
-//                    url = "https://github.com/sixhours-team/memcached-spring-boot"
-//
-//                    licenses {
-//                        license {
-//                            name "The Apache Software License, Version 2.0"
-//                            url "http://www.apache.org/licenses/LICENSE-2.0.txt"
-//                            distribution "repo"
-//                        }
-//                    }
-//
-//                    scm {
-//                        url "https://github.com/sixhours-team/memcached-spring-boot.git"
-//                    }
-//
-//                    developers {
-//                        developer {
-//                            name 'Igor Bolic'
-//                            email 'igor.bolic@sixhours.io'
-//                        }
-//                        developer {
-//                            name 'Sasa Bolic'
-//                            email 'sasa.bolic@sixhours.io'
-//                        }
-//                    }
-//                }
-//            }
-//        }
-//    }
-//}
 
 bintray {
     user = System.getenv('BINTRAY_USER')

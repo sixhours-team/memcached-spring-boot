@@ -3,5 +3,5 @@ ext.projectDesc = 'Starter for the Memcached Spring Boot Cache'
 
 dependencies {
     implementation project(':memcached-spring-boot-autoconfigure')
-    implementation 'com.amazonaws:elasticache-java-cluster-client'
+    implementation "com.amazonaws:elasticache-java-cluster-client:${elasticacheClientVersion}"
 }

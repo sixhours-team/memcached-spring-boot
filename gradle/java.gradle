@@ -6,6 +6,10 @@ java {
 
     withJavadocJar()
     withSourcesJar()
+
+    registerFeature('optional') {
+        usingSourceSet(sourceSets.main)
+    }
 }
 
 sourceSets {
@@ -21,7 +25,7 @@ sourceSets {
 configurations {
     integrationTestImplementation.extendsFrom testImplementation
     integrationTestRuntimeOnly.extendsFrom testRuntimeOnly
-    testImplementation.extendsFrom compileOnly
+    testImplementation.extendsFrom optionalImplementation
 }
 
 task integrationTest(type: Test) {

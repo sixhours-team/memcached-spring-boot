@@ -15,4 +15,3 @@ jacocoTestReport {
 }
 
 build.dependsOn jacocoTestReport
-
