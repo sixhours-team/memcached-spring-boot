@@ -23,6 +23,7 @@ ext.SONAR_GRADLE = "$rootDir/gradle/sonar.gradle"
 
 ext {
     projectVersion = '2.0.0-SNAPSHOT'
+    useLastTag = false
 }
 
 allprojects {
@@ -36,10 +37,9 @@ allprojects {
         def version = stdout.toString().trim()
         return !version.isEmpty() ? version - 'v' : projectVersion
     }
-    def useLastTag = project.hasProperty("useLastTag") ? project.getProperty("useLastTag").toBoolean() : false
 
     group = "io.sixhours"
-    version = useLastTag ? gitVersion() : projectVersion
+    version = useLastTag.toBoolean() ? gitVersion() : projectVersion
 }
 
 subprojects {
