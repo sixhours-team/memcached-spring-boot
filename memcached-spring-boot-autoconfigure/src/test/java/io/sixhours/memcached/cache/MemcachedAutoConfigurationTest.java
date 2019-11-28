@@ -26,7 +26,6 @@ import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.UnsatisfiedDependencyException;
 import org.springframework.boot.autoconfigure.cache.CacheAutoConfiguration;
-import org.springframework.boot.context.properties.bind.validation.BindValidationException;
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
@@ -42,9 +41,11 @@ import org.springframework.test.util.ReflectionTestUtils;
 import java.net.InetSocketAddress;
 import java.util.Collections;
 
-import static io.sixhours.memcached.cache.MemcachedAssertions.*;
-import static org.assertj.core.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static io.sixhours.memcached.cache.MemcachedAssertions.assertMemcachedCacheManager;
+import static io.sixhours.memcached.cache.MemcachedAssertions.assertMemcachedClient;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.Mockito.mock;
 
 /**
  * Memcached auto-configuration tests.
@@ -253,8 +254,7 @@ public class MemcachedAutoConfigurationTest {
                         "memcached.cache.mode=static")
         )
                 .isInstanceOf(UnsatisfiedDependencyException.class)
-                .hasRootCauseInstanceOf(BindValidationException.class)
-                .hasStackTraceContaining("Server list is empty");
+                .hasRootCause(new IllegalArgumentException("Server list is empty"));
     }
 
     @Test
@@ -262,8 +262,7 @@ public class MemcachedAutoConfigurationTest {
         assertThatThrownBy(() -> loadContext(CacheConfiguration.class,
                 "memcached.cache.operation-timeout=0"))
                 .isInstanceOf(UnsatisfiedDependencyException.class)
-                .hasRootCauseInstanceOf(BindValidationException.class)
-                .hasStackTraceContaining("Operation timeout must be greater then zero");
+                .hasRootCause(new IllegalArgumentException("Operation timeout must be greater then zero"));
     }
 
 
