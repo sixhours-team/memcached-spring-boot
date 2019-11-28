@@ -1,8 +1,16 @@
 apply plugin: 'java'
-apply plugin: 'propdeps-idea'
 
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+
+    withJavadocJar()
+    withSourcesJar()
+
+    registerFeature('optional') {
+        usingSourceSet(sourceSets.main)
+    }
+}
 
 sourceSets {
     integrationTest {
@@ -17,6 +25,7 @@ sourceSets {
 configurations {
     integrationTestImplementation.extendsFrom testImplementation
     integrationTestRuntimeOnly.extendsFrom testRuntimeOnly
+    testImplementation.extendsFrom optionalImplementation
 }
 
 task integrationTest(type: Test) {
