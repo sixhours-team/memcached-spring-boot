@@ -114,13 +114,16 @@ public class MemcachedCacheProperties {
     public void setExpirations(String value) {
         this.expirations = new HashMap<>();
 
+        // remove whitespaces from expirations value
+        value = value.replaceAll("\\s+","");
+
         if (StringUtils.isEmpty(value)) {
             throw new IllegalArgumentException("Expiration list is empty");
         }
 
-        final String[] expirations = value.split("(?:\\s|,)+");
+        final String[] expirationPerCacheNames = value.split("(?:\\s|,)+");
 
-        Stream.of(expirations).forEach(v -> {
+        Stream.of(expirationPerCacheNames).forEach(v -> {
             final int colonIndex = v.lastIndexOf(':');
 
             if (colonIndex < 1) {
@@ -129,9 +132,9 @@ public class MemcachedCacheProperties {
             } else {
                 // expiration per cache name
                 final String cacheName = v.substring(0, colonIndex);
-                final String expiration = v.substring(colonIndex + 1);
+                final String expirationValue = v.substring(colonIndex + 1);
 
-                this.expirations.put(cacheName, Integer.valueOf(expiration));
+                this.expirations.put(cacheName, Integer.valueOf(expirationValue));
             }
         });
     }
