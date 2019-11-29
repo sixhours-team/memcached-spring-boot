@@ -40,6 +40,9 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 import java.net.InetSocketAddress;
 import java.util.Collections;
+import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static io.sixhours.memcached.cache.MemcachedAssertions.assertMemcachedCacheManager;
 import static io.sixhours.memcached.cache.MemcachedAssertions.assertMemcachedClient;
@@ -295,6 +298,27 @@ public class MemcachedAutoConfigurationTest {
 
         assertMemcachedClient(memcachedClient, Default.CLIENT_MODE, Default.PROTOCOL, Default.OPERATION_TIMEOUT, new InetSocketAddress("192.168.99.100", 12345));
         assertMemcachedCacheManager(memcachedCacheManager, Default.EXPIRATION, null, "custom:prefix", Default.NAMESPACE);
+    }
+
+    @Test
+    public void whenExpirationsValueWithSpacesThenMemcachedLoaded() {
+        loadContext(CacheConfiguration.class,
+                "memcached.cache.expirations=  800  ,  testKey1 :400,testKey2:500,testKey3   : 600  , testKey4 : 700 ");
+
+        MemcachedCacheManager memcachedCacheManager = this.applicationContext.getBean(MemcachedCacheManager.class);
+
+        MemcachedClient memcachedClient = (MemcachedClient) ReflectionTestUtils.getField(memcachedCacheManager, "memcachedClient");
+
+        assertMemcachedClient(memcachedClient, Default.CLIENT_MODE, Default.PROTOCOL, Default.OPERATION_TIMEOUT, new InetSocketAddress("localhost", 11211));
+
+        final Map<String, Integer> expirations = Stream.of(new Object[][]{
+                {"testKey1", 400},
+                {"testKey2", 500},
+                {"testKey3", 600},
+                {"testKey4", 700},
+        }).collect(Collectors.toMap(e -> (String) e[0], e -> (Integer) e[1]));
+
+        assertMemcachedCacheManager(memcachedCacheManager, 800, expirations, Default.PREFIX, Default.NAMESPACE);
     }
 
     private void loadContext(Class<?> configuration, String... environment) {
