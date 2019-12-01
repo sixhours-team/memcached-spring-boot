@@ -3,14 +3,17 @@
 if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then
   echo -e "Build Pull Request #$TRAVIS_PULL_REQUEST => Branch [$TRAVIS_BRANCH]"
   ./gradlew build
+elif [ "$TRAVIS_PULL_REQUEST" == "false" ] && [ "$BUILD_PUBLISH" == "false" ]; then
+  echo -e "Build Branch => Branch [$TRAVIS_BRANCH]"
+  ./gradlew build
 elif [ "$TRAVIS_PULL_REQUEST" == "false" ] && [ "$TRAVIS_TAG" == "" ]; then
   echo -e 'Build Branch with Snapshot => Branch ['$TRAVIS_BRANCH']'
-  ./gradlew build
+  ./gradlew build artifactoryPublish
 elif [ "$TRAVIS_PULL_REQUEST" == "false" ] && [ "$TRAVIS_TAG" != "" ]; then
   echo -e 'Build Branch for Release => Branch ['$TRAVIS_BRANCH']  Tag ['$TRAVIS_TAG']'
   case "$TRAVIS_TAG" in
   v[[:digit:]]*\.[[:digit:]]*\.[[:digit:]]*)
-    ./gradlew build bintrayUpload
+    ./gradlew build bintrayUpload -PuseLastTag=true
     ;;
   *)
     echo -e 'WARN: Invalid Tag ['$TRAVIS_TAG']'
