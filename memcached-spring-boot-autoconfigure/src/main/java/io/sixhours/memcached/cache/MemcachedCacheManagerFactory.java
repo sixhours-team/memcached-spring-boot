@@ -39,7 +39,7 @@ public class MemcachedCacheManagerFactory {
     public MemcachedCacheManager create() throws IOException {
         final DisposableMemcachedCacheManager cacheManager = new DisposableMemcachedCacheManager(memcachedClient());
 
-        cacheManager.setExpiration(properties.getExpiration());
+        cacheManager.setExpiration(properties.getDefaultExpiration());
         cacheManager.setExpirations(properties.getExpirations());
         cacheManager.setPrefix(properties.getPrefix());
         cacheManager.setNamespace(Default.NAMESPACE);
