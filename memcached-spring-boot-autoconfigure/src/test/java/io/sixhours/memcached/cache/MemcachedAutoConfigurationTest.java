@@ -162,7 +162,7 @@ public class MemcachedAutoConfigurationTest {
         MemcachedClient memcachedClient = (MemcachedClient) ReflectionTestUtils.getField(memcachedCacheManager, "memcachedClient");
 
         assertMemcachedClient(memcachedClient, Default.CLIENT_MODE, Default.PROTOCOL, Default.OPERATION_TIMEOUT, Default.SERVERS.toArray(new InetSocketAddress[0]));
-        assertMemcachedCacheManager(memcachedCacheManager, Default.EXPIRATION, null, Default.PREFIX, Default.NAMESPACE);
+        assertMemcachedCacheManager(memcachedCacheManager, Default.EXPIRATION, Collections.emptyMap(), Default.PREFIX, Default.NAMESPACE);
     }
 
     @Test
@@ -182,12 +182,12 @@ public class MemcachedAutoConfigurationTest {
         MemcachedClient memcachedClient = (MemcachedClient) ReflectionTestUtils.getField(cacheManager, "memcachedClient");
 
         assertMemcachedClient(memcachedClient, Default.CLIENT_MODE, Default.PROTOCOL, Default.OPERATION_TIMEOUT, Default.SERVERS.toArray(new InetSocketAddress[0]));
-        assertMemcachedCacheManager(cacheManager, Default.EXPIRATION, null, Default.PREFIX, Default.NAMESPACE);
+        assertMemcachedCacheManager(cacheManager, Default.EXPIRATION, Collections.emptyMap(), Default.PREFIX, Default.NAMESPACE);
     }
 
     @Test
     public void whenMemcachedCacheManagerBeanAlreadyInContextThenMemcachedWithNonCustomConfigurationLoaded() {
-        loadContext(CacheWithMemcachedCacheManagerConfiguration.class, "memcached.cache.expiration=3600",
+        loadContext(CacheWithMemcachedCacheManagerConfiguration.class, "memcached.cache.defaultExpiration=3600",
                 "memcached.cache.prefix=custom:prefix",
                 "memcached.cache.namespace=custom_namespace");
 
@@ -220,7 +220,7 @@ public class MemcachedAutoConfigurationTest {
         MemcachedClient memcachedClient = (MemcachedClient) ReflectionTestUtils.getField(memcachedCacheManager, "memcachedClient");
 
         assertMemcachedClient(memcachedClient, ClientMode.Static, Default.PROTOCOL, Default.OPERATION_TIMEOUT, new InetSocketAddress("192.168.99.100", 11212), new InetSocketAddress("192.168.99.101", 11211));
-        assertMemcachedCacheManager(memcachedCacheManager, Default.EXPIRATION, null, Default.PREFIX, Default.NAMESPACE);
+        assertMemcachedCacheManager(memcachedCacheManager, Default.EXPIRATION, Collections.emptyMap(), Default.PREFIX, Default.NAMESPACE);
     }
 
     @Test
@@ -233,7 +233,7 @@ public class MemcachedAutoConfigurationTest {
         MemcachedClient memcachedClient = (MemcachedClient) ReflectionTestUtils.getField(memcachedCacheManager, "memcachedClient");
 
         assertMemcachedClient(memcachedClient, Default.CLIENT_MODE, Protocol.TEXT, Default.OPERATION_TIMEOUT, new InetSocketAddress("192.168.99.100", 11212), new InetSocketAddress("192.168.99.101", 11211));
-        assertMemcachedCacheManager(memcachedCacheManager, Default.EXPIRATION, null, Default.PREFIX, Default.NAMESPACE);
+        assertMemcachedCacheManager(memcachedCacheManager, Default.EXPIRATION, Collections.emptyMap(), Default.PREFIX, Default.NAMESPACE);
     }
 
     @Test
@@ -246,7 +246,7 @@ public class MemcachedAutoConfigurationTest {
         MemcachedClient memcachedClient = (MemcachedClient) ReflectionTestUtils.getField(memcachedCacheManager, "memcachedClient");
 
         assertMemcachedClient(memcachedClient, Default.CLIENT_MODE, Protocol.BINARY, Default.OPERATION_TIMEOUT, new InetSocketAddress("192.168.99.100", 11212), new InetSocketAddress("192.168.99.101", 11211));
-        assertMemcachedCacheManager(memcachedCacheManager, Default.EXPIRATION, null, Default.PREFIX, Default.NAMESPACE);
+        assertMemcachedCacheManager(memcachedCacheManager, Default.EXPIRATION, Collections.emptyMap(), Default.PREFIX, Default.NAMESPACE);
     }
 
     @Test
@@ -272,8 +272,8 @@ public class MemcachedAutoConfigurationTest {
     public void whenCustomConfigurationThenMemcachedLoaded() {
         loadContext(CacheConfiguration.class, "memcached.cache.servers=192.168.99.100:11212",
                 "memcached.cache.mode=static",
-                "memcached.cache.expiration=3600",
-                "memcached.cache.expirations=myKey1:400",
+                "memcached.cache.defaultExpiration=3600",
+                "memcached.cache.expirations.myKey1=400",
                 "memcached.cache.prefix=custom:prefix",
                 "memcached.cache.operation-timeout=3000",
                 "memcached.cache.namespace=custom_namespace");
@@ -296,13 +296,13 @@ public class MemcachedAutoConfigurationTest {
         MemcachedClient memcachedClient = (MemcachedClient) ReflectionTestUtils.getField(memcachedCacheManager, "memcachedClient");
 
         assertMemcachedClient(memcachedClient, Default.CLIENT_MODE, Default.PROTOCOL, Default.OPERATION_TIMEOUT, new InetSocketAddress("192.168.99.100", 12345));
-        assertMemcachedCacheManager(memcachedCacheManager, Default.EXPIRATION, null, "custom:prefix", Default.NAMESPACE);
+        assertMemcachedCacheManager(memcachedCacheManager, Default.EXPIRATION, Collections.emptyMap(), "custom:prefix", Default.NAMESPACE);
     }
 
     @Test
-    public void whenExpirationsValueWithSpacesThenMemcachedLoaded() {
+    public void whenExpirationsValuesGiven() {
         loadContext(CacheConfiguration.class,
-                "memcached.cache.expirations=  800  ,  testKey1 :400,testKey2:500,testKey3   : 600  , testKey4 : 700 ");
+                "memcached.cache.defaultExpiration=800","memcached.cache.expirations.testKey1=400","memcached.cache.expirations.testKey2=500","memcached.cache.expirations.testKey3=600","memcached.cache.expirations.testKey4=700");
 
         MemcachedCacheManager memcachedCacheManager = this.applicationContext.getBean(MemcachedCacheManager.class);
 

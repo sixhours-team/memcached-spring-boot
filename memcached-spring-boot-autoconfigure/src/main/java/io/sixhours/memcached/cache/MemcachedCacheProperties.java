@@ -52,9 +52,9 @@ public class MemcachedCacheProperties {
     /**
      * Cache expiration in seconds. The default is 60 seconds.
      */
-    private Integer expiration = Default.EXPIRATION;
+    private Integer defaultExpiration = Default.EXPIRATION;
 
-    private Map<String, Integer> expirations;
+    private Map<String, Integer> expirations = new HashMap<>();
 
     /**
      * Cached object key prefix. The default is 'memcached:spring-boot'.
@@ -96,46 +96,20 @@ public class MemcachedCacheProperties {
         this.mode = mode;
     }
 
-    @DeprecatedConfigurationProperty(reason = "As of release {@code 1.3.0}. To be removed in next major release. This " +
-            "value is expected to be extracted from property 'expirations'.", replacement = "memcached.cache.expirations")
-    public Integer getExpiration() {
-        return expiration;
+    public Integer getDefaultExpiration() {
+        return defaultExpiration;
     }
 
-    public void setExpiration(Integer expiration) {
-        this.expiration = expiration;
+    public void setDefaultExpiration(Integer defaultExpiration) {
+        this.defaultExpiration = defaultExpiration;
+    }
+
+    public void setExpirations(Map<String, Integer> expirations) {
+        this.expirations = expirations;
     }
 
     public Map<String, Integer> getExpirations() {
         return expirations;
-    }
-
-    public void setExpirations(String value) {
-        this.expirations = new HashMap<>();
-
-        // remove whitespaces from expirations value
-        value = value.replaceAll("\\s+","");
-
-        if (StringUtils.isEmpty(value)) {
-            throw new IllegalArgumentException("Expiration list is empty");
-        }
-
-        final String[] expirationPerCacheNames = value.split("(?:\\s|,)+");
-
-        Stream.of(expirationPerCacheNames).forEach(v -> {
-            final int colonIndex = v.lastIndexOf(':');
-
-            if (colonIndex < 1) {
-                // global expiration (without colon in value)
-                this.expiration = Integer.valueOf(v);
-            } else {
-                // expiration per cache name
-                final String cacheName = v.substring(0, colonIndex);
-                final String expirationValue = v.substring(colonIndex + 1);
-
-                this.expirations.put(cacheName, Integer.valueOf(expirationValue));
-            }
-        });
     }
 
     public String getPrefix() {
