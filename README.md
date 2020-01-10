@@ -105,7 +105,6 @@ memcached.cache.mode: # Memcached client mode (use one of following: "static", "
 memcached.cache.defaultExpiration: # Default cache expirations in seconds if not configured per cache (default "60").
 memcached.cache.expirations.cacheName: # To set expiration value for cache named "cacheName" {cache_name}:{number} e.g. "authors: 3600"
 memcached.cache.prefix: # Cache key prefix (default "memcached:spring-boot")
-memcached.cache.namespace: # Cache eviction namespace key name (default "namespace")
 memcached.cache.protocol: # Memcached client protocol. Supports "text" and "binary" protocols (default is "text" protocol)
 memcached.cache.operation-timeout: # Memcached client operation timeout in milliseconds (default "2500").
 ```
