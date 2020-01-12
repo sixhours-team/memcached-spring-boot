@@ -1,7 +1,7 @@
 import org.springframework.boot.gradle.plugin.SpringBootPlugin
 
 plugins {
-    id 'org.springframework.boot' version '2.2.1.RELEASE' apply false
+    id 'org.springframework.boot' version '2.2.2.RELEASE' apply false
     id 'com.jfrog.bintray' version '1.8.4'
     id 'com.jfrog.artifactory' version '4.11.0'
     id 'com.github.hierynomus.license' version '0.15.0'
@@ -11,7 +11,7 @@ plugins {
 }
 
 ext {
-    springCloudVersion = 'Hoxton.RELEASE'
+    springCloudVersion = 'Hoxton.SR1'
     elasticacheClientVersion = '1.1.1'
     commonsLoggingVersion = '1.2'
     testcontainersVersion = '1.12.3'
