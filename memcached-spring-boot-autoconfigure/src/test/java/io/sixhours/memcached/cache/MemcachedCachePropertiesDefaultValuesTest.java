@@ -15,8 +15,6 @@
  */
 package io.sixhours.memcached.cache;
 
-import net.spy.memcached.ClientMode;
-import net.spy.memcached.ConnectionFactoryBuilder;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,11 +40,11 @@ public class MemcachedCachePropertiesDefaultValuesTest {
     private MemcachedCacheProperties memcachedCacheProperties;
 
     @Test
-    public void whenGetMode_thenCorrectValue() {
-        ClientMode result = memcachedCacheProperties.getMode();
+    public void whenGetProvider_thenCorrectValue() {
+        MemcachedCacheProperties.Provider result = memcachedCacheProperties.getProvider();
 
         assertThat(result).isNotNull();
-        assertThat(result).isEqualTo(ClientMode.Static);
+        assertThat(result).isEqualTo(MemcachedCacheProperties.Provider.STATIC);
     }
 
     @Test
@@ -77,7 +75,7 @@ public class MemcachedCachePropertiesDefaultValuesTest {
         MemcachedCacheProperties.Protocol result = memcachedCacheProperties.getProtocol();
 
         assertThat(result).isNotNull();
-        assertThat(result.value()).isEqualByComparingTo(ConnectionFactoryBuilder.Protocol.valueOf(MemcachedCacheProperties.Protocol.TEXT.name()));
+        assertThat(result).isEqualByComparingTo(MemcachedCacheProperties.Protocol.TEXT);
     }
 
     @Test

@@ -19,7 +19,7 @@ memcached.cache:
   operation-timeout: 2s
   prefix: memcached:my-app
   protocol: binary
-  mode: dynamic
+  provider: appengine
   expiration: 1d
   expiration-per-cache:
     cache_name1: 2m

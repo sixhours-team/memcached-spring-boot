@@ -20,7 +20,6 @@ import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tags;
 import io.micrometer.core.instrument.binder.MeterBinder;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
-import net.spy.memcached.MemcachedClient;
 import org.junit.After;
 import org.junit.Test;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
@@ -35,9 +34,11 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import static org.assertj.core.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.BDDMockito.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.mock;
 
 /**
  * Cache statistics auto-configuration tests.
@@ -154,7 +155,7 @@ public class MemcachedCacheMeterBinderProviderConfigurationTest {
 
         @Bean
         public MemcachedCacheManager cacheManager() {
-            MemcachedClient memcachedClient = mock(MemcachedClient.class);
+            IMemcachedClient memcachedClient = mock(IMemcachedClient.class);
 
             given(memcachedClient.get(any()))
                     .willReturn("namespace").willReturn(null)

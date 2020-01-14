@@ -20,9 +20,7 @@ import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tags;
 import io.micrometer.core.instrument.binder.MeterBinder;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
-import net.spy.memcached.ClientMode;
-import net.spy.memcached.DefaultConnectionFactory;
-import net.spy.memcached.MemcachedClient;
+import net.rubyeye.xmemcached.XMemcachedClientBuilder;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
@@ -66,7 +64,7 @@ public class MemcachedCacheIT {
     MemcachedCacheManager cacheManager;
 
     @Autowired
-    MemcachedClient memcachedClient;
+    IMemcachedClient memcachedClient;
 
     @Autowired
     AuthorService authorService;
@@ -351,12 +349,11 @@ public class MemcachedCacheIT {
         }
 
         @Bean
-        public MemcachedClient memcachedClient() throws IOException {
+        public IMemcachedClient memcachedClient() throws IOException {
             final String host = memcached.getContainerIpAddress();
             final int port = memcached.getMappedPort(11211);
 
-            return new MemcachedClient(new DefaultConnectionFactory(ClientMode.Static),
-                    Collections.singletonList(new InetSocketAddress(host, port)));
+            return new XMemcachedClient(new XMemcachedClientBuilder(Collections.singletonList(new InetSocketAddress(host, port))).build());
         }
     }
 }

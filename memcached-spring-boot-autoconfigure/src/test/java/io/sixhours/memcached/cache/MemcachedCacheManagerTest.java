@@ -15,7 +15,6 @@
  */
 package io.sixhours.memcached.cache;
 
-import net.spy.memcached.MemcachedClient;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.cache.Cache;
@@ -39,7 +38,7 @@ public class MemcachedCacheManagerTest {
 
     @Before
     public void setUp() {
-        MemcachedClient memcachedClient = mock(MemcachedClient.class);
+        IMemcachedClient memcachedClient = mock(IMemcachedClient.class);
         cacheManager = new MemcachedCacheManager(memcachedClient);
 
         cacheManager.getCache(EXISTING_CACHE);

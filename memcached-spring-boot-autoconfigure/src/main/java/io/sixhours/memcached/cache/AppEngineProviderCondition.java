@@ -15,21 +15,22 @@
  */
 package io.sixhours.memcached.cache;
 
-import org.springframework.beans.factory.DisposableBean;
+import org.springframework.boot.autoconfigure.condition.AllNestedConditions;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.context.annotation.Condition;
 
 /**
- * Disposable {@link MemcachedCacheManager} bean.
+ * {@link Condition} that checks that {@code memcached.cache.provider} property is {@code appegnine}.
  *
  * @author Igor Bolic
  */
-class DisposableMemcachedCacheManager extends MemcachedCacheManager implements DisposableBean {
+public class AppEngineProviderCondition extends AllNestedConditions  {
 
-    public DisposableMemcachedCacheManager(IMemcachedClient memcachedClient) {
-        super(memcachedClient);
+    public AppEngineProviderCondition() {
+        super(ConfigurationPhase.PARSE_CONFIGURATION);
     }
 
-    @Override
-    public void destroy() {
-        this.memcachedClient.shutdown();
+    @ConditionalOnProperty(prefix = "memcached.cache", name = "provider", havingValue = "appengine")
+    static class AppEngineCondition {
     }
 }

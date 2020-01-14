@@ -32,7 +32,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Sasa Bolic
  * @author Igor Bolic
  */
-public class ConditionalOnMissingSpringCacheTypeTest {
+public class ConditionalOnMissingSpringCacheProviderTest {
 
     private final AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 

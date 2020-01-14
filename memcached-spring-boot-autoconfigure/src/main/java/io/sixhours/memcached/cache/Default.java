@@ -15,7 +15,7 @@
  */
 package io.sixhours.memcached.cache;
 
-import net.spy.memcached.ClientMode;
+import io.sixhours.memcached.cache.MemcachedCacheProperties.Provider;
 
 import java.net.InetSocketAddress;
 import java.util.Collections;
@@ -33,7 +33,7 @@ public final class Default {
     public static final List<InetSocketAddress> SERVERS = Collections.unmodifiableList(
             Collections.singletonList(new InetSocketAddress("localhost", 11211)));
 
-    public static final ClientMode CLIENT_MODE = ClientMode.Static;
+    public static final Provider PROVIDER = Provider.STATIC;
 
     public static final int EXPIRATION = 0;
 

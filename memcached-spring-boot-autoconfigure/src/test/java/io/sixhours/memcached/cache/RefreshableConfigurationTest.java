@@ -15,7 +15,6 @@
  */
 package io.sixhours.memcached.cache;
 
-import net.spy.memcached.MemcachedClient;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,15 +60,15 @@ public class RefreshableConfigurationTest {
         Object memcachedClient = ReflectionTestUtils.getField(cacheManager, "memcachedClient");
 
         assertThat(memcachedClient).isNotNull();
-        assertThat(memcachedClient).isInstanceOf(MemcachedClient.class);
-        assertMemcachedClient((MemcachedClient) memcachedClient);
+        assertThat(memcachedClient).isInstanceOf(XMemcachedClient.class);
+        assertMemcachedClient((IMemcachedClient) memcachedClient);
     }
 
     @Test
     @DirtiesContext
     public void whenConfigurationChangedThenMemcachedClientReinitialized() {
         Object beforeRefresh = ReflectionTestUtils.getField(cacheManager, "memcachedClient");
-        assertMemcachedClient((MemcachedClient) beforeRefresh);
+        assertMemcachedClient((IMemcachedClient) beforeRefresh);
 
         TestPropertyValues.of(
             "memcached.cache.prefix:test-prefix",
@@ -86,8 +85,8 @@ public class RefreshableConfigurationTest {
         assertThat(expiration).isEqualTo(Default.EXPIRATION);
         assertThat(prefix).isNotNull();
         assertThat(prefix).isEqualTo("test-prefix");
-        assertMemcachedClient((MemcachedClient) afterRefresh,
-                Default.CLIENT_MODE, MemcachedCacheProperties.Protocol.BINARY, Default.OPERATION_TIMEOUT, Default.SERVERS.get(0));
+        assertMemcachedClient((IMemcachedClient) afterRefresh,
+                MemcachedCacheProperties.Protocol.BINARY, Default.OPERATION_TIMEOUT, Default.SERVERS.get(0));
     }
 
     @Configuration

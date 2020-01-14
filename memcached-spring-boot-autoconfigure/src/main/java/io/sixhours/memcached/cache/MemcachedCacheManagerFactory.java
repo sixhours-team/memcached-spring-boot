@@ -15,13 +15,7 @@
  */
 package io.sixhours.memcached.cache;
 
-import net.spy.memcached.ClientMode;
-import net.spy.memcached.ConnectionFactoryBuilder;
-import net.spy.memcached.MemcachedClient;
-
 import java.io.IOException;
-import java.net.InetSocketAddress;
-import java.util.List;
 import java.util.stream.Collectors;
 
 /**
@@ -29,9 +23,9 @@ import java.util.stream.Collectors;
  *
  * @author Igor Bolic
  */
-public class MemcachedCacheManagerFactory {
+public abstract class MemcachedCacheManagerFactory {
 
-    private final MemcachedCacheProperties properties;
+    protected final MemcachedCacheProperties properties;
 
     public MemcachedCacheManagerFactory(MemcachedCacheProperties properties) {
         this.properties = properties;
@@ -49,16 +43,5 @@ public class MemcachedCacheManagerFactory {
         return cacheManager;
     }
 
-    private MemcachedClient memcachedClient() throws IOException {
-        final List<InetSocketAddress> servers = properties.getServers();
-        final ClientMode mode = properties.getMode();
-        final MemcachedCacheProperties.Protocol protocol = properties.getProtocol();
-
-        final ConnectionFactoryBuilder connectionFactoryBuilder = new ConnectionFactoryBuilder()
-                .setClientMode(mode)
-                .setOpTimeout(properties.getOperationTimeout().toMillis())
-                .setProtocol(protocol.value());
-
-        return new MemcachedClient(connectionFactoryBuilder.build(), servers);
-    }
+    abstract IMemcachedClient memcachedClient() throws IOException;
 }

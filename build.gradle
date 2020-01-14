@@ -13,6 +13,8 @@ plugins {
 ext {
     springCloudVersion = 'Hoxton.SR1'
     elasticacheClientVersion = '1.1.1'
+    xmemcachedVersion = '2.4.6'
+    appengineApiVersion = '1.9.77'
     commonsLoggingVersion = '1.2'
     testcontainersVersion = '1.12.3'
 }

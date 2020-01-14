@@ -15,21 +15,26 @@
  */
 package io.sixhours.memcached.cache;
 
-import org.springframework.beans.factory.DisposableBean;
-
 /**
- * Disposable {@link MemcachedCacheManager} bean.
+ * Memcached client interface.
  *
  * @author Igor Bolic
  */
-class DisposableMemcachedCacheManager extends MemcachedCacheManager implements DisposableBean {
+public interface IMemcachedClient {
 
-    public DisposableMemcachedCacheManager(IMemcachedClient memcachedClient) {
-        super(memcachedClient);
-    }
+    Object nativeCache();
 
-    @Override
-    public void destroy() {
-        this.memcachedClient.shutdown();
-    }
+    Object get(String key);
+
+    void set(String key, int exp, Object value);
+
+    void touch(final String key, final int exp);
+
+    void delete(String key);
+
+    void flush();
+
+    long incr(String key, int by);
+
+    void shutdown();
 }

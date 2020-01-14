@@ -16,18 +16,19 @@
 package io.sixhours.memcached.cache;
 
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
-import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.cache.CacheAutoConfiguration;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.SearchStrategy;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
-import org.springframework.cache.interceptor.CacheAspectSupport;
-import org.springframework.cache.interceptor.CacheResolver;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
+
+import java.io.IOException;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for the Memcached cache.
@@ -36,12 +37,32 @@ import org.springframework.context.annotation.Import;
  * @author Igor Bolic
  */
 @Configuration
-@ConditionalOnMissingSpringCacheType
-@ConditionalOnBean(CacheAspectSupport.class)
-@ConditionalOnMissingBean({CacheManager.class, CacheResolver.class})
+@ConditionalOnClass({com.google.appengine.api.memcache.BaseMemcacheService.class, CacheManager.class})
+@Conditional(AppEngineProviderCondition.class)
 @EnableConfigurationProperties(MemcachedCacheProperties.class)
-@AutoConfigureBefore(CacheAutoConfiguration.class)
 @AutoConfigureAfter(name = "org.springframework.cloud.autoconfigure.RefreshAutoConfiguration")
-@Import({AppEngineMemcachedCacheAutoConfiguration.class, XMemcachedCacheAutoConfiguration.class})
-public class MemcachedCacheAutoConfiguration {
+public class AppEngineMemcachedCacheAutoConfiguration {
+
+    @Configuration
+    @ConditionalOnRefreshScope
+    static class RefreshableMemcachedCacheConfiguration {
+
+        @Bean
+        @RefreshScope
+        @ConditionalOnMissingBean(value = MemcachedCacheManager.class, search = SearchStrategy.CURRENT)
+        public MemcachedCacheManager cacheManager(MemcachedCacheProperties properties) throws IOException {
+            return new AppEngineMemcachedCacheManagerFactory(properties).create();
+        }
+    }
+
+    @Configuration
+    @ConditionalOnMissingRefreshScope
+    static class MemcachedCacheConfiguration {
+
+        @Bean
+        @ConditionalOnMissingBean(value = MemcachedCacheManager.class, search = SearchStrategy.CURRENT)
+        public MemcachedCacheManager cacheManager(MemcachedCacheProperties properties) throws IOException {
+            return new AppEngineMemcachedCacheManagerFactory(properties).create();
+        }
+    }
 }
