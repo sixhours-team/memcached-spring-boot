@@ -49,7 +49,7 @@ public class MemcachedCacheManager implements CacheManager {
     private int expiration = Default.EXPIRATION;
     private String prefix = Default.PREFIX;
     private String namespace = Default.NAMESPACE;
-    private Map<String, Integer> expirations;
+    private Map<String, Integer> expirationPerCache;
 
     /**
      * Construct a {@link MemcachedCacheManager}
@@ -88,8 +88,8 @@ public class MemcachedCacheManager implements CacheManager {
     private int determineExpiration(String name) {
         Integer expiration = null;
 
-        if (expirations != null) {
-            expiration = expirations.get(name);
+        if (expirationPerCache != null) {
+            expiration = expirationPerCache.get(name);
         }
 
         return Optional.ofNullable(expiration).orElse(this.expiration);
@@ -97,7 +97,7 @@ public class MemcachedCacheManager implements CacheManager {
 
     /**
      * Sets global expiration for all cache names.
-     * Custom expiration is used in case it is defined by {@code expirations} {@link Map} property.
+     * Custom expiration per cache is used in case it is defined by {@code expirationPerCache} {@link Map} property.
      *
      * @param expiration the expiration
      */
@@ -116,9 +116,9 @@ public class MemcachedCacheManager implements CacheManager {
     /**
      * Sets expiration time for cache keys.
      *
-     * @param expirations {@link Map} of expiration times per cache key
+     * @param expirationPerCache {@link Map} of expiration times per cache key
      */
-    public void setExpirations(Map<String, Integer> expirations) {
-        this.expirations = (expirations != null ? new ConcurrentHashMap<>(expirations) : null);
+    public void setExpirationPerCache(Map<String, Integer> expirationPerCache) {
+        this.expirationPerCache = (expirationPerCache != null ? new ConcurrentHashMap<>(expirationPerCache) : null);
     }
 }

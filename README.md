@@ -41,8 +41,8 @@ To plug-in Memcached cache in your application follow the steps below:
        servers: example1.com:11211,example2.com:11211
        mode: static
        # default expiration is '86400' and custom ones for cache_name1 and cache_name2
-       defaultExpiration: 86400
-       expirations:
+       expiration: 86400
+       expiration-per-cache:
          cache_name1: 3600
          cache_name2: 108000
      ```
@@ -54,7 +54,7 @@ To plug-in Memcached cache in your application follow the steps below:
     memcached.cache:
         servers: mycluster.example.com:11211
         mode: dynamic
-        defaultExpiration: 86400 # default expiration set to '86400'
+        expiration: 86400 # default expiration set to '86400'
     ```
 
 3. Enable caching support by adding `@EnableCaching` annotation to one of your `@Configuration` classes.
@@ -102,8 +102,8 @@ full list of supported properties:
 # MEMCACHED CACHE
 memcached.cache.servers: # Comma-separated list of hostname:port for memcached servers (default "localhost:11211")
 memcached.cache.mode: # Memcached client mode (use one of following: "static", "dynamic"). Default mode is "static", use "dynamic" for AWS node auto discovery
-memcached.cache.defaultExpiration: # Default cache expirations in seconds if not configured per cache (default "60").
-memcached.cache.expirations.cacheName: # To set expiration value for cache named "cacheName" {cache_name}:{number} e.g. "authors: 3600"
+memcached.cache.expiration: # Default cache expiration in seconds if not configured per cache (default "0", meaning that cache will never expire).
+memcached.cache.expiration-per-cache.cacheName: # To set expiration value for cache named "cacheName" {cache_name}:{number} e.g. "authors: 3600"
 memcached.cache.prefix: # Cache key prefix (default "memcached:spring-boot")
 memcached.cache.protocol: # Memcached client protocol. Supports "text" and "binary" protocols (default is "text" protocol)
 memcached.cache.operation-timeout: # Memcached client operation timeout in milliseconds (default "2500").

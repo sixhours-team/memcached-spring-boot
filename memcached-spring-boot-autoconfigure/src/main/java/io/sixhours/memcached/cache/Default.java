@@ -35,7 +35,7 @@ public final class Default {
 
     public static final ClientMode CLIENT_MODE = ClientMode.Static;
 
-    public static final int EXPIRATION = 60;
+    public static final int EXPIRATION = 0;
 
     public static final String PREFIX = "memcached:spring-boot";
 

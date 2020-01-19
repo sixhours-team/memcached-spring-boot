@@ -272,8 +272,8 @@ public class MemcachedAutoConfigurationTest {
     public void whenCustomConfigurationThenMemcachedLoaded() {
         loadContext(CacheConfiguration.class, "memcached.cache.servers=192.168.99.100:11212",
                 "memcached.cache.mode=static",
-                "memcached.cache.defaultExpiration=3600",
-                "memcached.cache.expirations.myKey1=400",
+                "memcached.cache.expiration=3600",
+                "memcached.cache.expiration-per-cache.myKey1=400",
                 "memcached.cache.prefix=custom:prefix",
                 "memcached.cache.operation-timeout=3000",
                 "memcached.cache.namespace=custom_namespace");
@@ -302,7 +302,7 @@ public class MemcachedAutoConfigurationTest {
     @Test
     public void whenExpirationsValuesGiven() {
         loadContext(CacheConfiguration.class,
-                "memcached.cache.defaultExpiration=800","memcached.cache.expirations.testKey1=400","memcached.cache.expirations.testKey2=500","memcached.cache.expirations.testKey3=600","memcached.cache.expirations.testKey4=700");
+                "memcached.cache.expiration=800","memcached.cache.expiration-per-cache.testKey1=400","memcached.cache.expiration-per-cache.testKey2=500","memcached.cache.expiration-per-cache.testKey3=600","memcached.cache.expiration-per-cache.testKey4=700");
 
         MemcachedCacheManager memcachedCacheManager = this.applicationContext.getBean(MemcachedCacheManager.class);
 
