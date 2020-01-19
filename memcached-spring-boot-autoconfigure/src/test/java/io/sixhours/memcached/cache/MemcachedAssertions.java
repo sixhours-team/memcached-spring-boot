@@ -48,7 +48,7 @@ public final class MemcachedAssertions {
         int actualExpiration = (int) ReflectionTestUtils.getField(memcachedCacheManager, "expiration");
         assertThat(actualExpiration).isEqualTo(expiration);
 
-        Map<String, Integer> actualExpirations = (Map<String, Integer>) ReflectionTestUtils.getField(memcachedCacheManager, "expirations");
+        Map<String, Integer> actualExpirations = (Map<String, Integer>) ReflectionTestUtils.getField(memcachedCacheManager, "expirationPerCache");
         assertThat(actualExpirations).isEqualTo(expirations);
 
         String actualPrefix = (String) ReflectionTestUtils.getField(memcachedCacheManager, "prefix");

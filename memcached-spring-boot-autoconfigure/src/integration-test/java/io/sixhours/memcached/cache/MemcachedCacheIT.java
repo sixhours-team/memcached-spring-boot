@@ -345,7 +345,7 @@ public class MemcachedCacheIT {
         public MemcachedCacheManager cacheManager() throws IOException {
             final MemcachedCacheManager memcachedCacheManager = new MemcachedCacheManager(memcachedClient());
             memcachedCacheManager.setExpiration(5);
-            memcachedCacheManager.setExpirations(Collections.singletonMap("authors", 3));
+            memcachedCacheManager.setExpirationPerCache(Collections.singletonMap("authors", 3));
 
             return memcachedCacheManager;
         }
