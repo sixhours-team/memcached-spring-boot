@@ -1,0 +1,11 @@
+memcached.cache:
+  servers: example1.com:12345,example2.com:12346
+  operation-timeout: 7200
+  prefix: memcached:my-app
+  protocol: binary
+  mode: dynamic
+  expiration: 86400
+  expiration-per-cache:
+    cache_name1: 3600
+    cache_name2: 108000
+    cache_name3: 7200
