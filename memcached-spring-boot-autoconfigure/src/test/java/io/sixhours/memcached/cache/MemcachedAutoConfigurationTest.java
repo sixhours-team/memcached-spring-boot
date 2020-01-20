@@ -273,7 +273,7 @@ public class MemcachedAutoConfigurationTest {
         loadContext(CacheConfiguration.class, "memcached.cache.servers=192.168.99.100:11212",
                 "memcached.cache.mode=static",
                 "memcached.cache.expiration=3600",
-                "memcached.cache.expiration-per-cache.myKey1=400",
+                "memcached.cache.expiration-per-cache.myKey1=4000",
                 "memcached.cache.prefix=custom:prefix",
                 "memcached.cache.operation-timeout=3000",
                 "memcached.cache.namespace=custom_namespace");
@@ -283,7 +283,7 @@ public class MemcachedAutoConfigurationTest {
         MemcachedClient memcachedClient = (MemcachedClient) ReflectionTestUtils.getField(memcachedCacheManager, "memcachedClient");
 
         assertMemcachedClient(memcachedClient, ClientMode.Static, Default.PROTOCOL, 3000, new InetSocketAddress("192.168.99.100", 11212));
-        assertMemcachedCacheManager(memcachedCacheManager, 3600, Collections.singletonMap("myKey1", 400), "custom:prefix", Default.NAMESPACE);
+        assertMemcachedCacheManager(memcachedCacheManager, 3600, Collections.singletonMap("myKey1", 4000), "custom:prefix", Default.NAMESPACE);
     }
 
     @Test
@@ -302,7 +302,7 @@ public class MemcachedAutoConfigurationTest {
     @Test
     public void whenExpirationsValuesGiven() {
         loadContext(CacheConfiguration.class,
-                "memcached.cache.expiration=800","memcached.cache.expiration-per-cache.testKey1=400","memcached.cache.expiration-per-cache.testKey2=500","memcached.cache.expiration-per-cache.testKey3=600","memcached.cache.expiration-per-cache.testKey4=700");
+                "memcached.cache.expiration=8000","memcached.cache.expiration-per-cache.testKey1=4000","memcached.cache.expiration-per-cache.testKey2=5000","memcached.cache.expiration-per-cache.testKey3=6000","memcached.cache.expiration-per-cache.testKey4=7000");
 
         MemcachedCacheManager memcachedCacheManager = this.applicationContext.getBean(MemcachedCacheManager.class);
 
@@ -310,14 +310,14 @@ public class MemcachedAutoConfigurationTest {
 
         assertMemcachedClient(memcachedClient, Default.CLIENT_MODE, Default.PROTOCOL, Default.OPERATION_TIMEOUT, new InetSocketAddress("localhost", 11211));
 
-        final Map<String, Integer> expirations = Stream.of(new Object[][]{
-                {"testKey1", 400},
-                {"testKey2", 500},
-                {"testKey3", 600},
-                {"testKey4", 700},
+        final Map<String, Integer> expirationPerCache = Stream.of(new Object[][]{
+                {"testKey1", 4000},
+                {"testKey2", 5000},
+                {"testKey3", 6000},
+                {"testKey4", 7000},
         }).collect(Collectors.toMap(e -> (String) e[0], e -> (Integer) e[1]));
 
-        assertMemcachedCacheManager(memcachedCacheManager, 800, expirations, Default.PREFIX, Default.NAMESPACE);
+        assertMemcachedCacheManager(memcachedCacheManager, 8000, expirationPerCache, Default.PREFIX, Default.NAMESPACE);
     }
 
     private void loadContext(Class<?> configuration, String... environment) {

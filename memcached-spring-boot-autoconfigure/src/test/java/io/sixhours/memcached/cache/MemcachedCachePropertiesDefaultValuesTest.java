@@ -26,6 +26,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.net.InetSocketAddress;
+import java.time.Duration;
 import java.util.List;
 import java.util.Map;
 
@@ -64,14 +65,6 @@ public class MemcachedCachePropertiesDefaultValuesTest {
     }
 
     @Test
-    public void whenGetOperationTimeout_thenCorrectValue() {
-        Long result = memcachedCacheProperties.getOperationTimeout();
-
-        assertThat(result).isNotNull();
-        assertThat(result).isEqualTo(2500);
-    }
-
-    @Test
     public void whenGetPrefix_thenCorrectValue() {
         String result = memcachedCacheProperties.getPrefix();
 
@@ -88,16 +81,24 @@ public class MemcachedCachePropertiesDefaultValuesTest {
     }
 
     @Test
-    public void whenGetExpiration_thenCorrectValue() {
-        Integer result = memcachedCacheProperties.getExpiration();
+    public void whenGetOperationTimeout_thenCorrectValue() {
+        Duration result = memcachedCacheProperties.getOperationTimeout();
 
         assertThat(result).isNotNull();
-        assertThat(result).isEqualTo(0);
+        assertThat(result).isEqualTo(Duration.ofMillis(2500));
+    }
+
+    @Test
+    public void whenGetExpiration_thenCorrectValue() {
+        Duration result = memcachedCacheProperties.getExpiration();
+
+        assertThat(result).isNotNull();
+        assertThat(result).isEqualTo(Duration.ofMillis(0));
     }
 
     @Test
     public void whenGetExpirationPerCache_thenCorrectValue() {
-        Map<String, Integer> result = memcachedCacheProperties.getExpirationPerCache();
+        Map<String, Duration> result = memcachedCacheProperties.getExpirationPerCache();
 
         assertThat(result).isNotNull();
         assertThat(result.isEmpty()).isTrue();

@@ -34,10 +34,10 @@ import java.util.Map;
 import static org.assertj.core.api.Assertions.*;
 
 @RunWith(SpringRunner.class)
-@ActiveProfiles("config-test")
+@ActiveProfiles("config-duration-test")
 @ContextConfiguration(classes = { MemcachedCacheProperties.class }, initializers = { ConfigFileApplicationContextInitializer.class })
 @EnableConfigurationProperties
-public class MemcachedCachePropertiesTest {
+public class MemcachedCachePropertiesDurationTest {
 
     @Autowired
     private MemcachedCacheProperties memcachedCacheProperties;
@@ -87,15 +87,16 @@ public class MemcachedCachePropertiesTest {
         Duration result = memcachedCacheProperties.getOperationTimeout();
 
         assertThat(result).isNotNull();
-        assertThat(result).isEqualTo(Duration.ofMillis(7200));
+        assertThat(result).isEqualTo(Duration.ofMillis(2000));
     }
+
 
     @Test
     public void whenGetExpiration_thenCorrectValue() {
         Duration result = memcachedCacheProperties.getExpiration();
 
         assertThat(result).isNotNull();
-        assertThat(result).isEqualTo(Duration.ofSeconds(86400));
+        assertThat(result).isEqualTo(Duration.ofMillis(86400000));
     }
 
     @Test
@@ -107,9 +108,9 @@ public class MemcachedCachePropertiesTest {
         assertThat(result.size()).isEqualTo(3);
         // @formatter:off
         assertThat(result).contains(
-                entry("cache_name1", Duration.ofSeconds(3600)),
-                entry("cache_name2", Duration.ofSeconds(108000)),
-                entry("cache_name3", Duration.ofSeconds(7200))
+                entry("cache_name1", Duration.ofMillis(120000)),
+                entry("cache_name2", Duration.ofMillis(108000000)),
+                entry("cache_name3", Duration.ofMillis(7200000))
         );
         // @formatter:on
     }
