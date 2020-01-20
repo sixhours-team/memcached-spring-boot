@@ -112,6 +112,7 @@ memcached.cache.operation-timeout: # Memcached client operation timeout (default
 All of the values have sensible defaults and are bound to [MemcachedCacheProperties](https://github.com/sixhours-team/memcached-spring-boot/blob/master/memcached-spring-boot-autoconfigure/src/main/java/io/sixhours/memcached/cache/MemcachedCacheProperties.java) class.
 
 Duration properties such as `expiration` and `expiration-per-cache` by default are using unit of seconds if no unit is specified. For `operation-timeout` property unit of milliseconds is the default one.
+
 E.g. to specify a `expiration` of 30 seconds, `30`, `PT30S` (ISO-8601 format) and `30s` are all equivalent. A `operatio-timeout` of 500ms can be specified in any of the following form: `500`, `PT0.5S` (ISO-8601 format) and `500ms`.
 
 Supported units are:
