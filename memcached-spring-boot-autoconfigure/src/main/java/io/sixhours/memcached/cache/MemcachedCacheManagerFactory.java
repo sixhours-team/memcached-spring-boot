@@ -22,6 +22,7 @@ import net.spy.memcached.MemcachedClient;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Factory for the {@link MemcachedCacheManager} instances.
@@ -39,8 +40,9 @@ public class MemcachedCacheManagerFactory {
     public MemcachedCacheManager create() throws IOException {
         final DisposableMemcachedCacheManager cacheManager = new DisposableMemcachedCacheManager(memcachedClient());
 
-        cacheManager.setExpiration(properties.getExpiration().intValue());
-        cacheManager.setExpirationPerCache(properties.getExpirationPerCache());
+        cacheManager.setExpiration(Long.valueOf(properties.getExpiration().getSeconds()).intValue());
+        cacheManager.setExpirationPerCache(properties.getExpirationPerCache().entrySet().stream()
+                .collect(Collectors.toMap(e -> e.getKey(), e -> Long.valueOf(e.getValue().getSeconds()).intValue())));
         cacheManager.setPrefix(properties.getPrefix());
         cacheManager.setNamespace(Default.NAMESPACE);
 
@@ -54,7 +56,7 @@ public class MemcachedCacheManagerFactory {
 
         final ConnectionFactoryBuilder connectionFactoryBuilder = new ConnectionFactoryBuilder()
                 .setClientMode(mode)
-                .setOpTimeout(properties.getOperationTimeout())
+                .setOpTimeout(properties.getOperationTimeout().toMillis())
                 .setProtocol(protocol.value());
 
         return new MemcachedClient(connectionFactoryBuilder.build(), servers);

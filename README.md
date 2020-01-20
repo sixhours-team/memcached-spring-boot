@@ -40,11 +40,11 @@ To plug-in Memcached cache in your application follow the steps below:
      memcached.cache:
        servers: example1.com:11211,example2.com:11211
        mode: static
-       # default expiration is '86400' and custom ones for cache_name1 and cache_name2
-       expiration: 86400
+       # default expiration is '1d' ('86400' seconds) and custom ones for cache_name1 and cache_name2
+       expiration: 1d 
        expiration-per-cache:
-         cache_name1: 3600
-         cache_name2: 108000
+         cache_name1: 1h
+         cache_name2: 30h
      ```
 
     To connect to a cluster with AWS [Auto Discovery](http://docs.aws.amazon.com/AmazonElastiCache/latest/UserGuide/AutoDiscovery.html), specify
@@ -54,7 +54,7 @@ To plug-in Memcached cache in your application follow the steps below:
     memcached.cache:
         servers: mycluster.example.com:11211
         mode: dynamic
-        expiration: 86400 # default expiration set to '86400'
+        expiration: 86400 # default expiration set to '86400' seconds i.e. 1 day
     ```
 
 3. Enable caching support by adding `@EnableCaching` annotation to one of your `@Configuration` classes.
@@ -102,14 +102,33 @@ full list of supported properties:
 # MEMCACHED CACHE
 memcached.cache.servers: # Comma-separated list of hostname:port for memcached servers (default "localhost:11211")
 memcached.cache.mode: # Memcached client mode (use one of following: "static", "dynamic"). Default mode is "static", use "dynamic" for AWS node auto discovery
-memcached.cache.expiration: # Default cache expiration in seconds if not configured per cache (default "0", meaning that cache will never expire).
-memcached.cache.expiration-per-cache.cacheName: # To set expiration value for cache named "cacheName" {cache_name}:{number} e.g. "authors: 3600"
+memcached.cache.expiration: # Default cache expiration if not configured per cache (default "0", meaning that cache will never expire). If unit not specified, seconds will be used.
+memcached.cache.expiration-per-cache.cacheName: # To set expiration value for cache named "cacheName" {cache_name}:{number} e.g. "authors: 3600" or "authors: 1h". If unit not specified, seconds will be used.
 memcached.cache.prefix: # Cache key prefix (default "memcached:spring-boot")
 memcached.cache.protocol: # Memcached client protocol. Supports "text" and "binary" protocols (default is "text" protocol)
-memcached.cache.operation-timeout: # Memcached client operation timeout in milliseconds (default "2500").
+memcached.cache.operation-timeout: # Memcached client operation timeout (default "2500 milliseconds"). If unit not specified, milliseconds will be used.
 ```
 
 All of the values have sensible defaults and are bound to [MemcachedCacheProperties](https://github.com/sixhours-team/memcached-spring-boot/blob/master/memcached-spring-boot-autoconfigure/src/main/java/io/sixhours/memcached/cache/MemcachedCacheProperties.java) class.
+
+Duration properties such as `expiration`, `expiration-per-cache` and `operation-timeout` by default are using unit of milliseconds if no unit is specified.
+E.g. to specify a `expiration` of 30 seconds, `30`, `PT30S` (ISO-8601 format) and `30s` are all equivalent. A `operatio-timeout` of 500ms can be specified in any of the following form: `500`, `PT0.5S` (ISO-8601 format) and `500ms`.
+
+Supported units are:
+
+* `ns` for nanoseconds
+
+* `us` for microseconds
+
+* `ms` for milliseconds
+
+* `s` for seconds
+
+* `m` for minutes
+
+* `h` for hours
+
+* `d` for days
 
 **Notice:**
 >If different applications are sharing the same Memcached server, make sure to specify unique cache `prefix` for each application

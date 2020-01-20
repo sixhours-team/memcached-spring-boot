@@ -20,8 +20,12 @@ import net.spy.memcached.AddrUtil;
 import net.spy.memcached.ClientMode;
 import net.spy.memcached.ConnectionFactoryBuilder;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.convert.DurationStyle;
+import org.springframework.boot.convert.DurationUnit;
 
 import java.net.InetSocketAddress;
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -49,9 +53,10 @@ public class MemcachedCacheProperties {
     /**
      * Cache expiration in seconds. The default is 0s, meaning the cache will never expire.
      */
-    private Integer expiration = Default.EXPIRATION;
+    @DurationUnit(ChronoUnit.SECONDS)
+    private Duration expiration = Duration.ofSeconds(Default.EXPIRATION);
 
-    private Map<String, Integer> expirationPerCache = new HashMap<>();
+    private Map<String, Duration> expirationPerCache = new HashMap<>();
 
     /**
      * Cached object key prefix. The default is 'memcached:spring-boot'.
@@ -67,7 +72,7 @@ public class MemcachedCacheProperties {
     /**
      * Memcached client operation timeout in milliseconds. The default is 2500 milliseconds.
      */
-    private Long operationTimeout = Default.OPERATION_TIMEOUT;
+    private Duration operationTimeout = Duration.ofMillis(Default.OPERATION_TIMEOUT);
 
     public List<InetSocketAddress> getServers() {
         return servers;
@@ -93,25 +98,26 @@ public class MemcachedCacheProperties {
         this.mode = mode;
     }
 
-    public Integer getExpiration() {
-        return (int) expiration;
+    public Duration getExpiration() {
+        return expiration;
     }
 
-    public void setExpiration(Integer expiration) {
+    public void setExpiration(Duration expiration) {
         validateExpiration(expiration);
         this.expiration = expiration;
     }
 
-    public void setExpirationPerCache(Map<String, Integer> expirationPerCache) {
+    public void setExpirationPerCache(Map<String, String> expirationPerCache) {
         if (expirationPerCache != null) {
             expirationPerCache.forEach((cacheName, expiration) -> {
-                validateExpiration(expiration);
-                this.expirationPerCache.put(cacheName, expiration);
+                Duration exp = DurationStyle.detect(expiration).parse(expiration, ChronoUnit.SECONDS);
+                validateExpiration(exp);
+                this.expirationPerCache.put(cacheName, exp);
             });
         }
     }
 
-    public Map<String, Integer> getExpirationPerCache() {
+    public Map<String, Duration> getExpirationPerCache() {
         return expirationPerCache;
     }
 
@@ -131,19 +137,19 @@ public class MemcachedCacheProperties {
         this.protocol = protocol;
     }
 
-    public Long getOperationTimeout() {
+    public Duration getOperationTimeout() {
         return operationTimeout;
     }
 
-    public void setOperationTimeout(Long operationTimeout) {
-        if (operationTimeout <= 0) {
+    public void setOperationTimeout(Duration operationTimeout) {
+        if (operationTimeout == Duration.ZERO) {
             throw new IllegalArgumentException("Operation timeout must be greater then zero");
         }
         this.operationTimeout = operationTimeout;
     }
 
-    private void validateExpiration(Integer expiration) {
-        if (expiration == null || expiration > 60 * 60 * 24 * 30) {
+    private void validateExpiration(Duration expiration) {
+        if (expiration == null || expiration.toDays() > 30) {
             throw new IllegalStateException("Invalid expiration. It should not be null or greater than 30 days.");
         }
     }
