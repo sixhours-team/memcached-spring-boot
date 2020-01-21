@@ -20,6 +20,7 @@ import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tags;
 import io.micrometer.core.instrument.binder.MeterBinder;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
+import net.rubyeye.xmemcached.MemcachedClient;
 import org.junit.After;
 import org.junit.Test;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
@@ -33,6 +34,9 @@ import org.springframework.cache.concurrent.ConcurrentMapCacheManager;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
+import java.net.InetSocketAddress;
+import java.util.Collections;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -106,14 +110,20 @@ public class MemcachedCacheMeterBinderProviderConfigurationTest {
 
         FunctionCounter hits = registry.get("cache.gets").tags(expectedTag).tag("result", "hit").functionCounter();
         FunctionCounter misses = registry.get("cache.gets").tags(expectedTag).tag("result", "miss").functionCounter();
+        FunctionCounter puts = registry.get("cache.puts").tags(expectedTag).functionCounter();
+        double availableServersCount = registry.get("available_servers_count").gauge().value();
 
         assertThat(hits.count()).isEqualTo(0);
         assertThat(misses.count()).isEqualTo(0);
+        assertThat(puts.count()).isEqualTo(0);
+        assertThat(availableServersCount).isEqualTo(1.0);
 
         getCacheKeyValues(books, "a", "b", "b", "c", "d", "c", "a", "a", "a", "d");
 
         assertThat(hits.count()).isEqualTo(6);
         assertThat(misses.count()).isEqualTo(4);
+        assertThat(puts.count()).isEqualTo(0);
+        assertThat(availableServersCount).isEqualTo(1.0);
     }
 
     private void getCacheKeyValues(Cache cache, String... keys) {
@@ -142,20 +152,13 @@ public class MemcachedCacheMeterBinderProviderConfigurationTest {
     }
 
     @Configuration
-    static class CacheWithCustomCacheManagerConfiguration extends CacheConfiguration {
-
-        @Bean
-        public CacheManager cacheManager() {
-            return new ConcurrentMapCacheManager();
-        }
-    }
-
-    @Configuration
     static class CacheWithMemcachedCacheManagerConfiguration extends CacheConfiguration {
 
         @Bean
         public MemcachedCacheManager cacheManager() {
-            IMemcachedClient memcachedClient = mock(IMemcachedClient.class);
+            final IMemcachedClient memcachedClient = mock(IMemcachedClient.class);
+            final MemcachedClient client = mock(MemcachedClient.class);
+
 
             given(memcachedClient.get(any()))
                     .willReturn("namespace").willReturn(null)
@@ -168,6 +171,9 @@ public class MemcachedCacheMeterBinderProviderConfigurationTest {
                     .willReturn("namespace").willReturn("a")
                     .willReturn("namespace").willReturn("a")
                     .willReturn("namespace").willReturn("d");
+            given(memcachedClient.nativeCache()).willReturn(client);
+            given(client.getAvailableServers())
+                    .willReturn(Collections.singletonList(new InetSocketAddress("127.0.0.1", 11222)));
 
             return new MemcachedCacheManager(memcachedClient);
         }
