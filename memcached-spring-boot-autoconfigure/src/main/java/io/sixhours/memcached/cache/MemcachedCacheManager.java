@@ -15,7 +15,6 @@
  */
 package io.sixhours.memcached.cache;
 
-import net.spy.memcached.MemcachedClient;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 
@@ -44,7 +43,7 @@ public class MemcachedCacheManager implements CacheManager {
 
     private final ConcurrentMap<String, Cache> cacheMap = new ConcurrentHashMap<>();
 
-    final MemcachedClient memcachedClient;
+    final IMemcachedClient memcachedClient;
 
     private int expiration = Default.EXPIRATION;
     private String prefix = Default.PREFIX;
@@ -54,9 +53,9 @@ public class MemcachedCacheManager implements CacheManager {
     /**
      * Construct a {@link MemcachedCacheManager}
      *
-     * @param memcachedClient {@link MemcachedClient}
+     * @param memcachedClient {@link IMemcachedClient}
      */
-    public MemcachedCacheManager(MemcachedClient memcachedClient) {
+    public MemcachedCacheManager(IMemcachedClient memcachedClient) {
         this.memcachedClient = memcachedClient;
     }
 

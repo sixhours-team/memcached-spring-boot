@@ -15,7 +15,6 @@
  */
 package io.sixhours.memcached.cache;
 
-import net.spy.memcached.MemcachedClient;
 import org.springframework.cache.support.AbstractValueAdaptingCache;
 
 import java.util.concurrent.Callable;
@@ -32,7 +31,7 @@ public class MemcachedCache extends AbstractValueAdaptingCache {
 
     private static final String KEY_DELIMITER = ":";
 
-    private final MemcachedClient memcachedClient;
+    private final IMemcachedClient memcachedClient;
     private final MemcacheCacheMetadata memcacheCacheMetadata;
 
     private final Lock lock = new ReentrantLock();
@@ -46,12 +45,12 @@ public class MemcachedCache extends AbstractValueAdaptingCache {
      * Create an {@code MemcachedCache} with the given settings.
      *
      * @param name            Cache name
-     * @param memcachedClient {@link MemcachedClient}
+     * @param memcachedClient {@link IMemcachedClient}
      * @param expiration      Cache expiration in seconds
      * @param prefix          Cache key prefix
      * @param namespace       Cache invalidation namespace key
      */
-    public MemcachedCache(String name, MemcachedClient memcachedClient, int expiration, String prefix, String namespace) {
+    public MemcachedCache(String name, IMemcachedClient memcachedClient, int expiration, String prefix, String namespace) {
         super(true);
         this.memcachedClient = memcachedClient;
         this.memcacheCacheMetadata = new MemcacheCacheMetadata(name, expiration, prefix, namespace);
@@ -68,8 +67,8 @@ public class MemcachedCache extends AbstractValueAdaptingCache {
     }
 
     @Override
-    public net.spy.memcached.MemcachedClient getNativeCache() {
-        return this.memcachedClient;
+    public Object getNativeCache() {
+        return this.memcachedClient.nativeCache();
     }
 
     @SuppressWarnings("unchecked")
@@ -197,7 +196,7 @@ public class MemcachedCache extends AbstractValueAdaptingCache {
         return value;
     }
 
-    class MemcacheCacheMetadata {
+    static class MemcacheCacheMetadata {
         private final String name;
         private final int expiration;
         private final String keyPrefix;

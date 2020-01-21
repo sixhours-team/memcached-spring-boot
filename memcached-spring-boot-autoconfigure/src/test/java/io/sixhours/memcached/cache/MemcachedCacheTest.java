@@ -15,7 +15,7 @@
  */
 package io.sixhours.memcached.cache;
 
-import net.spy.memcached.MemcachedClient;
+import net.rubyeye.xmemcached.MemcachedClient;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -44,7 +44,7 @@ public class MemcachedCacheTest {
     private static final String NAMESPACE_KEY = Default.NAMESPACE;
     private static final String NAMESPACE_KEY_VALUE = String.valueOf(System.currentTimeMillis());
 
-    private MemcachedClient memcachedClient;
+    private IMemcachedClient memcachedClient;
     private MemcachedCache memcachedCache;
 
     private final Object cachedValue = new Object();
@@ -59,7 +59,7 @@ public class MemcachedCacheTest {
 
     @Before
     public void setUp() {
-        memcachedClient = mock(MemcachedClient.class);
+        memcachedClient = mock(IMemcachedClient.class);
         memcachedCache = new MemcachedCache(CACHE_NAME, memcachedClient, CACHE_EXPIRATION, CACHE_PREFIX, NAMESPACE_KEY);
 
         memcachedKey = String.format("%s:%s:%s:%s", CACHE_PREFIX, CACHE_NAME, NAMESPACE_KEY_VALUE, CACHED_OBJECT_KEY);
@@ -124,9 +124,14 @@ public class MemcachedCacheTest {
 
     @Test
     public void whenGetNativeThenReturnMemcachedClient() {
-        MemcachedClient actual = memcachedCache.getNativeCache();
+        final MemcachedClient client = mock(MemcachedClient.class);
+        when(memcachedClient.nativeCache()).thenReturn(client);
 
-        assertThat(actual).isSameAs(memcachedClient);
+        MemcachedClient actual = (MemcachedClient) memcachedCache.getNativeCache();
+
+        assertThat(actual).isSameAs(client);
+
+        verify(memcachedClient).nativeCache();
     }
 
     @Test

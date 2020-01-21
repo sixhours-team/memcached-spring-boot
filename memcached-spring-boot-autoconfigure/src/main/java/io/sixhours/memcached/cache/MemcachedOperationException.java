@@ -15,21 +15,14 @@
  */
 package io.sixhours.memcached.cache;
 
-import org.springframework.beans.factory.DisposableBean;
-
 /**
- * Disposable {@link MemcachedCacheManager} bean.
+ * Memcached operation exception.
  *
  * @author Igor Bolic
  */
-class DisposableMemcachedCacheManager extends MemcachedCacheManager implements DisposableBean {
+public class MemcachedOperationException extends RuntimeException {
 
-    public DisposableMemcachedCacheManager(IMemcachedClient memcachedClient) {
-        super(memcachedClient);
-    }
-
-    @Override
-    public void destroy() {
-        this.memcachedClient.shutdown();
+    public MemcachedOperationException(String message, Throwable cause) {
+        super(message, cause);
     }
 }

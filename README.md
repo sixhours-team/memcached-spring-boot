@@ -19,7 +19,7 @@ To plug-in Memcached cache in your application follow the steps below:
    * **Gradle**
 
       ```groovy
-      compile('io.sixhours:memcached-spring-boot-starter:1.3.2')
+      compile('io.sixhours:memcached-spring-boot-starter:2.0.0-SNAPSHOT')
       ```
    * **Maven**
 
@@ -27,19 +27,19 @@ To plug-in Memcached cache in your application follow the steps below:
       <dependency>
           <groupId>io.sixhours</groupId>
           <artifactId>memcached-spring-boot-starter</artifactId>
-          <version>1.3.2</version>
+          <version>2.0.0-SNAPSHOT</version>
       </dependency>
       ```
 2. Configure `Memcached` key-value store in your properties file (`application.yml`).
 
     **Example**
 
-    To manually connect to one or more cache servers (nodes), specify comma-separated list of hostname:port with the `static` mode:
+    To manually connect to one or more cache servers (nodes), specify comma-separated list of hostname:port with the `static` provider:
 
     ```yaml
      memcached.cache:
        servers: example1.com:11211,example2.com:11211
-       mode: static
+       provider: static
        # default expiration is '1d' ('86400' seconds) and custom ones for cache_name1 and cache_name2
        expiration: 1d 
        expiration-per-cache:
@@ -48,12 +48,21 @@ To plug-in Memcached cache in your application follow the steps below:
      ```
 
     To connect to a cluster with AWS [Auto Discovery](http://docs.aws.amazon.com/AmazonElastiCache/latest/UserGuide/AutoDiscovery.html), specify
-    cluster configuration endpoint in `memcached.cache.servers` property with the `dynamic` mode:
+    cluster configuration endpoint in `memcached.cache.servers` property with the `aws` provider:
 
     ```yaml
     memcached.cache:
         servers: mycluster.example.com:11211
-        mode: dynamic
+        provider: aws
+        expiration: 86400 # default expiration set to '86400' seconds i.e. 1 day
+    ```
+   
+    To connect to a cluster within Google App Engine memcached service, it is sufficient to specify
+    the configuration property for provider with value `appengine`:
+
+    ```yaml
+    memcached.cache:
+        provider: appengine
         expiration: 86400 # default expiration set to '86400' seconds i.e. 1 day
     ```
 
@@ -101,7 +110,7 @@ full list of supported properties:
 ```yaml
 # MEMCACHED CACHE
 memcached.cache.servers: # Comma-separated list of hostname:port for memcached servers (default "localhost:11211")
-memcached.cache.mode: # Memcached client mode (use one of following: "static", "dynamic"). Default mode is "static", use "dynamic" for AWS node auto discovery
+memcached.cache.provider: # Memcached server provider (use one of following: "static", "aws" or "appengine"). Default provider is "static". Use "aws" for AWS node auto discovery, or "appengine" if running on Google Cloud Platform.
 memcached.cache.expiration: # Default cache expiration if not configured per cache (default "0", meaning that cache will never expire). If unit not specified, seconds will be used.
 memcached.cache.expiration-per-cache.cacheName: # To set expiration value for cache named "cacheName" {cache_name}:{number} e.g. "authors: 3600" or "authors: 1h". If unit not specified, seconds will be used.
 memcached.cache.prefix: # Cache key prefix (default "memcached:spring-boot")

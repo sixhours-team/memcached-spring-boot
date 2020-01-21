@@ -15,21 +15,20 @@
  */
 package io.sixhours.memcached.cache;
 
-import io.micrometer.core.instrument.util.StringUtils;
-import net.spy.memcached.AddrUtil;
-import net.spy.memcached.ClientMode;
-import net.spy.memcached.ConnectionFactoryBuilder;
+import net.rubyeye.xmemcached.utils.AddrUtil;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.convert.DurationStyle;
 import org.springframework.boot.convert.DurationUnit;
+import org.springframework.util.StringUtils;
 
 import java.net.InetSocketAddress;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Configuration properties for Memcached cache.
@@ -45,10 +44,10 @@ public class MemcachedCacheProperties {
     private List<InetSocketAddress> servers = Default.SERVERS;
 
     /**
-     * Memcached client mode. The default mode is 'static'. Use 'dynamic' mode for AWS node auto discovery, or 'static'
-     * if using multiple memcached servers.
+     * Memcached server provider. Use 'appengine' if running on Google Cloud Platform;
+     * Use 'aws' for AWS Elastic Cache with node auto discovery. Defaults to 'static'.
      */
-    private ClientMode mode = Default.CLIENT_MODE;
+    private Provider provider = Default.PROVIDER;
 
     /**
      * Cache expiration in seconds. The default is 0s, meaning the cache will never expire.
@@ -87,15 +86,16 @@ public class MemcachedCacheProperties {
         if (StringUtils.isEmpty(value)) {
             throw new IllegalArgumentException("Server list is empty");
         }
-        this.servers = AddrUtil.getAddresses(Arrays.asList(value.split(",")));
+        this.servers = Stream.of(value.split("\\s*,\\s*")).map(AddrUtil::getOneAddress)
+                .collect(Collectors.toList());
     }
 
-    public ClientMode getMode() {
-        return mode;
+    public Provider getProvider() {
+        return provider;
     }
 
-    public void setMode(ClientMode mode) {
-        this.mode = mode;
+    public void setProvider(Provider provider) {
+        this.provider = provider;
     }
 
     public Duration getExpiration() {
@@ -156,9 +156,9 @@ public class MemcachedCacheProperties {
 
     public enum Protocol {
         TEXT, BINARY;
+    }
 
-        public ConnectionFactoryBuilder.Protocol value() {
-            return ConnectionFactoryBuilder.Protocol.valueOf(this.name());
-        }
+    public enum Provider {
+        STATIC, APPENGINE, AWS
     }
 }

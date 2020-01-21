@@ -3,5 +3,6 @@ ext.projectDesc = 'Starter for the Memcached Spring Boot Cache'
 
 dependencies {
     implementation project(':memcached-spring-boot-autoconfigure')
-    implementation "com.amazonaws:elasticache-java-cluster-client:${elasticacheClientVersion}"
+    implementation "com.googlecode.xmemcached:xmemcached:${xmemcachedVersion}"
+    implementation "com.google.appengine:appengine-api-1.0-sdk:${appengineApiVersion}"
 }

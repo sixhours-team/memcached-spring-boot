@@ -20,6 +20,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 import java.net.InetSocketAddress;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -70,7 +71,9 @@ public final class MemcachedAssertions {
      */
     public static void assertMemcachedClient(IMemcachedClient memcachedClient, MemcachedCacheProperties.Protocol protocol, long operationTimeout, InetSocketAddress... servers) {
         InetSocketAddress[] availableServers = ((MemcachedClient) memcachedClient.nativeCache()).getAvailableServers().toArray(new InetSocketAddress[]{});
-//        List<NodeEndPoint> nodeEndPoints = (List<NodeEndPoint>) memcachedClient.getAllNodeEndPoints();
+        Stream.of(availableServers)
+                .forEach(System.out::println);
+        //        List<NodeEndPoint> nodeEndPoints = (List<NodeEndPoint>) memcachedClient.getAllNodeEndPoints();
 
 //        assertThat(availableServers)
 //                .as("The number of memcached node endpoints should match server list size")

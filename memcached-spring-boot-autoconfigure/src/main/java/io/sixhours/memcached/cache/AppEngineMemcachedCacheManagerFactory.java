@@ -15,21 +15,21 @@
  */
 package io.sixhours.memcached.cache;
 
-import org.springframework.beans.factory.DisposableBean;
+import com.google.appengine.api.memcache.MemcacheServiceFactory;
 
 /**
- * Disposable {@link MemcachedCacheManager} bean.
+ * Factory for the {@link MemcachedCacheManager} instances.
  *
  * @author Igor Bolic
  */
-class DisposableMemcachedCacheManager extends MemcachedCacheManager implements DisposableBean {
+public class AppEngineMemcachedCacheManagerFactory extends MemcachedCacheManagerFactory {
 
-    public DisposableMemcachedCacheManager(IMemcachedClient memcachedClient) {
-        super(memcachedClient);
+    public AppEngineMemcachedCacheManagerFactory(MemcachedCacheProperties properties) {
+        super(properties);
     }
 
     @Override
-    public void destroy() {
-        this.memcachedClient.shutdown();
+    IMemcachedClient memcachedClient() {
+        return new AppEngineMemcachedClient(MemcacheServiceFactory.getMemcacheService());
     }
 }

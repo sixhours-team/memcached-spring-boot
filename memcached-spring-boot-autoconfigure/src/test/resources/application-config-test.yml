@@ -19,7 +19,7 @@ memcached.cache:
   operation-timeout: 7200
   prefix: memcached:my-app
   protocol: binary
-  mode: dynamic
+  provider: aws
   expiration: 86400
   expiration-per-cache:
     cache_name1: 3600
