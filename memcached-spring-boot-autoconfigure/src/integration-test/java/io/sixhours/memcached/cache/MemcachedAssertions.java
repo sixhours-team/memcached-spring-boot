@@ -16,11 +16,13 @@
 package io.sixhours.memcached.cache;
 
 import net.rubyeye.xmemcached.MemcachedClient;
+import net.rubyeye.xmemcached.impl.MemcachedConnector;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.net.InetSocketAddress;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
-import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -59,7 +61,7 @@ public final class MemcachedAssertions {
      * @param memcachedClient {@link MemcachedClient}
      */
     public static void assertMemcachedClient(IMemcachedClient memcachedClient) {
-        assertMemcachedClient(memcachedClient, Default.PROTOCOL, Default.OPERATION_TIMEOUT, Default.SERVERS.get(0));
+        assertMemcachedClient(memcachedClient, Default.PROTOCOL, Default.OPERATION_TIMEOUT);
     }
 
     /**
@@ -70,42 +72,23 @@ public final class MemcachedAssertions {
      * @param servers         Expected server list
      */
     public static void assertMemcachedClient(IMemcachedClient memcachedClient, MemcachedCacheProperties.Protocol protocol, long operationTimeout, InetSocketAddress... servers) {
-        InetSocketAddress[] availableServers = ((MemcachedClient) memcachedClient.nativeCache()).getAvailableServers().toArray(new InetSocketAddress[]{});
-        Stream.of(availableServers)
-                .forEach(System.out::println);
-        //        List<NodeEndPoint> nodeEndPoints = (List<NodeEndPoint>) memcachedClient.getAllNodeEndPoints();
+        final MemcachedClient nativeCache = (MemcachedClient) memcachedClient.nativeCache();
 
-//        assertThat(availableServers)
-//                .as("The number of memcached node endpoints should match server list size")
-//                .hasSize(servers.length);
+        final MemcachedConnector connector = (MemcachedConnector) nativeCache.getConnector();
+        final InetSocketAddress[] availableServers = nativeCache.getAvailableServers().toArray(new InetSocketAddress[]{});
 
-//        ConnectionFactory cf = (ConnectionFactory) ReflectionTestUtils.getField(memcachedClient, "connFactory");
+        assertThat(nativeCache.getOpTimeout()).isEqualTo(operationTimeout);
+        assertThat(connector.getProtocol().name().toUpperCase()).isEqualTo(protocol.name());
+        assertThat(availableServers)
+                .as("The number of memcached node endpoints should match server list size")
+                .hasSize(servers.length);
+
+        final List<InetSocketAddress> actualServers = Arrays.asList(servers);
 
         for (int i = 0; i < availableServers.length; i++) {
-            InetSocketAddress server = availableServers[i];
-//            InetSocketAddress server = servers[i];
+            InetSocketAddress address = availableServers[i];
 
-            String host = server.getHostString();
-            int port = server.getPort();
-
-//            assertThat(host.matches("\\w+") ? nodeEndPoint.getHostName() : nodeEndPoint.getIpAddress())
-//                    .as("Memcached node endpoint host is incorrect")
-//                    .isEqualTo(host);
-//            assertThat(nodeEndPoint.getPort())
-//                    .as("Memcached node endpoint port is incorrect")
-//                    .isEqualTo(port);
+            assertThat(actualServers).contains(address);
         }
-
-//        assertThat(cf.getClientMode())
-//                .as("Memcached node endpoint mode is incorrect")
-//                .isEqualTo(clientMode);
-
-//        assertThat(cf.getOperationFactory())
-//                .as("Memcached node endpoint protocol is incorrect")
-//                .isInstanceOf(protocol == MemcachedCacheProperties.Protocol.TEXT ? AsciiOperationFactory.class : BinaryOperationFactory.class);
-//
-//        assertThat(cf.getOperationTimeout())
-//                .as("Memcached operation timeout is incorrect")
-//                .isEqualTo(operationTimeout);
     }
 }

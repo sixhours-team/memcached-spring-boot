@@ -46,7 +46,7 @@ public class XMemcachedCacheManagerFactory extends MemcachedCacheManagerFactory 
                 new AWSElasticCacheClientBuilder(servers) : new XMemcachedClientBuilder(servers);
 
         builder.setOpTimeout(properties.getOperationTimeout().toMillis());
-        builder.setCommandFactory(protocol.equals(MemcachedCacheProperties.Protocol.BINARY) ?
+        builder.setCommandFactory(MemcachedCacheProperties.Protocol.BINARY.equals(protocol) ?
                 new BinaryCommandFactory() : new TextCommandFactory());
 
         return new XMemcachedClient(builder.build());
