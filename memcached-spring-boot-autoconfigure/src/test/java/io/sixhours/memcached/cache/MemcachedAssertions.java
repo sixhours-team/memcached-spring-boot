@@ -86,12 +86,12 @@ public final class MemcachedAssertions {
             assertThat(availableServers)
                     .as("The number of memcached node endpoints should match server list size")
                     .hasSize(servers.length);
-        }
 
-        for (int i = 0; i < availableServers.length; i++) {
-            InetSocketAddress address = availableServers[i];
+            for (int i = 0; i < availableServers.length; i++) {
+                InetSocketAddress address = availableServers[i];
 
-            assertThat(actualServers).contains(address);
+                assertThat(actualServers).contains(address);
+            }
         }
     }
 }

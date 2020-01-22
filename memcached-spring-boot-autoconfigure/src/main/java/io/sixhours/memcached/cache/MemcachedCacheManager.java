@@ -80,8 +80,8 @@ public class MemcachedCacheManager implements CacheManager {
     }
 
     private MemcachedCache createCache(String name) {
-        int expiration = determineExpiration(name);
-        return new MemcachedCache(name, memcachedClient, expiration, prefix, namespace);
+        int cacheExpiration = determineExpiration(name);
+        return new MemcachedCache(name, memcachedClient, cacheExpiration, prefix, namespace);
     }
 
     private int determineExpiration(String name) {
