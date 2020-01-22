@@ -79,11 +79,14 @@ public final class MemcachedAssertions {
 
         assertThat(nativeCache.getOpTimeout()).isEqualTo(operationTimeout);
         assertThat(connector.getProtocol().name().toUpperCase()).isEqualTo(protocol.name());
-        assertThat(availableServers)
-                .as("The number of memcached node endpoints should match server list size")
-                .hasSize(servers.length);
 
         final List<InetSocketAddress> actualServers = Arrays.asList(servers);
+
+        if (actualServers.size() > 0) {
+            assertThat(availableServers)
+                    .as("The number of memcached node endpoints should match server list size")
+                    .hasSize(servers.length);
+        }
 
         for (int i = 0; i < availableServers.length; i++) {
             InetSocketAddress address = availableServers[i];
