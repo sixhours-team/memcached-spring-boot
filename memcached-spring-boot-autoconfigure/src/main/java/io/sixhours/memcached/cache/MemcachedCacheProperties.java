@@ -109,8 +109,8 @@ public class MemcachedCacheProperties {
 
     public void setExpirationPerCache(Map<String, String> expirationPerCache) {
         if (expirationPerCache != null) {
-            expirationPerCache.forEach((cacheName, expiration) -> {
-                Duration exp = DurationStyle.detect(expiration).parse(expiration, ChronoUnit.SECONDS);
+            expirationPerCache.forEach((cacheName, cacheExpiration) -> {
+                Duration exp = DurationStyle.detect(cacheExpiration).parse(cacheExpiration, ChronoUnit.SECONDS);
                 validateExpiration(exp);
                 this.expirationPerCache.put(cacheName, exp);
             });

@@ -69,7 +69,21 @@ public class XMemcachedClientTest {
         given(client.get(anyString())).willThrow(new TimeoutException("Test timeout error"));
 
         assertThatThrownBy(() -> memcachedClient.get("my-key"))
-                .isInstanceOf(MemcachedOperationException.class);
+                .isInstanceOf(MemcachedOperationException.class)
+                .hasMessage("Failed to get key")
+                .hasCauseInstanceOf(TimeoutException.class);
+
+        verify(client).get("my-key");
+    }
+
+    @Test
+    public void whenGetWithInterrupted_thenThrowException() throws InterruptedException, MemcachedException, TimeoutException {
+        given(client.get(anyString())).willThrow(new InterruptedException("Test interrupted error"));
+
+        assertThatThrownBy(() -> memcachedClient.get("my-key"))
+                .isInstanceOf(MemcachedOperationException.class)
+                .hasMessage("Failed to get key")
+                .hasCauseInstanceOf(InterruptedException.class);
 
         verify(client).get("my-key");
     }
@@ -86,7 +100,21 @@ public class XMemcachedClientTest {
         given(client.set(anyString(), anyInt(), any())).willThrow(new TimeoutException("Test timeout error"));
 
         assertThatThrownBy(() -> memcachedClient.set("my-key", 12000, "my-value"))
-                .isInstanceOf(MemcachedOperationException.class);
+                .isInstanceOf(MemcachedOperationException.class)
+                .hasMessage("Failed to set key")
+                .hasCauseInstanceOf(TimeoutException.class);
+
+        verify(client).set("my-key", 12000, "my-value");
+    }
+
+    @Test
+    public void whenSetWithInterrupted_thenThrowException() throws InterruptedException, MemcachedException, TimeoutException {
+        given(client.set(anyString(), anyInt(), any())).willThrow(new InterruptedException("Test interrupted error"));
+
+        assertThatThrownBy(() -> memcachedClient.set("my-key", 12000, "my-value"))
+                .isInstanceOf(MemcachedOperationException.class)
+                .hasMessage("Failed to set key")
+                .hasCauseInstanceOf(InterruptedException.class);
 
         verify(client).set("my-key", 12000, "my-value");
     }
@@ -103,7 +131,21 @@ public class XMemcachedClientTest {
         given(client.touch(anyString(), anyInt())).willThrow(new TimeoutException("Test timeout error"));
 
         assertThatThrownBy(() -> memcachedClient.touch("my-key", 700))
-                .isInstanceOf(MemcachedOperationException.class);
+                .isInstanceOf(MemcachedOperationException.class)
+                .hasMessage("Failed to touch key")
+                .hasCauseInstanceOf(TimeoutException.class);
+
+        verify(client).touch("my-key", 700);
+    }
+
+    @Test
+    public void whenTouchWithInterrupted_thenThrowException() throws InterruptedException, MemcachedException, TimeoutException {
+        given(client.touch(anyString(), anyInt())).willThrow(new InterruptedException("Test interrupted error"));
+
+        assertThatThrownBy(() -> memcachedClient.touch("my-key", 700))
+                .isInstanceOf(MemcachedOperationException.class)
+                .hasMessage("Failed to touch key")
+                .hasCauseInstanceOf(InterruptedException.class);
 
         verify(client).touch("my-key", 700);
     }
@@ -128,6 +170,18 @@ public class XMemcachedClientTest {
     }
 
     @Test
+    public void whenDeleteWithInterrupted_thenThrowException() throws InterruptedException, MemcachedException, TimeoutException {
+        given(client.delete(anyString())).willThrow(new InterruptedException("Test interrupted error"));
+
+        assertThatThrownBy(() -> memcachedClient.delete("my-key"))
+                .isInstanceOf(MemcachedOperationException.class)
+                .hasMessage("Failed to delete key")
+                .hasCauseInstanceOf(InterruptedException.class);
+
+        verify(client).delete("my-key");
+    }
+
+    @Test
     public void whenFlush_thenCorrectMethodInvoked() throws InterruptedException, MemcachedException, TimeoutException {
         memcachedClient.flush();
 
@@ -147,6 +201,18 @@ public class XMemcachedClientTest {
     }
 
     @Test
+    public void whenFlushWithInterrupted_thenThrowException() throws InterruptedException, MemcachedException, TimeoutException {
+        doThrow(new InterruptedException("Test interrupted error")).when(client).flushAll();
+
+        assertThatThrownBy(() -> memcachedClient.flush())
+                .isInstanceOf(MemcachedOperationException.class)
+                .hasMessage("Failed to flush all keys")
+                .hasCauseInstanceOf(InterruptedException.class);
+
+        verify(client).flushAll();
+    }
+
+    @Test
     public void whenIncr_thenCorrectMethodInvoked() throws InterruptedException, MemcachedException, TimeoutException {
         memcachedClient.incr("my-key", 2);
 
@@ -161,6 +227,18 @@ public class XMemcachedClientTest {
                 .isInstanceOf(MemcachedOperationException.class)
                 .hasMessage("Failed to increment key")
                 .hasCauseInstanceOf(TimeoutException.class);
+
+        verify(client).incr("my-key", 2);
+    }
+
+    @Test
+    public void whenIncrWithInterrupted_thenThrowException() throws InterruptedException, MemcachedException, TimeoutException {
+        given(client.incr(anyString(), anyLong())).willThrow(new InterruptedException("Test interrupted error"));
+
+        assertThatThrownBy(() -> memcachedClient.incr("my-key", 2))
+                .isInstanceOf(MemcachedOperationException.class)
+                .hasMessage("Failed to increment key")
+                .hasCauseInstanceOf(InterruptedException.class);
 
         verify(client).incr("my-key", 2);
     }

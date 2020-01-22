@@ -16,6 +16,7 @@
 package io.sixhours.memcached.cache;
 
 import java.io.IOException;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -34,9 +35,9 @@ public abstract class MemcachedCacheManagerFactory {
     public MemcachedCacheManager create() throws IOException {
         final DisposableMemcachedCacheManager cacheManager = new DisposableMemcachedCacheManager(memcachedClient());
 
-        cacheManager.setExpiration(Long.valueOf(properties.getExpiration().getSeconds()).intValue());
+        cacheManager.setExpiration((int) properties.getExpiration().getSeconds());
         cacheManager.setExpirationPerCache(properties.getExpirationPerCache().entrySet().stream()
-                .collect(Collectors.toMap(e -> e.getKey(), e -> Long.valueOf(e.getValue().getSeconds()).intValue())));
+                .collect(Collectors.toMap(Map.Entry::getKey, e -> (int) e.getValue().getSeconds())));
         cacheManager.setPrefix(properties.getPrefix());
         cacheManager.setNamespace(Default.NAMESPACE);
 

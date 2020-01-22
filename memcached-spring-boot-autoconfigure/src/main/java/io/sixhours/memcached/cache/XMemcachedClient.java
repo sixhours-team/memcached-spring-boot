@@ -43,7 +43,10 @@ public class XMemcachedClient implements IMemcachedClient {
     public Object get(String key) {
         try {
             return this.memcachedClient.get(key);
-        } catch (TimeoutException | InterruptedException | MemcachedException e) {
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new MemcachedOperationException("Failed to get key", e);
+        } catch (TimeoutException | MemcachedException e) {
             throw new MemcachedOperationException("Failed to get key", e);
         }
     }
@@ -52,7 +55,10 @@ public class XMemcachedClient implements IMemcachedClient {
     public void set(String key, int exp, Object value) {
         try {
             this.memcachedClient.set(key, exp, value);
-        } catch (TimeoutException | InterruptedException | MemcachedException e) {
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new MemcachedOperationException("Failed to set key", e);
+        } catch (TimeoutException | MemcachedException e) {
             throw new MemcachedOperationException("Failed to set key", e);
         }
     }
@@ -61,7 +67,10 @@ public class XMemcachedClient implements IMemcachedClient {
     public void touch(String key, int exp) {
         try {
             this.memcachedClient.touch(key, exp);
-        } catch (TimeoutException | InterruptedException | MemcachedException e) {
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new MemcachedOperationException("Failed to touch key", e);
+        } catch (TimeoutException | MemcachedException e) {
             throw new MemcachedOperationException("Failed to touch key", e);
         }
     }
@@ -70,7 +79,10 @@ public class XMemcachedClient implements IMemcachedClient {
     public void delete(String key) {
         try {
             this.memcachedClient.delete(key);
-        } catch (TimeoutException | InterruptedException | MemcachedException e) {
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new MemcachedOperationException("Failed to delete key", e);
+        } catch (TimeoutException | MemcachedException e) {
             throw new MemcachedOperationException("Failed to delete key", e);
         }
     }
@@ -79,7 +91,10 @@ public class XMemcachedClient implements IMemcachedClient {
     public void flush() {
         try {
             this.memcachedClient.flushAll();
-        } catch (TimeoutException | InterruptedException | MemcachedException e) {
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new MemcachedOperationException("Failed to flush all keys", e);
+        } catch (TimeoutException | MemcachedException e) {
             throw new MemcachedOperationException("Failed to flush all keys", e);
         }
     }
@@ -88,7 +103,10 @@ public class XMemcachedClient implements IMemcachedClient {
     public long incr(String key, int by) {
         try {
             return this.memcachedClient.incr(key, by);
-        } catch (TimeoutException | InterruptedException | MemcachedException e) {
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new MemcachedOperationException("Failed to increment key", e);
+        } catch (TimeoutException | MemcachedException e) {
             throw new MemcachedOperationException("Failed to increment key", e);
         }
     }
