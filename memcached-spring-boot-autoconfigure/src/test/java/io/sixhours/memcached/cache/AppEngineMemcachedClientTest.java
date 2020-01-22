@@ -106,5 +106,7 @@ public class AppEngineMemcachedClientTest {
     @Test
     public void whenShutdown_thenCorrectMethodInvoked() {
         memcachedClient.shutdown();
+
+        verifyNoInteractions(service);
     }
 }

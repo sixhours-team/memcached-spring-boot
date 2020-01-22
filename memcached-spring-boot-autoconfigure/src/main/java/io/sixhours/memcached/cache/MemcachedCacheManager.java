@@ -85,13 +85,8 @@ public class MemcachedCacheManager implements CacheManager {
     }
 
     private int determineExpiration(String name) {
-        Integer expiration = null;
-
-        if (expirationPerCache != null) {
-            expiration = expirationPerCache.get(name);
-        }
-
-        return Optional.ofNullable(expiration).orElse(this.expiration);
+        return Optional.ofNullable(expirationPerCache).map(e -> e.get(name))
+                .orElse(this.expiration);
     }
 
     /**
