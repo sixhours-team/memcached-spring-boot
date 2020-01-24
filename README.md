@@ -30,6 +30,11 @@ To plug-in Memcached cache in your application follow the steps below:
           <version>2.0.0-SNAPSHOT</version>
       </dependency>
       ```
+
+  * Snapshot repository
+
+    If you want to use `SNAPSHOT` versions, add the snapshot-repo `https://oss.jfrog.org/artifactory/libs-snapshot/` as shown in the [example](https://github.com/sixhours-team/spring-boot-memcached-demo-java/blob/master/build.gradle#L16).
+
 2. Configure `Memcached` key-value store in your properties file (`application.yml`).
 
     **Example**
@@ -41,7 +46,7 @@ To plug-in Memcached cache in your application follow the steps below:
        servers: example1.com:11211,example2.com:11211
        provider: static
        # default expiration is '1d' ('86400' seconds) and custom ones for cache_name1 and cache_name2
-       expiration: 1d 
+       expiration: 1d
        expiration-per-cache:
          cache_name1: 1h
          cache_name2: 30h
@@ -56,7 +61,7 @@ To plug-in Memcached cache in your application follow the steps below:
         provider: aws
         expiration: 86400 # default expiration set to '86400' seconds i.e. 1 day
     ```
-   
+
     To connect to a cluster within Google App Engine memcached service, it is sufficient to specify
     the configuration property for provider with value `appengine`:
 
