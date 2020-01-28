@@ -35,7 +35,7 @@ import org.springframework.context.annotation.Import;
  *
  * @author Igor Bolic
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnMissingSpringCacheType
 @ConditionalOnBean(CacheAspectSupport.class)
 @ConditionalOnMissingBean({CacheManager.class, CacheResolver.class})

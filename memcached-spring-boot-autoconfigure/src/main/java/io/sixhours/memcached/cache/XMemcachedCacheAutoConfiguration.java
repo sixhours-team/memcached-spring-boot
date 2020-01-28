@@ -35,7 +35,7 @@ import java.io.IOException;
  *
  * @author Igor Bolic
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnClass({net.rubyeye.xmemcached.MemcachedClient.class, CacheManager.class})
 @Conditional(NotAppEngineProviderCondition.class)
 @EnableConfigurationProperties(MemcachedCacheProperties.class)
