@@ -36,7 +36,7 @@ import java.io.IOException;
  *
  * @author Igor Bolic
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnClass({com.google.appengine.api.memcache.BaseMemcacheService.class, CacheManager.class})
 @Conditional(AppEngineProviderCondition.class)
 @EnableConfigurationProperties(MemcachedCacheProperties.class)

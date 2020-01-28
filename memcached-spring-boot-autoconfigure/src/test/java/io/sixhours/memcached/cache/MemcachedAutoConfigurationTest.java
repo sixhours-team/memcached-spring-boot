@@ -113,7 +113,7 @@ public class MemcachedAutoConfigurationTest {
     }
 
     @Test
-    public void whenUsingCustomCacheManagerThenMemcachedNotLoaded() {
+    public void whenUsingCustomCacheManagerThenMemcachedCacheManagerNotLoaded() {
         loadContext(CacheWithCustomCacheManagerConfiguration.class);
 
         assertThatThrownBy(() ->
