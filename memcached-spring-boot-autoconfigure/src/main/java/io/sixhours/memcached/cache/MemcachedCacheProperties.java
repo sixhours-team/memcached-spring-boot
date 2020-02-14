@@ -15,7 +15,6 @@
  */
 package io.sixhours.memcached.cache;
 
-import net.rubyeye.xmemcached.utils.AddrUtil;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.convert.DurationStyle;
 import org.springframework.boot.convert.DurationUnit;
@@ -86,7 +85,9 @@ public class MemcachedCacheProperties {
         if (StringUtils.isEmpty(value)) {
             throw new IllegalArgumentException("Server list is empty");
         }
-        this.servers = Stream.of(value.split("\\s*,\\s*")).map(AddrUtil::getOneAddress)
+        this.servers = Stream.of(value.split("\\s*,\\s*"))
+                .map(SocketAddress::new)
+                .map(SocketAddress::value)
                 .collect(Collectors.toList());
     }
 
