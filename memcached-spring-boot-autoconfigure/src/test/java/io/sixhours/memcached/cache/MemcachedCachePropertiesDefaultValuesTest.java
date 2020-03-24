@@ -101,4 +101,12 @@ public class MemcachedCachePropertiesDefaultValuesTest {
         assertThat(result).isNotNull();
         assertThat(result.isEmpty()).isTrue();
     }
+
+    @Test
+    public void whenGetHashStrategy_thenCorrectValue() {
+        MemcachedCacheProperties.HashStrategy result = memcachedCacheProperties.getHashStrategy();
+
+        assertThat(result).isNotNull();
+        assertThat(result).isEqualTo(MemcachedCacheProperties.HashStrategy.STANDARD);
+    }
 }

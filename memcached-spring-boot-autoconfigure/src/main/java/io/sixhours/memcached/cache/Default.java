@@ -15,6 +15,7 @@
  */
 package io.sixhours.memcached.cache;
 
+import io.sixhours.memcached.cache.MemcachedCacheProperties.HashStrategy;
 import io.sixhours.memcached.cache.MemcachedCacheProperties.Provider;
 
 import java.net.InetSocketAddress;
@@ -44,6 +45,8 @@ public final class Default {
     public static final Protocol PROTOCOL = Protocol.TEXT;
 
     public static final long OPERATION_TIMEOUT = 2500L;
+
+    public static final HashStrategy HASH_STRATEGY = HashStrategy.STANDARD;
 
     private Default() {
         throw new AssertionError("Suppress default constructor");

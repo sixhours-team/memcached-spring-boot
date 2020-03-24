@@ -15,6 +15,13 @@
  */
 package io.sixhours.memcached.cache;
 
+import net.rubyeye.xmemcached.impl.ArrayMemcachedSessionLocator;
+import net.rubyeye.xmemcached.impl.ElectionMemcachedSessionLocator;
+import net.rubyeye.xmemcached.impl.KetamaMemcachedSessionLocator;
+import net.rubyeye.xmemcached.impl.LibmemcachedMemcachedSessionLocator;
+import net.rubyeye.xmemcached.impl.PHPMemcacheSessionLocator;
+import net.rubyeye.xmemcached.impl.RandomMemcachedSessionLocaltor;
+import net.rubyeye.xmemcached.impl.RoundRobinMemcachedSessionLocator;
 import org.junit.After;
 import org.junit.Test;
 import org.springframework.beans.factory.BeanCreationException;
@@ -31,6 +38,7 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import static io.sixhours.memcached.cache.MemcachedAssertions.assertMemcachedCacheManager;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -189,6 +197,67 @@ public class MemcachedAutoConfigurationTest {
                 "memcached.cache.operation-timeout=0"))
                 .isInstanceOf(UnsatisfiedDependencyException.class)
                 .hasRootCause(new IllegalArgumentException("Operation timeout must be greater then zero"));
+    }
+
+    @Test
+    public void whenStaticProviderAndStandardHashStrategyThenMemcachedLoaded() {
+        whenHashStrategyThenCorrectSessionLocator("standard", ArrayMemcachedSessionLocator.class);
+    }
+
+    @Test
+    public void whenStaticProviderAndLibmemcachedHashStrategyThenMemcachedLoaded() {
+        whenHashStrategyThenCorrectSessionLocator("libmemcached", LibmemcachedMemcachedSessionLocator.class);
+    }
+
+    @Test
+    public void whenStaticProviderAndKetamaHashStrategyThenMemcachedLoaded() {
+        whenHashStrategyThenCorrectSessionLocator("ketama", KetamaMemcachedSessionLocator.class);
+    }
+
+    @Test
+    public void whenStaticProviderAndPhpHashStrategyThenMemcachedLoaded() {
+        whenHashStrategyThenCorrectSessionLocator("php", PHPMemcacheSessionLocator.class);
+    }
+
+    @Test
+    public void whenStaticProviderAndElectionHashStrategyThenMemcachedLoaded() {
+        whenHashStrategyThenCorrectSessionLocator("election", ElectionMemcachedSessionLocator.class);
+    }
+
+    @Test
+    public void whenStaticProviderAndRoundRobinHashStrategyThenMemcachedLoaded() {
+        whenHashStrategyThenCorrectSessionLocator("roundrobin", RoundRobinMemcachedSessionLocator.class);
+    }
+
+    @Test
+    public void whenStaticProviderAndRandomHashStrategyThenMemcachedLoaded() {
+        whenHashStrategyThenCorrectSessionLocator("random", RandomMemcachedSessionLocaltor.class);
+    }
+
+    @Test
+    public void whenStaticProviderAndNoHashStrategyThenMemcachedLoaded() {
+        loadContext(CacheConfiguration.class,
+                "memcached.cache.provider=static");
+
+        MemcachedCacheManager memcachedCacheManager = this.applicationContext.getBean(MemcachedCacheManager.class);
+
+        XMemcachedClient ourXMemcachedClient = (XMemcachedClient) ReflectionTestUtils.getField(memcachedCacheManager, "memcachedClient");
+        net.rubyeye.xmemcached.XMemcachedClient xMemcachedClient = (net.rubyeye.xmemcached.XMemcachedClient) ReflectionTestUtils.getField(ourXMemcachedClient, "memcachedClient");
+
+        assertThat(xMemcachedClient.getSessionLocator()).isInstanceOf(ArrayMemcachedSessionLocator.class);
+    }
+
+    private void whenHashStrategyThenCorrectSessionLocator(String hashStrategy, Class<?> memcachedSessionLocatorClass) {
+        loadContext(CacheConfiguration.class,
+                "memcached.cache.provider=static",
+                "memcached.cache.hash_strategy=" + hashStrategy);
+
+        MemcachedCacheManager memcachedCacheManager = this.applicationContext.getBean(MemcachedCacheManager.class);
+
+        XMemcachedClient ourXMemcachedClient = (XMemcachedClient) ReflectionTestUtils.getField(memcachedCacheManager, "memcachedClient");
+        net.rubyeye.xmemcached.XMemcachedClient xMemcachedClient = (net.rubyeye.xmemcached.XMemcachedClient) ReflectionTestUtils.getField(ourXMemcachedClient, "memcachedClient");
+
+        assertThat(xMemcachedClient.getSessionLocator()).isInstanceOf(memcachedSessionLocatorClass);
     }
 
     private void loadContext(Class<?> configuration, String... environment) {
