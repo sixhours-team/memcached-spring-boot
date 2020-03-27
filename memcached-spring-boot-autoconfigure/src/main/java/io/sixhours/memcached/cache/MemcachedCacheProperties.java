@@ -72,6 +72,14 @@ public class MemcachedCacheProperties {
      */
     private Duration operationTimeout = Duration.ofMillis(Default.OPERATION_TIMEOUT);
 
+    /**
+     * Memcached client hash strategy for distribution of data between servers. Supports 'standard' (array based :
+     * "hash(key) mod server_count"), 'libmemcached' (consistent hash), 'ketama' (consistent hash),
+     * 'php' (make easier to share data with PHP based clients), 'election', 'roundrobin', 'random'.
+     * The default is 'standard'.
+     */
+    private HashStrategy hashStrategy = Default.HASH_STRATEGY;
+
     public List<InetSocketAddress> getServers() {
         return servers;
     }
@@ -155,11 +163,23 @@ public class MemcachedCacheProperties {
         }
     }
 
+    public HashStrategy getHashStrategy() {
+        return hashStrategy;
+    }
+
+    public void setHashStrategy(HashStrategy hashStrategy) {
+        this.hashStrategy = hashStrategy;
+    }
+
     public enum Protocol {
-        TEXT, BINARY;
+        TEXT, BINARY
     }
 
     public enum Provider {
         STATIC, APPENGINE, AWS
+    }
+
+    public enum HashStrategy {
+        STANDARD, LIBMEMCACHED, KETAMA, PHP, ELECTION, ROUNDROBIN, RANDOM
     }
 }

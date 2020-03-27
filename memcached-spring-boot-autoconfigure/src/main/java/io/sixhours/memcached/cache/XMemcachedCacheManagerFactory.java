@@ -16,10 +16,17 @@
 package io.sixhours.memcached.cache;
 
 import net.rubyeye.xmemcached.MemcachedClientBuilder;
+import net.rubyeye.xmemcached.MemcachedSessionLocator;
 import net.rubyeye.xmemcached.XMemcachedClientBuilder;
 import net.rubyeye.xmemcached.aws.AWSElasticCacheClientBuilder;
 import net.rubyeye.xmemcached.command.BinaryCommandFactory;
 import net.rubyeye.xmemcached.command.TextCommandFactory;
+import net.rubyeye.xmemcached.impl.ElectionMemcachedSessionLocator;
+import net.rubyeye.xmemcached.impl.KetamaMemcachedSessionLocator;
+import net.rubyeye.xmemcached.impl.LibmemcachedMemcachedSessionLocator;
+import net.rubyeye.xmemcached.impl.PHPMemcacheSessionLocator;
+import net.rubyeye.xmemcached.impl.RandomMemcachedSessionLocaltor;
+import net.rubyeye.xmemcached.impl.RoundRobinMemcachedSessionLocator;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -49,6 +56,28 @@ public class XMemcachedCacheManagerFactory extends MemcachedCacheManagerFactory 
         builder.setCommandFactory(MemcachedCacheProperties.Protocol.BINARY.equals(protocol) ?
                 new BinaryCommandFactory() : new TextCommandFactory());
 
+        if (properties.getHashStrategy() != MemcachedCacheProperties.HashStrategy.STANDARD) {
+            builder.setSessionLocator(getSessionLocator(properties.getHashStrategy()));
+        }
+
         return new XMemcachedClient(builder.build());
+    }
+
+    private MemcachedSessionLocator getSessionLocator(MemcachedCacheProperties.HashStrategy hashStrategy) {
+        switch (hashStrategy) {
+            case LIBMEMCACHED:
+                return new LibmemcachedMemcachedSessionLocator();
+            case KETAMA:
+                return new KetamaMemcachedSessionLocator();
+            case PHP:
+                return new PHPMemcacheSessionLocator();
+            case ELECTION:
+                return new ElectionMemcachedSessionLocator();
+            case ROUNDROBIN:
+                return new RoundRobinMemcachedSessionLocator();
+            case RANDOM:
+            default:
+                return new RandomMemcachedSessionLocaltor();
+        }
     }
 }
