@@ -8,7 +8,7 @@
 
 Library that provides support for auto-configuration of Memcached cache in a Spring Boot application.
 
-It provides implementation for the [Spring Cache Abstraction](https://docs.spring.io/spring/docs/4.3.x/spring-framework-reference/html/cache.html), backed by the [Xmemcached](https://github.com/killme2008/xmemcached).
+It provides implementation for the [Spring Cache Abstraction](https://docs.spring.io/spring/docs/5.2.3.RELEASE/spring-framework-reference/integration.html#cache), backed by the [Xmemcached](https://github.com/killme2008/xmemcached).
 Supports cache eviction per key, as well as clearing out of the entire cache region. Binaries are available from **Maven Central** and **JCenter**.
 
 ## Usage
@@ -19,7 +19,7 @@ To plug-in Memcached cache in your application follow the steps below:
    * **Gradle**
 
       ```groovy
-      compile('io.sixhours:memcached-spring-boot-starter:2.0.0')
+      compile('io.sixhours:memcached-spring-boot-starter:2.1.0')
       ```
    * **Maven**
 
@@ -27,7 +27,7 @@ To plug-in Memcached cache in your application follow the steps below:
       <dependency>
           <groupId>io.sixhours</groupId>
           <artifactId>memcached-spring-boot-starter</artifactId>
-          <version>2.0.0</version>
+          <version>2.1.0</version>
       </dependency>
       ```
 
