@@ -13,7 +13,7 @@ elif [ "$TRAVIS_PULL_REQUEST" == "false" ] && [ "$TRAVIS_TAG" != "" ]; then
   echo -e 'Build Branch for Release => Branch ['$TRAVIS_BRANCH']  Tag ['$TRAVIS_TAG']'
   case "$TRAVIS_TAG" in
   v[[:digit:]]*\.[[:digit:]]*\.[[:digit:]]*)
-    ./gradlew build bintrayUpload -PuseLastTag=true
+    ./gradlew build bintrayUpload -x :bintrayUpload -PuseLastTag=true
     ;;
   *)
     echo -e 'WARN: Invalid Tag ['$TRAVIS_TAG']'
