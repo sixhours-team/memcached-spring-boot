@@ -192,11 +192,35 @@ public class MemcachedAutoConfigurationTest {
     }
 
     @Test
-    public void whenOperationTimeoutInvalidThenMemcachedNotLoaded() {
+    public void whenOperationTimeoutZeroThenMemcachedNotLoaded() {
         assertThatThrownBy(() -> loadContext(CacheConfiguration.class,
                 "memcached.cache.operation-timeout=0"))
                 .isInstanceOf(UnsatisfiedDependencyException.class)
                 .hasRootCause(new IllegalArgumentException("Operation timeout must be greater then zero"));
+    }
+
+    @Test
+    public void whenOperationTimeoutNegativeThenMemcachedNotLoaded() {
+        assertThatThrownBy(() -> loadContext(CacheConfiguration.class,
+                "memcached.cache.operation-timeout=-1"))
+                .isInstanceOf(UnsatisfiedDependencyException.class)
+                .hasRootCause(new IllegalArgumentException("Operation timeout must be greater then zero"));
+    }
+
+    @Test
+    public void whenServersRefreshIntervalZeroThenMemcachedNotLoaded() {
+        assertThatThrownBy(() -> loadContext(CacheConfiguration.class,
+                "memcached.cache.servers-refresh-interval=0"))
+                .isInstanceOf(UnsatisfiedDependencyException.class)
+                .hasRootCause(new IllegalArgumentException("Servers refresh interval must be greater then zero"));
+    }
+
+    @Test
+    public void whenServersRefreshIntervalNegativeThenMemcachedNotLoaded() {
+        assertThatThrownBy(() -> loadContext(CacheConfiguration.class,
+                "memcached.cache.servers-refresh-interval=-1"))
+                .isInstanceOf(UnsatisfiedDependencyException.class)
+                .hasRootCause(new IllegalArgumentException("Servers refresh interval must be greater then zero"));
     }
 
     @Test

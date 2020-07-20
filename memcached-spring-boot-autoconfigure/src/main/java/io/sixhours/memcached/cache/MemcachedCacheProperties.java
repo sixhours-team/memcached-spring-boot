@@ -29,6 +29,8 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static io.sixhours.memcached.cache.Default.SERVERS_REFRESH_INTERVAL;
+
 /**
  * Configuration properties for Memcached cache.
  *
@@ -44,7 +46,7 @@ public class MemcachedCacheProperties {
 
     /**
      * Memcached server provider. Use 'appengine' if running on Google Cloud Platform;
-     * Use 'aws' for AWS Elastic Cache with node auto discovery. Defaults to 'static'.
+     * Use 'aws' for Amazon ElastiCache with node auto discovery. Defaults to 'static'.
      */
     private Provider provider = Default.PROVIDER;
 
@@ -71,6 +73,12 @@ public class MemcachedCacheProperties {
      * Memcached client operation timeout in milliseconds. The default is 2500 milliseconds.
      */
     private Duration operationTimeout = Duration.ofMillis(Default.OPERATION_TIMEOUT);
+
+    /**
+     * Amazon ElastiCache configuration polling interval in milliseconds that refreshes the list of cache node hostnames and IP
+     * addresses.  The default is 60000 milliseconds
+     */
+    private Duration serversRefreshInterval = SERVERS_REFRESH_INTERVAL;
 
     /**
      * Memcached client hash strategy for distribution of data between servers. Supports 'standard' (array based :
@@ -151,10 +159,21 @@ public class MemcachedCacheProperties {
     }
 
     public void setOperationTimeout(Duration operationTimeout) {
-        if (operationTimeout == Duration.ZERO) {
+        if (Duration.ZERO.compareTo(operationTimeout) >= 0) {
             throw new IllegalArgumentException("Operation timeout must be greater then zero");
         }
         this.operationTimeout = operationTimeout;
+    }
+
+    public Duration getServersRefreshInterval() {
+        return serversRefreshInterval;
+    }
+
+    public void setServersRefreshInterval(Duration serversRefreshInterval) {
+        if (Duration.ZERO.compareTo(serversRefreshInterval) >= 0) {
+            throw new IllegalArgumentException("Servers refresh interval must be greater then zero");
+        }
+        this.serversRefreshInterval = serversRefreshInterval;
     }
 
     private void validateExpiration(Duration expiration) {

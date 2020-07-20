@@ -19,6 +19,7 @@ import io.sixhours.memcached.cache.MemcachedCacheProperties.HashStrategy;
 import io.sixhours.memcached.cache.MemcachedCacheProperties.Provider;
 
 import java.net.InetSocketAddress;
+import java.time.Duration;
 import java.util.Collections;
 import java.util.List;
 
@@ -45,6 +46,8 @@ public final class Default {
     public static final Protocol PROTOCOL = Protocol.TEXT;
 
     public static final long OPERATION_TIMEOUT = 2500L;
+
+    public static final Duration SERVERS_REFRESH_INTERVAL = Duration.ofMinutes(1);
 
     public static final HashStrategy HASH_STRATEGY = HashStrategy.STANDARD;
 

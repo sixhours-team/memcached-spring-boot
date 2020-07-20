@@ -16,6 +16,7 @@
 
 memcached.cache:
   servers: example1.com:12345,example2.com:12346
+  servers-refresh-interval: 30s
   operation-timeout: 2s
   prefix: memcached:my-app
   protocol: binary
