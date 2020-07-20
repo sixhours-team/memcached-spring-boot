@@ -122,6 +122,7 @@ memcached.cache.prefix: # Cache key prefix (default "memcached:spring-boot")
 memcached.cache.protocol: # Memcached client protocol. Supports "text" and "binary" protocols (default is "text" protocol)
 memcached.cache.operation-timeout: # Memcached client operation timeout (default "2500 milliseconds"). If unit not specified, milliseconds will be used.
 memcached.cache.hash-strategy: # Memcached client hash strategy for distribution of data between servers. Supports "standard" (array based : "hash(key) mod server_count"), "libmemcached" (consistent hash), "ketama" (consistent hash), "php" (make easier to share data with PHP based clients), "election", "roundrobin", "random". Default is "standard".
+memcached.cache.servers-refresh-interval: # Interval in milliseconds that refreshes the list of cache node hostnames and IP addresses for AWS ElastiCache. The default is 60000 milliseconds.
 ```
 
 All of the values have sensible defaults and are bound to [MemcachedCacheProperties](https://github.com/sixhours-team/memcached-spring-boot/blob/master/memcached-spring-boot-autoconfigure/src/main/java/io/sixhours/memcached/cache/MemcachedCacheProperties.java) class.

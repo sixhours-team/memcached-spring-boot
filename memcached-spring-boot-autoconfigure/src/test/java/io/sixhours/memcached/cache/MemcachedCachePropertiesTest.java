@@ -29,7 +29,9 @@ import java.time.Duration;
 import java.util.List;
 import java.util.Map;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.entry;
+import static org.assertj.core.api.Assertions.tuple;
 
 @RunWith(SpringRunner.class)
 @ActiveProfiles("config-test")
@@ -86,6 +88,14 @@ public class MemcachedCachePropertiesTest {
 
         assertThat(result).isNotNull();
         assertThat(result).isEqualTo(Duration.ofMillis(7200));
+    }
+
+    @Test
+    public void whenGetServersRefreshInterval_thenCorrectValue() {
+        Duration result = memcachedCacheProperties.getServersRefreshInterval();
+
+        assertThat(result).isNotNull();
+        assertThat(result).isEqualTo(Duration.ofMillis(30000));
     }
 
     @Test

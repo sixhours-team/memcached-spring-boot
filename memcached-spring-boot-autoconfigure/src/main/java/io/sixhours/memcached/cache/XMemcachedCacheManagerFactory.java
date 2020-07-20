@@ -52,6 +52,10 @@ public class XMemcachedCacheManagerFactory extends MemcachedCacheManagerFactory 
         final MemcachedClientBuilder builder = MemcachedCacheProperties.Provider.AWS.equals(provider) ?
                 new AWSElasticCacheClientBuilder(servers) : new XMemcachedClientBuilder(servers);
 
+        if (builder instanceof AWSElasticCacheClientBuilder) {
+            ((AWSElasticCacheClientBuilder) builder)
+                    .setPollConfigIntervalMs(properties.getServersRefreshInterval().toMillis());
+        }
         builder.setOpTimeout(properties.getOperationTimeout().toMillis());
         builder.setCommandFactory(MemcachedCacheProperties.Protocol.BINARY.equals(protocol) ?
                 new BinaryCommandFactory() : new TextCommandFactory());
