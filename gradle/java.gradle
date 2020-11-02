@@ -1,52 +1,40 @@
 apply plugin: 'java'
-apply plugin: 'propdeps-idea'
 
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
 
-sourceSets {
-    integrationTest { sourceSet ->
-        ["java", "kotlin", "groovy", "scala", "resources"].each {
-            if (!sourceSet.hasProperty(it)) {
-                return
-            }
-            sourceSet."$it".srcDir "src/integration-test/$it"
-        }
-        compileClasspath = sourceSets.main.output + sourceSets.test.output + configurations.integrationTestCompile
-        runtimeClasspath = output + compileClasspath + configurations.integrationTestRuntime
+    withJavadocJar()
+    withSourcesJar()
+
+    registerFeature('optional') {
+        usingSourceSet(sourceSets.main)
     }
 }
 
-idea {
-    module {
-        ["java", "kotlin", "groovy", "scala", "resources"].each {
-            if (!project.sourceSets.integrationTest.hasProperty(it)) {
-                return
-            }
-            testSourceDirs += project.sourceSets.integrationTest."$it".srcDirs
-        }
+sourceSets {
+    integrationTest {
+        java.srcDir 'src/integration-test/java'
+        resources.srcDir 'src/integration-test/resources'
+
+        compileClasspath += sourceSets.main.output + sourceSets.test.output
+        runtimeClasspath += sourceSets.main.output
     }
 }
 
 configurations {
-    integrationTestCompile {
-        extendsFrom testImplementation, optional, provided
-    }
-    integrationTestRuntime {
-        extendsFrom integrationTestCompile, testRuntimeOnly
-    }
+    integrationTestImplementation.extendsFrom testImplementation
+    integrationTestRuntimeOnly.extendsFrom testRuntimeOnly
+    testImplementation.extendsFrom optionalImplementation
 }
 
 task integrationTest(type: Test) {
-    group = LifecycleBasePlugin.VERIFICATION_GROUP
-    description = 'Runs the integration tests.'
-
-    maxHeapSize = '1024m'
+    description = 'Runs integration tests.'
+    group = 'verification'
 
     testClassesDirs = sourceSets.integrationTest.output.classesDirs
     classpath = sourceSets.integrationTest.runtimeClasspath
-
-    mustRunAfter tasks.test
+    shouldRunAfter test
 }
 
 check.dependsOn integrationTest

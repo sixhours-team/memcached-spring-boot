@@ -1,5 +1,5 @@
-/*
- * Copyright 2017 Sixhours.
+/**
+ * Copyright 2016-2020 Sixhours
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,17 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package io.sixhours.memcached.cache;
 
+import io.micrometer.core.instrument.FunctionCounter;
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.Tags;
+import io.micrometer.core.instrument.binder.MeterBinder;
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import net.spy.memcached.MemcachedClient;
 import org.junit.After;
 import org.junit.Test;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
-import org.springframework.boot.actuate.cache.CacheStatistics;
-import org.springframework.boot.actuate.cache.CacheStatisticsProvider;
+import org.springframework.boot.actuate.metrics.cache.CacheMeterBinderProvider;
 import org.springframework.boot.autoconfigure.cache.CacheAutoConfiguration;
-import org.springframework.boot.test.util.EnvironmentTestUtils;
+import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
@@ -32,19 +35,26 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import static org.assertj.core.api.Assertions.*;
+import java.net.InetSocketAddress;
+import java.util.Collections;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 
 /**
- * Cache statistics auto-configuration tests.
+ * Cache meter binder provider auto-configuration tests.
  *
  * @author Igor Bolic
+ * @author Sasa Bolic
  */
-public class MemcachedCacheStatisticsAutoConfigurationTest {
+public class MemcachedCacheMeterBinderProviderConfigurationTest {
 
     private final AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
+
+    private Tags expectedTag = Tags.of("app", "test");
 
     @After
     public void tearDown() {
@@ -56,10 +66,10 @@ public class MemcachedCacheStatisticsAutoConfigurationTest {
         loadContext(EmptyConfiguration.class);
 
         assertThatThrownBy(() ->
-                this.context.getBean("memcachedCacheStatisticsProvider", CacheStatisticsProvider.class)
+                this.context.getBean("memcachedCacheMeterBinderProvider", CacheMeterBinderProvider.class)
         )
                 .isInstanceOf(NoSuchBeanDefinitionException.class)
-                .hasMessage("No bean named 'memcachedCacheStatisticsProvider' available");
+                .hasMessage("No bean named 'memcachedCacheMeterBinderProvider' available");
     }
 
     @Test
@@ -67,17 +77,17 @@ public class MemcachedCacheStatisticsAutoConfigurationTest {
         loadContext(CacheConfiguration.class, "spring.cache.type=none");
 
         assertThatThrownBy(() ->
-                this.context.getBean("memcachedCacheStatisticsProvider", CacheStatisticsProvider.class)
+                this.context.getBean("memcachedCacheMeterBinderProvider", CacheMeterBinderProvider.class)
         )
                 .isInstanceOf(NoSuchBeanDefinitionException.class)
-                .hasMessage("No bean named 'memcachedCacheStatisticsProvider' available");
+                .hasMessage("No bean named 'memcachedCacheMeterBinderProvider' available");
     }
 
     @Test
     public void whenNoCustomCacheManagerThenCacheStatisticsLoaded() {
         loadContext(MemcachedAutoConfigurationTest.CacheConfiguration.class);
 
-        CacheStatisticsProvider provider = this.context.getBean("memcachedCacheStatisticsProvider", CacheStatisticsProvider.class);
+        CacheMeterBinderProvider provider = this.context.getBean("memcachedCacheMeterBinderProvider", CacheMeterBinderProvider.class);
 
         assertThat(provider).isNotNull();
     }
@@ -86,21 +96,23 @@ public class MemcachedCacheStatisticsAutoConfigurationTest {
     public void whenMemcachedCacheManagerBeanThenCacheStatisticsLoaded() {
         loadContext(CacheWithMemcachedCacheManagerConfiguration.class);
 
-        CacheStatisticsProvider provider = this.context.getBean(
-                "memcachedCacheStatisticsProvider", CacheStatisticsProvider.class);
+        CacheMeterBinderProvider provider = this.context.getBean(
+                "memcachedCacheMeterBinderProvider", CacheMeterBinderProvider.class);
 
         assertThat(provider).isNotNull();
 
         CacheManager cacheManager = this.context.getBean(CacheManager.class);
         Cache books = cacheManager.getCache("books");
 
-        CacheStatistics cacheStatistics = provider.getCacheStatistics(cacheManager, books);
+        MeterBinder metrics = provider.getMeterBinder(books, expectedTag);
 
-        assertCacheStatistics(cacheStatistics, null, null);
+        MeterRegistry registry = new SimpleMeterRegistry();
+        metrics.bindTo(registry);
+
+        assertMetrics(registry, 0, 0, 0, 1);
         getCacheKeyValues(books, "a", "b", "b", "c", "d", "c", "a", "a", "a", "d");
 
-        cacheStatistics = provider.getCacheStatistics(cacheManager, books);
-        assertCacheStatistics(cacheStatistics, 0.6d, 0.4d);
+        assertMetrics(registry, 6, 4, 0, 1);
     }
 
     private void getCacheKeyValues(Cache cache, String... keys) {
@@ -109,27 +121,27 @@ public class MemcachedCacheStatisticsAutoConfigurationTest {
         }
     }
 
-    private void assertCacheStatistics(CacheStatistics cacheStatistics, Double hitRatio, Double missRatio) {
-        assertThat(cacheStatistics).isNotNull();
-        assertRatio(hitRatio, cacheStatistics.getHitRatio());
-        assertRatio(missRatio, cacheStatistics.getMissRatio());
-    }
+    private void assertMetrics(MeterRegistry registry, int hitRatio, int missRatio, int putRatio, int availableServerCount) {
+        assertThat(registry).isNotNull();
 
-    private static void assertRatio(Double actual, Double expected) {
-        if (actual == null || expected == null) {
-            assertThat(actual).isEqualTo(expected);
-        } else {
-            assertThat(actual).isEqualTo(expected, offset(0.01D));
-        }
+        FunctionCounter hits = registry.get("cache.gets").tags(expectedTag).tag("result", "hit").functionCounter();
+        FunctionCounter misses = registry.get("cache.gets").tags(expectedTag).tag("result", "miss").functionCounter();
+        FunctionCounter puts = registry.get("cache.puts").tags(expectedTag).functionCounter();
+        double availableServersCount = registry.get("available_servers_count").gauge().value();
+
+        assertThat(hits.count()).isEqualTo(hitRatio);
+        assertThat(misses.count()).isEqualTo(missRatio);
+        assertThat(puts.count()).isEqualTo(putRatio);
+        assertThat(availableServersCount).isEqualTo(availableServerCount);
     }
 
     private void loadContext(Class<?> configuration, String... environment) {
-        EnvironmentTestUtils.addEnvironment(context, environment);
+        TestPropertyValues.of(environment).applyTo(context);
 
         context.register(configuration);
         context.register(MemcachedCacheAutoConfiguration.class);
         context.register(CacheAutoConfiguration.class);
-        context.register(MemcachedCacheStatisticsAutoConfiguration.class);
+        context.register(MemcachedCacheMeterBinderProviderConfiguration.class);
         context.refresh();
     }
 
@@ -169,6 +181,8 @@ public class MemcachedCacheStatisticsAutoConfigurationTest {
                     .willReturn("namespace").willReturn("a")
                     .willReturn("namespace").willReturn("a")
                     .willReturn("namespace").willReturn("d");
+            given(memcachedClient.getAvailableServers())
+                    .willReturn(Collections.singletonList(new InetSocketAddress("127.0.0.1", 11222)));
 
             return new MemcachedCacheManager(memcachedClient);
         }

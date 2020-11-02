@@ -1,5 +1,5 @@
-/*
- * Copyright 2017 Sixhours.
+/**
+ * Copyright 2016-2020 Sixhours
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,9 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package io.sixhours.memcached.cache;
 
+import io.micrometer.core.instrument.FunctionCounter;
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.Tags;
+import io.micrometer.core.instrument.binder.MeterBinder;
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import net.spy.memcached.ClientMode;
 import net.spy.memcached.DefaultConnectionFactory;
 import net.spy.memcached.MemcachedClient;
@@ -25,8 +29,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.boot.actuate.cache.CacheStatistics;
-import org.springframework.boot.actuate.cache.CacheStatisticsProvider;
+import org.springframework.boot.actuate.metrics.cache.CacheMeterBinderProvider;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.cache.Cache;
 import org.springframework.cache.annotation.EnableCaching;
@@ -45,12 +48,12 @@ import java.util.Collections;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.offset;
 
 /**
  * Memcached cache integration tests.
  *
  * @author Igor Bolic
+ * @author Sasa Bolic
  */
 @RunWith(SpringRunner.class)
 @ContextConfiguration(classes = MemcachedCacheIT.CacheConfig.class)
@@ -73,8 +76,8 @@ public class MemcachedCacheIT {
     BookService bookService;
 
     @Autowired
-    @Qualifier("memcachedCacheStatisticsProvider")
-    CacheStatisticsProvider provider;
+    @Qualifier("memcachedCacheMeterBinderProvider")
+    CacheMeterBinderProvider provider;
 
     @Before
     public void setUp() {
@@ -314,20 +317,23 @@ public class MemcachedCacheIT {
 
         Cache books = cacheManager.getCache("books");
 
-        CacheStatistics statistics = provider.getCacheStatistics(cacheManager, books);
+        Tags expectedTag = Tags.of("app", "test");
+        MeterBinder metrics = provider.getMeterBinder(books, expectedTag);
 
-        assertThat(statistics).isNotNull();
-        assertThat(statistics.getHitRatio()).isEqualTo(0.625d, offset(0.01D));
-        assertThat(statistics.getMissRatio()).isEqualTo(0.375d, offset(0.01D));
+        MeterRegistry registry = new SimpleMeterRegistry();
+        metrics.bindTo(registry);
+
+        FunctionCounter hits = registry.get("cache.gets").tags(expectedTag).tag("result", "hit").functionCounter();
+        FunctionCounter misses = registry.get("cache.gets").tags(expectedTag).tag("result", "miss").functionCounter();
+
+        assertThat(hits.count()).isEqualTo(5);
+        assertThat(misses.count()).isEqualTo(3);
 
         bookService.findAll();
         bookService.findByTitle("Kotlin");
 
-        CacheStatistics updatedStatistics = provider.getCacheStatistics(cacheManager, books);
-
-        assertThat(updatedStatistics).isNotNull();
-        assertThat(updatedStatistics.getHitRatio()).isEqualTo(0.7d, offset(0.01D));
-        assertThat(updatedStatistics.getMissRatio()).isEqualTo(0.3d, offset(0.01D));
+        assertThat(hits.count()).isEqualTo(7);
+        assertThat(misses.count()).isEqualTo(3);
     }
 
     @Configuration

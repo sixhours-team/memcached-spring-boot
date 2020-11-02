@@ -1,5 +1,5 @@
-/*
- * Copyright 2017 Sixhours.
+/**
+ * Copyright 2016-2020 Sixhours
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package io.sixhours.memcached.cache;
 
 import net.spy.memcached.AddrUtil;
@@ -34,8 +33,9 @@ import java.util.stream.Stream;
  * Configuration properties for Memcached cache.
  *
  * @author Igor Bolic
+ * @author Sasa Bolic
  */
-@ConfigurationProperties(prefix = "memcached.cache", ignoreInvalidFields = true)
+@ConfigurationProperties(prefix = "memcached.cache")
 public class MemcachedCacheProperties {
 
     /**
@@ -158,6 +158,10 @@ public class MemcachedCacheProperties {
             namespace = Default.NAMESPACE;
         }
         return namespace;
+    }
+
+    public void setNamespace(String namespace) {
+        this.namespace = namespace;
     }
 
     public Protocol getProtocol() {

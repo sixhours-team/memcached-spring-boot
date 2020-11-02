@@ -1,5 +1,5 @@
-/*
- * Copyright 2017 Sixhours.
+/**
+ * Copyright 2016-2020 Sixhours
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package io.sixhours.memcached.cache;
 
 import io.sixhours.memcached.cache.MemcachedCacheProperties.Protocol;
@@ -26,7 +25,7 @@ import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.UnsatisfiedDependencyException;
 import org.springframework.boot.autoconfigure.cache.CacheAutoConfiguration;
-import org.springframework.boot.test.util.EnvironmentTestUtils;
+import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cache.concurrent.ConcurrentMapCacheManager;
@@ -119,7 +118,7 @@ public class MemcachedAutoConfigurationTest {
                 loadContext(CacheConfiguration.class, "spring.cache.type=invalid-type")
         )
                 .isInstanceOf(BeanCreationException.class)
-                .hasMessageContaining("Field error in object 'spring.cache' on field 'type': rejected value [invalid-type]");
+                .hasMessageContaining("Failed to bind properties under 'spring.cache.type' to org.springframework.boot.autoconfigure.cache.CacheType");
     }
 
     @Test
@@ -255,7 +254,7 @@ public class MemcachedAutoConfigurationTest {
         )
                 .isInstanceOf(UnsatisfiedDependencyException.class)
                 .hasCauseInstanceOf(BeanCreationException.class)
-                .hasMessageContaining("Server list is empty");
+                .hasRootCauseMessage("Server list is empty");
     }
 
     @Test
@@ -264,7 +263,7 @@ public class MemcachedAutoConfigurationTest {
                 "memcached.cache.operation-timeout=0"))
                 .isInstanceOf(UnsatisfiedDependencyException.class)
                 .hasCauseInstanceOf(BeanCreationException.class)
-                .hasMessageContaining("Operation timeout must be greater then zero");
+                .hasRootCauseMessage("Operation timeout must be greater then zero");
     }
 
 
@@ -300,7 +299,7 @@ public class MemcachedAutoConfigurationTest {
     }
 
     private void loadContext(Class<?> configuration, String... environment) {
-        EnvironmentTestUtils.addEnvironment(applicationContext, environment);
+        TestPropertyValues.of(environment).applyTo(applicationContext);
 
         applicationContext.register(configuration);
         applicationContext.register(MemcachedCacheAutoConfiguration.class);

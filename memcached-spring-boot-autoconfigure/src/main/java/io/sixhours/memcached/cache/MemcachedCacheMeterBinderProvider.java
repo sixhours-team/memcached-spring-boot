@@ -15,21 +15,19 @@
  */
 package io.sixhours.memcached.cache;
 
-import org.springframework.context.annotation.Conditional;
-import org.springframework.core.env.Environment;
-
-import java.lang.annotation.*;
+import io.micrometer.core.instrument.Tag;
+import io.micrometer.core.instrument.binder.cache.CacheMeterBinder;
+import org.springframework.boot.actuate.metrics.cache.CacheMeterBinderProvider;
 
 /**
- * {@link Conditional} that only matches when the {@code spring.cache.type} property is
- * not defined in the {@link Environment}.
+ * Memcached {@link CacheMeterBinderProvider}.
  *
  * @author Sasa Bolic
  */
-@Target({ElementType.TYPE, ElementType.METHOD})
-@Retention(RetentionPolicy.RUNTIME)
-@Documented
-@Conditional(OnMissingSpringCacheType.class)
-@interface ConditionalOnMissingSpringCacheType {
+public class MemcachedCacheMeterBinderProvider implements CacheMeterBinderProvider<MemcachedCache> {
 
+    @Override
+    public CacheMeterBinder getMeterBinder(MemcachedCache memcachedCache, Iterable<Tag> tags) {
+        return new MemcachedCacheMetrics(memcachedCache, memcachedCache.getName(), tags);
+    }
 }
