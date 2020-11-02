@@ -3,25 +3,19 @@ ext.projectDesc = 'Memcached Spring Boot AutoConfiguration'
 
 apply from: SONAR_GRADLE
 
-artifacts {
-    archives sourcesJar
-    archives javadocJar
-}
-
 dependencies {
-    implementation('org.springframework.boot:spring-boot-autoconfigure')
+    implementation 'org.springframework.boot:spring-boot-autoconfigure'
 
-    annotationProcessor('org.springframework.boot:spring-boot-configuration-processor')
+    annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
 
-    optional('org.springframework.boot:spring-boot-actuator')
-    optional('org.springframework.cloud:spring-cloud-context')
-    optional('com.amazonaws:elasticache-java-cluster-client')
-    optional('io.micrometer:micrometer-core')
+    optionalImplementation "com.amazonaws:elasticache-java-cluster-client:${elasticacheClientVersion}"
 
-    testImplementation('org.springframework.boot:spring-boot-starter-test')
-    testImplementation('commons-logging:commons-logging')
+    optionalImplementation 'org.springframework.boot:spring-boot-actuator'
+    optionalImplementation 'org.springframework.cloud:spring-cloud-context'
+    optionalImplementation 'io.micrometer:micrometer-core'
 
-    integrationTestCompile('org.testcontainers:testcontainers')
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    integrationTestImplementation "org.testcontainers:testcontainers:${testcontainersVersion}"
 }
 
 compileJava.dependsOn(processResources)

@@ -1,6 +1,6 @@
-[![Build Status](https://travis-ci.org/sixhours-team/memcached-spring-boot.svg?branch=master)](https://travis-ci.org/sixhours-team/memcached-spring-boot) 
+[![Build Status](https://travis-ci.org/sixhours-team/memcached-spring-boot.svg?branch=master)](https://travis-ci.org/sixhours-team/memcached-spring-boot)
 [![codecov](https://codecov.io/gh/sixhours-team/memcached-spring-boot/branch/master/graph/badge.svg)](https://codecov.io/gh/sixhours-team/memcached-spring-boot)
-[![Quality Gate](https://sonarcloud.io/api/project_badges/measure?project=io.sixhours%3Amemcached-spring-boot-autoconfigure&metric=alert_status)](https://sonarcloud.io/dashboard/index/io.sixhours%3Amemcached-spring-boot-autoconfigure)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=io.sixhours%3Amemcached-spring-boot&metric=alert_status)](https://sonarcloud.io/dashboard?id=io.sixhours%3Amemcached-spring-boot)
 [![Join the chat at gitter.im/six-hours/memcached-spring-boot](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/six-hours/memcached-spring-boot?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0.html)
 
@@ -17,9 +17,9 @@ To plug-in Memcached cache in your application follow the steps below:
 
 1. Include library as a Gradle or Maven compile dependency:
    * **Gradle**
-   
+
       ```groovy
-      compile('io.sixhours:memcached-spring-boot-starter:1.3.2') 
+      compile('io.sixhours:memcached-spring-boot-starter:1.4.0') 
       ```
    * **Maven**
    
@@ -27,7 +27,7 @@ To plug-in Memcached cache in your application follow the steps below:
       <dependency>
           <groupId>io.sixhours</groupId>
           <artifactId>memcached-spring-boot-starter</artifactId>
-          <version>1.3.2</version>
+          <version>1.4.0</version>
       </dependency>
       ```
 2. Configure `Memcached` key-value store in your properties file (`application.yml`).

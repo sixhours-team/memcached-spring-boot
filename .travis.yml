@@ -2,9 +2,20 @@ language: java
 sudo: required
 services:
   - docker
-jdk:
-  - openjdk8
-  - openjdk11
+jobs:
+  include:
+    - jdk: openjdk8
+      env:
+        - BUILD_PUBLISH=true
+        - SONAR_ANALYSIS=false
+    - jdk: openjdk11
+      env:
+        - BUILD_PUBLISH=false
+        - SONAR_ANALYSIS=true
+    - jdk: openjdk13
+      env:
+        - BUILD_PUBLISH=false
+        - SONAR_ANALYSIS=false
 script: ./travisBuild.sh
 after_success:
   - ./sonarcloud.sh
