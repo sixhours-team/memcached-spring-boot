@@ -66,11 +66,11 @@ subprojects {
     }
 
     ext {
-        springBootVersion = '1.5.19.RELEASE'
-        springCloudVersion = 'Edgware.SR2'
+        springBootVersion = '2.3.5.RELEASE'
+        springCloudVersion = 'Hoxton.SR8'
         elasticacheClientVersion = '1.1.1'
         commonsLoggingVersion = '1.2'
-        testcontainersVersion = '1.10.6'
+        testcontainersVersion = '1.15.0-rc2'
     }
 
     dependencyManagement {

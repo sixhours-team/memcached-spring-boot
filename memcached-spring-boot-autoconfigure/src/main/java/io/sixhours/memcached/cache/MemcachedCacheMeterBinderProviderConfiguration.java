@@ -1,5 +1,5 @@
-/*
- * Copyright 2017 Sixhours.
+/**
+ * Copyright 2016-2020 Sixhours
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,31 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package io.sixhours.memcached.cache;
 
-import org.springframework.boot.actuate.cache.CacheStatisticsProvider;
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.cache.CacheAutoConfiguration;
+import io.micrometer.core.instrument.binder.MeterBinder;
+import org.springframework.boot.actuate.metrics.cache.CacheMeterBinderProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * {@link EnableAutoConfiguration Auto-configuration} for the Memcached {@link CacheStatisticsProvider} bean.
+ * Configuration for the Memcached {@link CacheMeterBinderProvider} bean.
  *
- * @author Igor Bolic
+ * @author Sasa Bolic
  */
-@Configuration
-@AutoConfigureAfter(CacheAutoConfiguration.class)
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnBean(MemcachedCacheManager.class)
-@ConditionalOnClass(CacheStatisticsProvider.class)
-public class MemcachedCacheStatisticsAutoConfiguration {
+@ConditionalOnClass(MeterBinder.class)
+public class MemcachedCacheMeterBinderProviderConfiguration {
 
     @Bean
-    public MemcachedCacheStatisticsProvider memcachedCacheStatisticsProvider() {
-        return new MemcachedCacheStatisticsProvider();
+    public MemcachedCacheMeterBinderProvider memcachedCacheMeterBinderProvider() {
+        return new MemcachedCacheMeterBinderProvider();
     }
 }

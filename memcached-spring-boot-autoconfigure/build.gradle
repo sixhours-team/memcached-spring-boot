@@ -16,6 +16,7 @@ dependencies {
     optional('org.springframework.boot:spring-boot-actuator')
     optional('org.springframework.cloud:spring-cloud-context')
     optional('com.amazonaws:elasticache-java-cluster-client')
+    optional('io.micrometer:micrometer-core')
 
     testImplementation('org.springframework.boot:spring-boot-starter-test')
     testImplementation('commons-logging:commons-logging')

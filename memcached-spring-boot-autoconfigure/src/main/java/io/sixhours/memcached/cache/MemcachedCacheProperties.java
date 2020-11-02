@@ -34,8 +34,9 @@ import java.util.stream.Stream;
  * Configuration properties for Memcached cache.
  *
  * @author Igor Bolic
+ * @author Sasa Bolic
  */
-@ConfigurationProperties(prefix = "memcached.cache", ignoreInvalidFields = true)
+@ConfigurationProperties(prefix = "memcached.cache")
 public class MemcachedCacheProperties {
 
     /**
@@ -158,6 +159,10 @@ public class MemcachedCacheProperties {
             namespace = Default.NAMESPACE;
         }
         return namespace;
+    }
+
+    public void setNamespace(String namespace) {
+        this.namespace = namespace;
     }
 
     public Protocol getProtocol() {
