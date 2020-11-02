@@ -29,7 +29,7 @@ allprojects {
             standardOutput = stdout
         }
         def version = stdout.toString().trim()
-        return !version.isEmpty() ? version - 'v' : '1.0.0-SNAPSHOT'
+        return !version.isEmpty() ? version - 'v' : '1.4.0-SNAPSHOT'
     }
 
     group = "io.sixhours"
