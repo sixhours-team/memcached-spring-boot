@@ -15,64 +15,62 @@
  */
 package io.sixhours.memcached.cache;
 
-import com.google.appengine.api.memcache.Expiration;
-import com.google.appengine.api.memcache.MemcacheService;
+import net.spy.memcached.MemcachedClient;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 /**
- * {@code AppEngine} memcached client implementation.
+ * {@code SpyMemcached} memcached client implementation.
  *
- * @author Igor Bolic
+ * @author Sasa Bolic
  */
-public class AppEngineMemcachedClient implements IMemcachedClient {
-    private static final Log log = LogFactory.getLog(AppEngineMemcachedClient.class);
+public class SpyMemcachedClient implements IMemcachedClient {
+    private static final Log log = LogFactory.getLog(SpyMemcachedClient.class);
 
-    private final MemcacheService service;
+    private final MemcachedClient memcachedClient;
 
-    public AppEngineMemcachedClient(MemcacheService service) {
-        log.info("AppEngineMemcachedClient client initialized.");
-        this.service = service;
+    public SpyMemcachedClient(MemcachedClient memcachedClient) {
+        log.info("SpyMemcached client initialized.");
+        this.memcachedClient = memcachedClient;
     }
 
     @Override
-    public MemcacheService nativeClient() {
-        return this.service;
+    public MemcachedClient nativeClient() {
+        return this.memcachedClient;
     }
 
     @Override
     public Object get(String key) {
-        return this.service.get(key);
+        return this.memcachedClient.get(key);
     }
 
     @Override
     public void set(String key, int exp, Object value) {
-        this.service.put(key, value, Expiration.byDeltaSeconds(exp));
+        this.memcachedClient.set(key, exp, value);
     }
 
     @Override
     public void touch(String key, int exp) {
-        final MemcacheService.IdentifiableValue identifiable = this.service.getIdentifiable(key);
-        this.service.putIfUntouched(key, identifiable, identifiable.getValue(), Expiration.byDeltaSeconds(exp));
+        this.memcachedClient.touch(key, exp);
     }
 
     @Override
     public void delete(String key) {
-        this.service.delete(key);
+        this.memcachedClient.delete(key);
     }
 
     @Override
     public void flush() {
-        this.service.clearAll();
+        this.memcachedClient.flush();
     }
 
     @Override
     public long incr(String key, int by) {
-        return this.service.increment(key, by);
+        return this.memcachedClient.incr(key, by);
     }
 
     @Override
     public void shutdown() {
-        // do nothing
+        this.memcachedClient.shutdown();
     }
 }

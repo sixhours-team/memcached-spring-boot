@@ -72,12 +72,12 @@ public final class MemcachedAssertions {
      * @param servers         Expected server list
      */
     public static void assertMemcachedClient(IMemcachedClient memcachedClient, MemcachedCacheProperties.Protocol protocol, long operationTimeout, InetSocketAddress... servers) {
-        final MemcachedClient nativeCache = (MemcachedClient) memcachedClient.nativeCache();
+        final MemcachedClient nativeClient = (MemcachedClient) memcachedClient.nativeClient();
 
-        final MemcachedConnector connector = (MemcachedConnector) nativeCache.getConnector();
-        final InetSocketAddress[] availableServers = nativeCache.getAvailableServers().toArray(new InetSocketAddress[]{});
+        final MemcachedConnector connector = (MemcachedConnector) nativeClient.getConnector();
+        final InetSocketAddress[] availableServers = nativeClient.getAvailableServers().toArray(new InetSocketAddress[]{});
 
-        assertThat(nativeCache.getOpTimeout()).isEqualTo(operationTimeout);
+        assertThat(nativeClient.getOpTimeout()).isEqualTo(operationTimeout);
         assertThat(connector.getProtocol().name().toUpperCase()).isEqualTo(protocol.name());
 
         final List<InetSocketAddress> actualServers = Arrays.asList(servers);

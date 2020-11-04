@@ -17,6 +17,8 @@ package io.sixhours.memcached.cache;
 
 import net.rubyeye.xmemcached.MemcachedClient;
 import net.rubyeye.xmemcached.exception.MemcachedException;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import java.io.IOException;
 import java.util.concurrent.TimeoutException;
@@ -27,15 +29,17 @@ import java.util.concurrent.TimeoutException;
  * @author Igor Bolic
  */
 public class XMemcachedClient implements IMemcachedClient {
+    private static final Log log = LogFactory.getLog(XMemcachedClient.class);
 
     private final MemcachedClient memcachedClient;
 
     public XMemcachedClient(MemcachedClient memcachedClient) {
+        log.info("XMemcachedClient client initialized.");
         this.memcachedClient = memcachedClient;
     }
 
     @Override
-    public Object nativeCache() {
+    public MemcachedClient nativeClient() {
         return this.memcachedClient;
     }
 

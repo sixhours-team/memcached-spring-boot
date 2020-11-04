@@ -135,13 +135,13 @@ public class MemcachedCacheTest {
     @Test
     public void whenGetNativeThenReturnMemcachedClient() {
         final MemcachedClient client = mock(MemcachedClient.class);
-        when(memcachedClient.nativeCache()).thenReturn(client);
+        when(memcachedClient.nativeClient()).thenReturn(client);
 
         MemcachedClient actual = (MemcachedClient) memcachedCache.getNativeCache();
 
         assertThat(actual).isSameAs(client);
 
-        verify(memcachedClient).nativeCache();
+        verify(memcachedClient).nativeClient();
     }
 
     @Test

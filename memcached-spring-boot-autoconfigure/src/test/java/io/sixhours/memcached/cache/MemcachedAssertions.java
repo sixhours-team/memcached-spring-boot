@@ -72,7 +72,7 @@ public final class MemcachedAssertions {
      * @param servers         Expected server list
      */
     public static void assertMemcachedClient(IMemcachedClient memcachedClient, MemcachedCacheProperties.Protocol protocol, long operationTimeout, InetSocketAddress... servers) {
-        final MemcachedClient nativeCache = (MemcachedClient) memcachedClient.nativeCache();
+        final MemcachedClient nativeCache = (MemcachedClient) memcachedClient.nativeClient();
 
         final MemcachedConnector connector = (MemcachedConnector) nativeCache.getConnector();
         final InetSocketAddress[] availableServers = nativeCache.getAvailableServers().toArray(new InetSocketAddress[]{});

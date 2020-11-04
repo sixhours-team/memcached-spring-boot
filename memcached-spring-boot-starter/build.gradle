@@ -2,6 +2,6 @@ ext.projectName = 'Memcached Spring Boot Starter'
 ext.projectDesc = 'Starter for the Memcached Spring Boot Cache'
 
 dependencies {
-    implementation project(':memcached-spring-boot-autoconfigure')
+    api(project(':memcached-spring-boot-autoconfigure'))
     implementation "com.googlecode.xmemcached:xmemcached:${xmemcachedVersion}"
 }

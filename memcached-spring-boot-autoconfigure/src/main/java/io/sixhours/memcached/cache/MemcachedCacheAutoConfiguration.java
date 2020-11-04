@@ -34,6 +34,7 @@ import org.springframework.context.annotation.Import;
  * Creates {@link CacheManager} when caching is enabled via {@link EnableCaching}.
  *
  * @author Igor Bolic
+ * @author Sasa Bolic
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnMissingSpringCacheType
@@ -42,6 +43,6 @@ import org.springframework.context.annotation.Import;
 @EnableConfigurationProperties(MemcachedCacheProperties.class)
 @AutoConfigureBefore(CacheAutoConfiguration.class)
 @AutoConfigureAfter(name = "org.springframework.cloud.autoconfigure.RefreshAutoConfiguration")
-@Import({AppEngineMemcachedCacheAutoConfiguration.class, XMemcachedCacheAutoConfiguration.class})
+@Import({AppEngineMemcachedCacheAutoConfiguration.class, XMemcachedCacheAutoConfiguration.class, SpyMemcachedCacheAutoConfiguration.class})
 public class MemcachedCacheAutoConfiguration {
 }

@@ -12,9 +12,10 @@ plugins {
 ext {
     springCloudVersion = 'Hoxton.SR4'
     xmemcachedVersion = '2.4.6'
+    elasticacheClientVersion = '1.1.2'
     appengineApiVersion = '1.9.80'
     commonsLoggingVersion = '1.2'
-    testcontainersVersion = '1.14.3'
+    testcontainersVersion = '1.15.0-rc2'
 }
 
 ext.JAVA_GRADLE = "$rootDir/gradle/java.gradle"
@@ -50,6 +51,7 @@ subprojects {
     apply from: PUBLISH_GRADLE
     apply from: RELEASE_GRADLE
     apply plugin: 'io.spring.dependency-management'
+    apply plugin: 'java-library'
 
     jar {
         manifest {
