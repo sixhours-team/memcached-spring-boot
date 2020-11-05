@@ -19,7 +19,7 @@ To plug-in Memcached cache in your application follow the steps below:
    * **Gradle**
 
       ```groovy
-      compile('io.sixhours:memcached-spring-boot-starter:2.1.2')
+      compile('io.sixhours:memcached-spring-boot-starter:2.2.0')
       ```
    * **Maven**
 
@@ -27,9 +27,40 @@ To plug-in Memcached cache in your application follow the steps below:
       <dependency>
           <groupId>io.sixhours</groupId>
           <artifactId>memcached-spring-boot-starter</artifactId>
-          <version>2.1.2</version>
+          <version>2.2.0</version>
       </dependency>
       ```
+  
+    As the default implementation is backed by [Xmemcached](https://github.com/killme2008/xmemcached) if there is a requirement to use [Spymemcached](https://github.com/awslabs/aws-elasticache-cluster-client-memcached-for-java) (i.e. its forked AWS version) following configuation should be applied:
+  
+   * **Gradle**
+
+        ```groovy
+        implementation('io.sixhours:memcached-spring-boot-starter:2.2.0') {
+          exclude group: 'com.googlecode.xmemcached', module: 'xmemcached'
+        }
+        implementation('com.amazonaws:elasticache-java-cluster-client:1.1.2')
+        ```
+   * **Maven**
+
+        ```xml
+        <dependency>
+            <groupId>io.sixhours</groupId>
+            <artifactId>memcached-spring-boot-starter</artifactId>
+            <version>2.2.0</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.googlecode.xmemcached</groupId>
+                    <artifactId>xmemcached</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>com.amazonaws</groupId>
+            <artifactId>elasticache-java-cluster-client</artifactId>
+            <version>1.1.2</version>
+        </dependency>
+        ```
 
   * Snapshot repository
 
