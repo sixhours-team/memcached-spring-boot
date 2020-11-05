@@ -57,9 +57,9 @@ public class XMemcachedClientTest {
 
     @Test
     public void whenGetNativeCache_thenReturnCorrectValue() {
-        Object result = memcachedClient.nativeCache();
+        MemcachedClient result = this.memcachedClient.nativeClient();
 
-        assertThat(result).isInstanceOf(MemcachedClient.class);
+        assertThat(result).isNotNull();
     }
 
     @Test

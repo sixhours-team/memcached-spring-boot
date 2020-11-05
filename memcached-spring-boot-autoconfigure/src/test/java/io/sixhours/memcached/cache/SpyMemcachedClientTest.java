@@ -15,49 +15,40 @@
  */
 package io.sixhours.memcached.cache;
 
-import com.google.appengine.api.memcache.Expiration;
-import com.google.appengine.api.memcache.MemcacheService;
+import net.spy.memcached.MemcachedClient;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.*;
 
-public class AppEngineMemcachedClientTest {
+public class SpyMemcachedClientTest {
 
-    public static final MemcacheService.IdentifiableValue IDENTIFIABLE_VALUE = () -> "identifiable-value";
+    private final MemcachedClient client = mock(MemcachedClient.class);
 
-    private final MemcacheService service = mock(MemcacheService.class);
-
-    private AppEngineMemcachedClient memcachedClient;
+    private SpyMemcachedClient memcachedClient;
 
     @Before
     public void setUp() {
-        this.memcachedClient = new AppEngineMemcachedClient(service);
+        this.memcachedClient = new SpyMemcachedClient(client);
 
-        given(service.get(any())).willReturn(CompletableFuture.completedFuture("result"));
-        given(service.getIdentifiable(any())).willReturn(IDENTIFIABLE_VALUE);
-        given(service.increment(any(), anyLong())).willReturn(123L);
+        given(client.get(anyString())).willReturn("result");
+        given(client.incr(anyString(), anyLong())).willReturn(123L);
     }
 
     @After
     public void tearDown() {
-        verifyNoMoreInteractions(service);
+        verifyNoMoreInteractions(client);
     }
 
     @Test
     public void whenGetNativeCache_thenReturnCorrectValue() {
-        MemcacheService result = memcachedClient.nativeClient();
+        MemcachedClient result = this.memcachedClient.nativeClient();
 
         assertThat(result).isNotNull();
     }
@@ -67,49 +58,48 @@ public class AppEngineMemcachedClientTest {
         Object result = memcachedClient.get("my-key");
 
         assertThat(result).isNotNull();
-        verify(service).get("my-key");
+        verify(client).get("my-key");
     }
 
     @Test
     public void whenSet_thenCorrectMethodInvoked() {
         memcachedClient.set("my-key", 12000, "my-value");
 
-        verify(service).put("my-key", "my-value", Expiration.byDeltaSeconds(12000));
+        verify(client).set("my-key", 12000, "my-value");
     }
 
     @Test
     public void whenTouch_thenCorrectMethodInvoked() throws ExecutionException, InterruptedException {
         memcachedClient.touch("my-key", 700);
 
-        verify(service).getIdentifiable("my-key");
-        verify(service).putIfUntouched("my-key", IDENTIFIABLE_VALUE, IDENTIFIABLE_VALUE.getValue(), Expiration.byDeltaSeconds(700));
+        verify(client).touch("my-key", 700);
     }
 
     @Test
     public void whenDelete_thenCorrectMethodInvoked() {
         memcachedClient.delete("my-key");
 
-        verify(service).delete("my-key");
+        verify(client).delete("my-key");
     }
 
     @Test
     public void whenFlush_thenCorrectMethodInvoked() {
         memcachedClient.flush();
 
-        verify(service).clearAll();
+        verify(client).flush();
     }
 
     @Test
     public void whenIncr_thenCorrectMethodInvoked() {
         memcachedClient.incr("my-key", 2);
 
-        verify(service).increment("my-key", 2);
+        verify(client).incr("my-key", 2);
     }
 
     @Test
     public void whenShutdown_thenCorrectMethodInvoked() {
         memcachedClient.shutdown();
 
-        verifyNoInteractions(service);
+        verify(client).shutdown();
     }
 }

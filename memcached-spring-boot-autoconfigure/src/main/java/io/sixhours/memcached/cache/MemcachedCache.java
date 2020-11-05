@@ -68,7 +68,7 @@ public class MemcachedCache extends AbstractValueAdaptingCache {
 
     @Override
     public Object getNativeCache() {
-        return this.memcachedClient.nativeCache();
+        return this.memcachedClient.nativeClient();
     }
 
     @SuppressWarnings("unchecked")

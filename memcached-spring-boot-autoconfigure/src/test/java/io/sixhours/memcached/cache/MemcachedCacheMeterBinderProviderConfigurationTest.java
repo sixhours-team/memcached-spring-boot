@@ -170,7 +170,7 @@ public class MemcachedCacheMeterBinderProviderConfigurationTest {
                     .willReturn("namespace").willReturn("a")
                     .willReturn("namespace").willReturn("a")
                     .willReturn("namespace").willReturn("d");
-            given(memcachedClient.nativeCache()).willReturn(client);
+            given(memcachedClient.nativeClient()).willReturn(client);
             given(client.getAvailableServers())
                     .willReturn(Collections.singletonList(new InetSocketAddress("127.0.0.1", 11222)));
 

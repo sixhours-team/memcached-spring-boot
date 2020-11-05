@@ -22,7 +22,7 @@ package io.sixhours.memcached.cache;
  */
 public interface IMemcachedClient {
 
-    Object nativeCache();
+    Object nativeClient();
 
     Object get(String key);
 

@@ -115,4 +115,8 @@ public class MemcachedCacheManager implements CacheManager {
     public void setExpirationPerCache(Map<String, Integer> expirationPerCache) {
         this.expirationPerCache = (expirationPerCache != null ? new ConcurrentHashMap<>(expirationPerCache) : null);
     }
+
+    public IMemcachedClient client() {
+        return this.memcachedClient;
+    }
 }
