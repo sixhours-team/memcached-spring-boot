@@ -26,4 +26,6 @@ memcached.cache:
     cache_name1: 3600
     cache_name2: 108000
     cache_name3: 7200
+    disabled_cache_name: 7200
   hash-strategy: ketama
+  disable-cache-names: "disabled_cache_name,something"

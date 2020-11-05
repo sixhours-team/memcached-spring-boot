@@ -28,6 +28,7 @@ import java.net.InetSocketAddress;
 import java.time.Duration;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.entry;
@@ -107,12 +108,22 @@ public class MemcachedCachePropertiesTest {
     }
 
     @Test
+    public void whenGetDisabledCaches_thenCorrectValue() {
+        Set<String> result = memcachedCacheProperties.getDisableCacheNames();
+
+        assertThat(result).isNotNull();
+        assertThat(result).hasSize(2);
+        assertThat(result).contains("disabled_cache_name");
+        assertThat(result).contains("something");
+    }
+
+    @Test
     public void whenGetExpirationPerCache_thenCorrectValue() {
         Map<String, Duration> result = memcachedCacheProperties.getExpirationPerCache();
 
         assertThat(result).isNotNull();
         assertThat(result.isEmpty()).isFalse();
-        assertThat(result.size()).isEqualTo(3);
+        assertThat(result.size()).isEqualTo(4);
         // @formatter:off
         assertThat(result).contains(
                 entry("cache_name1", Duration.ofSeconds(3600)),

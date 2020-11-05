@@ -18,8 +18,11 @@ package io.sixhours.memcached.cache;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.cache.Cache;
+import org.springframework.cache.support.NoOpCache;
 
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -71,5 +74,15 @@ public class MemcachedCacheManagerTest {
 
         assertThat(cacheNamesArray).hasSize(1);
         assertThat(cacheNamesArray[0]).isEqualTo(EXISTING_CACHE);
+    }
+
+    @Test
+    public void whenGetDisabledCacheThenIncreaseCacheSize() {
+        final Set<String> disabledCacheNames = new HashSet<>();
+        disabledCacheNames.add(EXISTING_CACHE);
+        cacheManager.setDisabledCacheNames(disabledCacheNames);
+        Cache cache = cacheManager.getCache(EXISTING_CACHE);
+
+        assertThat(cache).isInstanceOf(NoOpCache.class);
     }
 }

@@ -17,13 +17,19 @@ package io.sixhours.memcached.cache;
 
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
+import org.springframework.cache.support.NoOpCache;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.logging.Logger;
 
 /**
  * {@link CacheManager} implementation for Memcached.
@@ -41,6 +47,8 @@ import java.util.concurrent.ConcurrentMap;
  */
 public class MemcachedCacheManager implements CacheManager {
 
+    private final Logger logger = Logger.getLogger(MemcachedCacheManager.class.getName());
+
     private final ConcurrentMap<String, Cache> cacheMap = new ConcurrentHashMap<>();
 
     final IMemcachedClient memcachedClient;
@@ -49,6 +57,7 @@ public class MemcachedCacheManager implements CacheManager {
     private String prefix = Default.PREFIX;
     private String namespace = Default.NAMESPACE;
     private Map<String, Integer> expirationPerCache;
+    private Set<String> disabledCacheNames = new HashSet<>();
 
     /**
      * Construct a {@link MemcachedCacheManager}
@@ -61,6 +70,10 @@ public class MemcachedCacheManager implements CacheManager {
 
     @Override
     public Cache getCache(String name) {
+        if(disabledCacheNames.contains(name)) {
+            logger.info(String.format("Ignoring cache \"%s\" because it is on the disabled cache names", name));
+            return new NoOpCache(name);
+        }
         Cache cache = this.cacheMap.get(name);
         if (cache == null) {
 
@@ -118,5 +131,13 @@ public class MemcachedCacheManager implements CacheManager {
 
     public IMemcachedClient client() {
         return this.memcachedClient;
+    }
+
+    public void setDisabledCacheNames(Set<String> disabledCacheNames) {
+        this.disabledCacheNames = disabledCacheNames;
+    }
+
+    public Set<String> getDisabledCacheNames() {
+        return disabledCacheNames;
     }
 }
