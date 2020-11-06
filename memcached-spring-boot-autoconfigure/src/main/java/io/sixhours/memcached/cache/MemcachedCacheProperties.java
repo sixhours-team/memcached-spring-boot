@@ -24,8 +24,10 @@ import java.net.InetSocketAddress;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -43,6 +45,11 @@ public class MemcachedCacheProperties {
      * Comma-separated list of hostname:port for memcached servers. The default hostname:port is 'localhost:11211'.
      */
     private List<InetSocketAddress> servers = Default.SERVERS;
+
+    /**
+     * Comma-separated list of cache names to disable
+     */
+    private Set<String> disableCacheNames = new HashSet<>();
 
     /**
      * Memcached server provider. Use 'appengine' if running on Google Cloud Platform;
@@ -188,6 +195,14 @@ public class MemcachedCacheProperties {
 
     public void setHashStrategy(HashStrategy hashStrategy) {
         this.hashStrategy = hashStrategy;
+    }
+
+    public Set<String> getDisableCacheNames() {
+        return disableCacheNames;
+    }
+
+    public void setDisableCacheNames(Set<String> disableCacheNames) {
+        this.disableCacheNames = disableCacheNames;
     }
 
     public enum Protocol {

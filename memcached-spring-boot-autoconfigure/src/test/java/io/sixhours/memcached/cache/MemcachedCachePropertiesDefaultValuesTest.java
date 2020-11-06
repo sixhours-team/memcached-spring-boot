@@ -27,6 +27,7 @@ import java.net.InetSocketAddress;
 import java.time.Duration;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
@@ -84,6 +85,14 @@ public class MemcachedCachePropertiesDefaultValuesTest {
 
         assertThat(result).isNotNull();
         assertThat(result).isEqualTo(Duration.ofMillis(2500));
+    }
+
+    @Test
+    public void whenGetDisabledCaches_thenCorrectValue() {
+        Set<String> result = memcachedCacheProperties.getDisableCacheNames();
+
+        assertThat(result).isNotNull();
+        assertThat(result).isEmpty();
     }
 
     @Test

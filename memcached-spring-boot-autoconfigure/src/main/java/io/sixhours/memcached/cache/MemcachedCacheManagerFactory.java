@@ -40,6 +40,7 @@ public abstract class MemcachedCacheManagerFactory {
                 .collect(Collectors.toMap(Map.Entry::getKey, e -> (int) e.getValue().getSeconds())));
         cacheManager.setPrefix(properties.getPrefix());
         cacheManager.setNamespace(Default.NAMESPACE);
+        cacheManager.setDisabledCacheNames(properties.getDisableCacheNames());
 
         return cacheManager;
     }
