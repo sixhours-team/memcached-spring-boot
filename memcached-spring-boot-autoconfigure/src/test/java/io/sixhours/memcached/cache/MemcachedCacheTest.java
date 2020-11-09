@@ -15,13 +15,6 @@
  */
 package io.sixhours.memcached.cache;
 
-import net.rubyeye.xmemcached.MemcachedClient;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.springframework.cache.Cache;
-import org.springframework.cache.support.NullValue;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.any;
@@ -35,6 +28,12 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
+
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.springframework.cache.Cache;
+import org.springframework.cache.support.NullValue;
 
 /**
  * Memcached cache tests.
@@ -134,14 +133,9 @@ public class MemcachedCacheTest {
 
     @Test
     public void whenGetNativeThenReturnMemcachedClient() {
-        final MemcachedClient client = mock(MemcachedClient.class);
-        when(memcachedClient.nativeClient()).thenReturn(client);
+        IMemcachedClient actual = (IMemcachedClient) memcachedCache.getNativeCache();
 
-        MemcachedClient actual = (MemcachedClient) memcachedCache.getNativeCache();
-
-        assertThat(actual).isSameAs(client);
-
-        verify(memcachedClient).nativeClient();
+        assertThat(actual).isSameAs(memcachedClient);
     }
 
     @Test
