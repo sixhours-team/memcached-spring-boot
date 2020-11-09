@@ -19,7 +19,6 @@ import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tag;
 import io.micrometer.core.instrument.binder.cache.CacheMeterBinder;
 import io.micrometer.core.instrument.binder.cache.CaffeineCacheMetrics;
-import net.rubyeye.xmemcached.MemcachedClient;
 
 /**
  * Collect metrics on Memcached caches.
@@ -69,10 +68,10 @@ public class MemcachedCacheMetrics extends CacheMeterBinder {
 
     @Override
     protected void bindImplementationSpecificMetrics(MeterRegistry registry) {
-        if (cache.getNativeCache() instanceof MemcachedClient) {
-            final MemcachedClient memcachedClient = (MemcachedClient) cache.getNativeCache();
+        if (cache.getNativeCache() instanceof XMemcachedClient) {
+            final XMemcachedClient memcachedClient = (XMemcachedClient) cache.getNativeCache();
 
-            registry.gauge("available_servers_count", memcachedClient.getAvailableServers().size());
+            registry.gauge("available_servers_count", memcachedClient.nativeClient().getAvailableServers().size());
         }
     }
 }

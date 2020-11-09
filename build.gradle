@@ -25,7 +25,7 @@ ext.RELEASE_GRADLE = "$rootDir/gradle/release.gradle"
 ext.SONAR_GRADLE = "$rootDir/gradle/sonar.gradle"
 
 ext {
-    projectVersion = '2.3.0-SNAPSHOT'
+    projectVersion = '2.3.1-SNAPSHOT'
     useLastTag = false
 }
 

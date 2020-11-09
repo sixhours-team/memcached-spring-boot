@@ -155,7 +155,7 @@ public class MemcachedCacheMeterBinderProviderConfigurationTest {
 
         @Bean
         public MemcachedCacheManager cacheManager() {
-            final IMemcachedClient memcachedClient = mock(IMemcachedClient.class);
+            final XMemcachedClient memcachedClient = mock(XMemcachedClient.class);
             final MemcachedClient client = mock(MemcachedClient.class);
 
 
