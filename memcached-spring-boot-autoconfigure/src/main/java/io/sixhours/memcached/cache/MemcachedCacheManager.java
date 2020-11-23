@@ -15,21 +15,19 @@
  */
 package io.sixhours.memcached.cache;
 
-import org.springframework.cache.Cache;
-import org.springframework.cache.CacheManager;
-import org.springframework.cache.support.NoOpCache;
-
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 import java.util.logging.Logger;
+
+import org.springframework.cache.Cache;
+import org.springframework.cache.CacheManager;
+import org.springframework.cache.support.NoOpCache;
+import org.springframework.cache.transaction.AbstractTransactionSupportingCacheManager;
 
 /**
  * {@link CacheManager} implementation for Memcached.
@@ -45,11 +43,9 @@ import java.util.logging.Logger;
  *
  * @author Igor Bolic
  */
-public class MemcachedCacheManager implements CacheManager {
+public class MemcachedCacheManager extends AbstractTransactionSupportingCacheManager {
 
     private final Logger logger = Logger.getLogger(MemcachedCacheManager.class.getName());
-
-    private final ConcurrentMap<String, Cache> cacheMap = new ConcurrentHashMap<>();
 
     final IMemcachedClient memcachedClient;
 
@@ -69,27 +65,22 @@ public class MemcachedCacheManager implements CacheManager {
     }
 
     @Override
+    protected Collection<? extends Cache> loadCaches() {
+        return Collections.emptyList();
+    }
+
+    @Override
     public Cache getCache(String name) {
         if(disabledCacheNames.contains(name)) {
             logger.info(String.format("Ignoring cache \"%s\" because it is on the disabled cache names", name));
             return new NoOpCache(name);
         }
-        Cache cache = this.cacheMap.get(name);
-        if (cache == null) {
-
-            cache = createCache(name);
-            final Cache currentCache = cacheMap.putIfAbsent(name, cache);
-
-            if (currentCache != null) {
-                cache = currentCache;
-            }
-        }
-        return cache;
+        return super.getCache(name);
     }
 
     @Override
-    public Collection<String> getCacheNames() {
-        return Collections.unmodifiableSet(cacheMap.keySet());
+    protected MemcachedCache getMissingCache(String name) {
+        return createCache(name);
     }
 
     private MemcachedCache createCache(String name) {

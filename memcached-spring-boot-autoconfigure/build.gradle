@@ -15,7 +15,9 @@ dependencies {
     optionalImplementation 'org.springframework.boot:spring-boot-actuator'
     optionalImplementation 'org.springframework.cloud:spring-cloud-context'
     optionalImplementation 'io.micrometer:micrometer-core'
+    implementation 'org.springframework:spring-context-support'
 
+    testImplementation 'javax.cache:cache-api:1.1.1'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     integrationTestImplementation "org.testcontainers:testcontainers:${testcontainersVersion}"
 }
