@@ -15,15 +15,15 @@
  */
 package io.sixhours.memcached.cache;
 
-import io.sixhours.memcached.cache.MemcachedCacheProperties.HashStrategy;
-import io.sixhours.memcached.cache.MemcachedCacheProperties.Provider;
+import static io.sixhours.memcached.cache.MemcachedCacheProperties.Protocol;
 
 import java.net.InetSocketAddress;
 import java.time.Duration;
 import java.util.Collections;
 import java.util.List;
 
-import static io.sixhours.memcached.cache.MemcachedCacheProperties.Protocol;
+import io.sixhours.memcached.cache.MemcachedCacheProperties.HashStrategy;
+import io.sixhours.memcached.cache.MemcachedCacheProperties.Provider;
 
 /**
  * Default cache configuration values.
@@ -39,10 +39,6 @@ public final class Default {
 
     public static final int EXPIRATION = 0;
 
-    public static final boolean METRICS_ENABLED = false;
-
-    public static final boolean DISABLED = false;
-
     public static final String PREFIX = "memcached:spring-boot";
 
     public static final String NAMESPACE = "namespace";
@@ -57,5 +53,20 @@ public final class Default {
 
     private Default() {
         throw new AssertionError("Suppress default constructor");
+    }
+
+
+    /**
+     * Default per cache configuration values.
+     *
+     * @author Sasa Bolic
+     */
+    public static class PerCache {
+
+        public static final int EXPIRATION = Default.EXPIRATION;
+
+        public static final boolean METRICS_ENABLED = false;
+
+        public static final boolean DISABLED = false;
     }
 }

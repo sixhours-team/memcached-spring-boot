@@ -15,10 +15,7 @@
  */
 package io.sixhours.memcached.cache;
 
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.convert.DurationStyle;
-import org.springframework.boot.convert.DurationUnit;
-import org.springframework.util.StringUtils;
+import static io.sixhours.memcached.cache.Default.SERVERS_REFRESH_INTERVAL;
 
 import java.net.InetSocketAddress;
 import java.time.Duration;
@@ -31,7 +28,10 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static io.sixhours.memcached.cache.Default.SERVERS_REFRESH_INTERVAL;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.convert.DurationStyle;
+import org.springframework.boot.convert.DurationUnit;
+import org.springframework.util.StringUtils;
 
 /**
  * Configuration properties for Memcached cache.
@@ -230,21 +230,22 @@ public class MemcachedCacheProperties {
     }
 
     static class CacheConfig {
+
         /**
          * Cache expiration in seconds. The default is 0s, meaning the cache will never expire.
          */
         @DurationUnit(ChronoUnit.SECONDS)
-        private Duration expiration = Duration.ofSeconds(Default.EXPIRATION);
+        private Duration expiration = Duration.ofSeconds(Default.PerCache.EXPIRATION);
 
         /**
          * Should the metrics be enabled for specific cache. The default is false.
          */
-        private boolean metricsEnabled = Default.METRICS_ENABLED;
+        private boolean metricsEnabled = Default.PerCache.METRICS_ENABLED;
 
         /**
          * Should we skip caching for specific cache name. The default is false.
          */
-        private boolean disabled = Default.DISABLED;
+        private boolean disabled = Default.PerCache.DISABLED;
 
         public Duration getExpiration() {
             return expiration;
