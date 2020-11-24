@@ -112,22 +112,35 @@ public class MemcachedCachePropertiesConfigPerCacheTest {
 
         assertThat(result).isNotNull();
         assertThat(result.isEmpty()).isFalse();
-        assertThat(result.size()).isEqualTo(4);
+        assertThat(result.size()).isEqualTo(6);
 
         assertThat(result.get("cache_name1")).isNotNull();
         assertThat(result.get("cache_name1").getExpiration()).isEqualByComparingTo(Duration.ofMinutes(2));
         assertThat(result.get("cache_name1").isMetricsEnabled()).isTrue();
+        assertThat(result.get("cache_name1").isDisabled()).isFalse();
 
         assertThat(result.get("cache_name2")).isNotNull();
         assertThat(result.get("cache_name2").getExpiration()).isEqualByComparingTo(Duration.ofHours(30));
         assertThat(result.get("cache_name2").isMetricsEnabled()).isFalse();
+        assertThat(result.get("cache_name2").isDisabled()).isFalse();
 
         assertThat(result.get("cache_name3")).isNotNull();
         assertThat(result.get("cache_name3").getExpiration()).isEqualByComparingTo(Duration.ofHours(2));
         assertThat(result.get("cache_name3").isMetricsEnabled()).isFalse();
+        assertThat(result.get("cache_name3").isDisabled()).isFalse();
 
         assertThat(result.get("cache_name4")).isNotNull();
         assertThat(result.get("cache_name4").getExpiration()).isEqualByComparingTo(Duration.ofSeconds(0));
         assertThat(result.get("cache_name4").isMetricsEnabled()).isTrue();
+
+        assertThat(result.get("cache_name5")).isNotNull();
+        assertThat(result.get("cache_name5").getExpiration()).isEqualByComparingTo(Duration.ofSeconds(0));
+        assertThat(result.get("cache_name5").isMetricsEnabled()).isFalse();
+        assertThat(result.get("cache_name5").isDisabled()).isTrue();
+
+        assertThat(result.get("cache_name6")).isNotNull();
+        assertThat(result.get("cache_name6").getExpiration()).isEqualByComparingTo(Duration.ofMinutes(2));
+        assertThat(result.get("cache_name6").isMetricsEnabled()).isTrue();
+        assertThat(result.get("cache_name6").isDisabled()).isTrue();
     }
 }

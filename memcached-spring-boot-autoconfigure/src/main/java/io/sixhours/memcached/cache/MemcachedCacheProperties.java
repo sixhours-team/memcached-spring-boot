@@ -241,6 +241,11 @@ public class MemcachedCacheProperties {
          */
         private boolean metricsEnabled = Default.METRICS_ENABLED;
 
+        /**
+         * Should we skip caching for specific cache name. The default is false.
+         */
+        private boolean disabled = Default.DISABLED;
+
         public Duration getExpiration() {
             return expiration;
         }
@@ -258,6 +263,14 @@ public class MemcachedCacheProperties {
 
         public void setMetricsEnabled(boolean metricsEnabled) {
             this.metricsEnabled = metricsEnabled;
+        }
+
+        public boolean isDisabled() {
+            return disabled;
+        }
+
+        public void setDisabled(boolean disabled) {
+            this.disabled = disabled;
         }
     }
 }

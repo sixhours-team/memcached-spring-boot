@@ -33,3 +33,10 @@ memcached.cache:
       metrics-enabled: false
     cache_name4:
       metrics-enabled: true
+    cache_name5:
+      disabled: true
+    cache_name6:
+      expiration: 2m
+      metrics-enabled: true
+      disabled: true
+

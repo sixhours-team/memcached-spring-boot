@@ -82,10 +82,17 @@ public class MemcachedCacheManager extends AbstractTransactionSupportingCacheMan
 
     @Override
     public Cache getCache(String name) {
+        MemcachedCacheProperties.CacheConfig cacheConfig = configurationPerCache.get(name);
+        if (cacheConfig != null && cacheConfig.isDisabled()) {
+            logger.info(String.format("Ignoring cache \"%s\" because it is was disabled in the configuration.", name));
+            return new NoOpCache(name);
+        }
+
         if(disabledCacheNames.contains(name)) {
             logger.info(String.format("Ignoring cache \"%s\" because it is on the disabled cache names", name));
             return new NoOpCache(name);
         }
+
         return super.getCache(name);
     }
 
