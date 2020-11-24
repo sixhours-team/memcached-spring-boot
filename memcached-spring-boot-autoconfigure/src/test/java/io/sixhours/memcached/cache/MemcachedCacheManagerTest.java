@@ -91,6 +91,24 @@ public class MemcachedCacheManagerTest {
         assertThat(cache).isInstanceOf(NoOpCache.class);
     }
 
+	@Test
+	public void whenGetDisabledCacheThenNoOpCache() {
+        MemcachedCacheProperties.CacheConfig cacheConfig = new MemcachedCacheProperties.CacheConfig();
+        cacheConfig.setExpiration(Duration.ofHours(3));
+        cacheConfig.setMetricsEnabled(true);
+        cacheConfig.setDisabled(true);
+
+        Map<String, MemcachedCacheProperties.CacheConfig> configurationPerCache = Stream.of(new Object[][] {
+                { EXISTING_CACHE, cacheConfig }
+        }).collect(Collectors.toMap(data -> String.valueOf(data[0]), data -> (MemcachedCacheProperties.CacheConfig) data[1]));
+
+        cacheManager.setConfigurationPerCache(configurationPerCache);
+
+        Cache cache = cacheManager.getCache(EXISTING_CACHE);
+
+        assertThat(cache).isInstanceOf(NoOpCache.class);
+	}
+
     @Test
     public void whenLoadCachesThenReturnConfiguredCachesWithMetricsEnabled() {
         MemcachedCacheProperties.CacheConfig cacheConfig = new MemcachedCacheProperties.CacheConfig();
