@@ -15,9 +15,10 @@
  */
 package io.sixhours.memcached.cache;
 
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -53,6 +54,7 @@ public class MemcachedCacheManager extends AbstractTransactionSupportingCacheMan
     private String prefix = Default.PREFIX;
     private String namespace = Default.NAMESPACE;
     private Map<String, Integer> expirationPerCache;
+    private Map<String, MemcachedCacheProperties.CacheConfig> configurationPerCache;
     private Set<String> disabledCacheNames = new HashSet<>();
 
     /**
@@ -66,7 +68,17 @@ public class MemcachedCacheManager extends AbstractTransactionSupportingCacheMan
 
     @Override
     protected Collection<? extends Cache> loadCaches() {
-        return Collections.emptyList();
+        List<MemcachedCache> caches = new ArrayList<>();
+
+        Optional.ofNullable(configurationPerCache).ifPresent(c -> {
+            for (Map.Entry<String, MemcachedCacheProperties.CacheConfig> entry : c.entrySet()) {
+                if (entry.getValue().isMetricsEnabled()) {
+                    caches.add(new MemcachedCache(entry.getKey(), memcachedClient, (int) entry.getValue().getExpiration().getSeconds(), prefix, namespace));
+                }
+            }
+        });
+
+        return caches;
     }
 
     @Override
@@ -118,6 +130,15 @@ public class MemcachedCacheManager extends AbstractTransactionSupportingCacheMan
      */
     public void setExpirationPerCache(Map<String, Integer> expirationPerCache) {
         this.expirationPerCache = (expirationPerCache != null ? new ConcurrentHashMap<>(expirationPerCache) : null);
+    }
+
+    /**
+     * Sets configuration per cache.
+     *
+     * @param configurationPerCache {@link Map} of configurations per cache key
+     */
+    public void setConfigurationPerCache(Map<String, MemcachedCacheProperties.CacheConfig> configurationPerCache) {
+        this.configurationPerCache = (configurationPerCache != null ? new ConcurrentHashMap<>(configurationPerCache) : null);
     }
 
     public IMemcachedClient client() {

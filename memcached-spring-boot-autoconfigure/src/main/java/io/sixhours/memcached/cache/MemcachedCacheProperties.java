@@ -65,6 +65,8 @@ public class MemcachedCacheProperties {
 
     private Map<String, Duration> expirationPerCache = new HashMap<>();
 
+    private Map<String, CacheConfig> configurationPerCache = new HashMap<>();
+
     /**
      * Cached object key prefix. The default is 'memcached:spring-boot'.
      */
@@ -145,6 +147,16 @@ public class MemcachedCacheProperties {
         return expirationPerCache;
     }
 
+    public Map<String, CacheConfig> getConfigurationPerCache() {
+        return configurationPerCache;
+    }
+
+    public void setConfigurationPerCache(Map<String, CacheConfig> configurationPerCache) {
+        if (configurationPerCache != null) {
+            this.configurationPerCache = configurationPerCache;
+        }
+    }
+
     public String getPrefix() {
         return prefix;
     }
@@ -183,7 +195,7 @@ public class MemcachedCacheProperties {
         this.serversRefreshInterval = serversRefreshInterval;
     }
 
-    private void validateExpiration(Duration expiration) {
+    private static void validateExpiration(Duration expiration) {
         if (expiration == null || expiration.toDays() > 30) {
             throw new IllegalStateException("Invalid expiration. It should not be null or greater than 30 days.");
         }
@@ -215,5 +227,37 @@ public class MemcachedCacheProperties {
 
     public enum HashStrategy {
         STANDARD, LIBMEMCACHED, KETAMA, PHP, ELECTION, ROUNDROBIN, RANDOM
+    }
+
+    static class CacheConfig {
+        /**
+         * Cache expiration in seconds. The default is 0s, meaning the cache will never expire.
+         */
+        @DurationUnit(ChronoUnit.SECONDS)
+        private Duration expiration = Duration.ofSeconds(Default.EXPIRATION);
+
+        /**
+         * Should the metrics be enabled for specific cache. The default is false.
+         */
+        private boolean metricsEnabled = Default.METRICS_ENABLED;
+
+        public Duration getExpiration() {
+            return expiration;
+        }
+
+        public void setExpiration(Duration expiration) {
+            if (expiration != null) {
+                validateExpiration(expiration);
+                this.expiration = expiration;
+            }
+        }
+
+        public boolean isMetricsEnabled() {
+            return metricsEnabled;
+        }
+
+        public void setMetricsEnabled(boolean metricsEnabled) {
+            this.metricsEnabled = metricsEnabled;
+        }
     }
 }

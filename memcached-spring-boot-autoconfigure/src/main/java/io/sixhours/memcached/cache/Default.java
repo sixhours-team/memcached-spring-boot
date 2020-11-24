@@ -39,6 +39,8 @@ public final class Default {
 
     public static final int EXPIRATION = 0;
 
+    public static final boolean METRICS_ENABLED = false;
+
     public static final String PREFIX = "memcached:spring-boot";
 
     public static final String NAMESPACE = "namespace";
