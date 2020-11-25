@@ -57,13 +57,11 @@ public class MemcachedCachePropertiesConfigPerCacheTest {
         assertThat(result).isNotNull();
         assertThat(result.isEmpty()).isFalse();
         assertThat(result.size()).isEqualTo(2);
-        // @formatter:off
         assertThat(result).extracting("hostName", "port")
                 .containsExactly(
                         tuple("example1.com", 12345),
                         tuple("example2.com", 12346)
                 );
-        // @formatter:on
     }
 
     @Test

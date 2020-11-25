@@ -21,11 +21,10 @@ import static org.mockito.Mockito.mock;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -98,9 +97,7 @@ public class MemcachedCacheManagerTest {
         cacheConfig.setMetricsEnabled(true);
         cacheConfig.setDisabled(true);
 
-        Map<String, MemcachedCacheProperties.CacheConfig> configurationPerCache = Stream.of(new Object[][] {
-                { EXISTING_CACHE, cacheConfig }
-        }).collect(Collectors.toMap(data -> String.valueOf(data[0]), data -> (MemcachedCacheProperties.CacheConfig) data[1]));
+        Map<String, MemcachedCacheProperties.CacheConfig> configurationPerCache = Collections.singletonMap(EXISTING_CACHE, cacheConfig);
 
         cacheManager.setConfigurationPerCache(configurationPerCache);
 
@@ -115,9 +112,7 @@ public class MemcachedCacheManagerTest {
         cacheConfig.setExpiration(Duration.ofHours(3));
         cacheConfig.setMetricsEnabled(true);
 
-        Map<String, MemcachedCacheProperties.CacheConfig> configurationPerCache = Stream.of(new Object[][] {
-                { "books", cacheConfig }
-        }).collect(Collectors.toMap(data -> String.valueOf(data[0]), data -> (MemcachedCacheProperties.CacheConfig) data[1]));
+        Map<String, MemcachedCacheProperties.CacheConfig> configurationPerCache = Collections.singletonMap(EXISTING_CACHE, cacheConfig);
 
         cacheManager.setConfigurationPerCache(configurationPerCache);
         Collection<? extends Cache> result = cacheManager.loadCaches();
@@ -128,7 +123,7 @@ public class MemcachedCacheManagerTest {
 
         Object actual = result.toArray()[0];
         assertThat(actual).isInstanceOf(MemcachedCache.class);
-        assertThat((MemcachedCache) actual).extracting("name").isEqualToComparingFieldByField("books");
+        assertThat((MemcachedCache) actual).extracting("name").isEqualToComparingFieldByField(EXISTING_CACHE);
     }
 
     @Test
@@ -137,9 +132,7 @@ public class MemcachedCacheManagerTest {
         cacheConfig.setExpiration(Duration.ofHours(3));
         cacheConfig.setMetricsEnabled(false);
 
-        Map<String, MemcachedCacheProperties.CacheConfig> configurationPerCache = Stream.of(new Object[][] {
-                { "books", cacheConfig }
-        }).collect(Collectors.toMap(data -> String.valueOf(data[0]), data -> (MemcachedCacheProperties.CacheConfig) data[1]));
+        Map<String, MemcachedCacheProperties.CacheConfig> configurationPerCache = Collections.singletonMap(EXISTING_CACHE, cacheConfig);
 
         cacheManager.setConfigurationPerCache(configurationPerCache);
         Collection<? extends Cache> result = cacheManager.loadCaches();
