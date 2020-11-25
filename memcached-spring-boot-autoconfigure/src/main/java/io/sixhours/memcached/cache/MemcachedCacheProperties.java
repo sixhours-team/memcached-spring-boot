@@ -15,14 +15,12 @@
  */
 package io.sixhours.memcached.cache;
 
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.convert.DurationStyle;
-import org.springframework.boot.convert.DurationUnit;
-import org.springframework.util.StringUtils;
+import static io.sixhours.memcached.cache.Default.SERVERS_REFRESH_INTERVAL;
 
 import java.net.InetSocketAddress;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -31,7 +29,10 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static io.sixhours.memcached.cache.Default.SERVERS_REFRESH_INTERVAL;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.convert.DurationStyle;
+import org.springframework.boot.convert.DurationUnit;
+import org.springframework.util.StringUtils;
 
 /**
  * Configuration properties for Memcached cache.
@@ -49,7 +50,12 @@ public class MemcachedCacheProperties {
     /**
      * Comma-separated list of cache names to disable
      */
-    private Set<String> disableCacheNames = new HashSet<>();
+    private Set<String> disabledCacheNames = new HashSet<>();
+
+    /**
+     * Comma-separated list of cache names for which metrics will be collected
+     */
+    private List<String> metricsCacheNames = new ArrayList<>();
 
     /**
      * Memcached server provider. Use 'appengine' if running on Google Cloud Platform;
@@ -112,6 +118,22 @@ public class MemcachedCacheProperties {
                 .map(SocketAddress::new)
                 .map(SocketAddress::value)
                 .collect(Collectors.toList());
+    }
+
+    public Set<String> getDisabledCacheNames() {
+        return disabledCacheNames;
+    }
+
+    public void setDisabledCacheNames(Set<String> disabledCacheNames) {
+        this.disabledCacheNames = disabledCacheNames;
+    }
+
+    public List<String> getMetricsCacheNames() {
+        return metricsCacheNames;
+    }
+
+    public void setMetricsCacheNames(List<String> metricsCacheNames) {
+        this.metricsCacheNames = metricsCacheNames;
     }
 
     public Provider getProvider() {
@@ -195,14 +217,6 @@ public class MemcachedCacheProperties {
 
     public void setHashStrategy(HashStrategy hashStrategy) {
         this.hashStrategy = hashStrategy;
-    }
-
-    public Set<String> getDisableCacheNames() {
-        return disableCacheNames;
-    }
-
-    public void setDisableCacheNames(Set<String> disableCacheNames) {
-        this.disableCacheNames = disableCacheNames;
     }
 
     public enum Protocol {

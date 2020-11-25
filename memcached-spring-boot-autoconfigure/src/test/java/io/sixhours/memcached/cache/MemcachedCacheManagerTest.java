@@ -15,17 +15,19 @@
  */
 package io.sixhours.memcached.cache;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.cache.Cache;
 import org.springframework.cache.support.NoOpCache;
-
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
 
 /**
  * Memcached cache manager tests.
@@ -84,5 +86,20 @@ public class MemcachedCacheManagerTest {
         Cache cache = cacheManager.getCache(EXISTING_CACHE);
 
         assertThat(cache).isInstanceOf(NoOpCache.class);
+    }
+
+    @Test
+    public void whenLoadCachesThenReturnMetricsCacheNames() {
+        cacheManager.setMetricsCacheNames(Collections.singletonList(EXISTING_CACHE));
+
+        Collection<? extends Cache> result = cacheManager.loadCaches();
+
+        assertThat(result).isNotNull();
+        assertThat(result).hasSize(1);
+        assertThat(result).isInstanceOf(ArrayList.class);
+
+        Object actual = result.toArray()[0];
+        assertThat(actual).isInstanceOf(MemcachedCache.class);
+        assertThat((MemcachedCache) actual).extracting("name").isEqualToComparingFieldByField(EXISTING_CACHE);
     }
 }

@@ -15,15 +15,15 @@
  */
 package io.sixhours.memcached.cache;
 
-import io.sixhours.memcached.cache.MemcachedCacheProperties.HashStrategy;
-import io.sixhours.memcached.cache.MemcachedCacheProperties.Provider;
+import static io.sixhours.memcached.cache.MemcachedCacheProperties.Protocol;
 
 import java.net.InetSocketAddress;
 import java.time.Duration;
 import java.util.Collections;
 import java.util.List;
 
-import static io.sixhours.memcached.cache.MemcachedCacheProperties.Protocol;
+import io.sixhours.memcached.cache.MemcachedCacheProperties.HashStrategy;
+import io.sixhours.memcached.cache.MemcachedCacheProperties.Provider;
 
 /**
  * Default cache configuration values.

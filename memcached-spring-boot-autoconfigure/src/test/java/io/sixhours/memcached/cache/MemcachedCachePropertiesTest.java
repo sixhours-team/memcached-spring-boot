@@ -109,7 +109,7 @@ public class MemcachedCachePropertiesTest {
 
     @Test
     public void whenGetDisabledCaches_thenCorrectValue() {
-        Set<String> result = memcachedCacheProperties.getDisableCacheNames();
+        Set<String> result = memcachedCacheProperties.getDisabledCacheNames();
 
         assertThat(result).isNotNull();
         assertThat(result).hasSize(2);
@@ -139,5 +139,23 @@ public class MemcachedCachePropertiesTest {
 
         assertThat(result).isNotNull();
         assertThat(result).isEqualTo(MemcachedCacheProperties.HashStrategy.KETAMA);
+    }
+
+    @Test
+    public void whenGetMetricsCacheName_thenCorrectValue() {
+        List<String> result = memcachedCacheProperties.getMetricsCacheNames();
+
+        assertThat(result).isNotNull();
+        assertThat(result.isEmpty()).isFalse();
+        assertThat(result.size()).isEqualTo(6);
+
+        assertThat(result).containsOnly(
+                "cache_name1",
+                "cache_name2",
+                "cache_name3",
+                "cache_name4",
+                "cache_name5",
+                "cache_name6"
+        );
     }
 }

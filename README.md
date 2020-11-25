@@ -81,6 +81,7 @@ To plug-in Memcached cache in your application follow the steps below:
        expiration-per-cache:
          cache_name1: 1h
          cache_name2: 30h
+       metrics-cache-names: cache_name1, cache_name2
      ```
 
     To connect to a cluster with AWS [Auto Discovery](http://docs.aws.amazon.com/AmazonElastiCache/latest/UserGuide/AutoDiscovery.html), specify
@@ -154,6 +155,7 @@ memcached.cache.protocol: # Memcached client protocol. Supports "text" and "bina
 memcached.cache.operation-timeout: # Memcached client operation timeout (default "2500 milliseconds"). If unit not specified, milliseconds will be used.
 memcached.cache.hash-strategy: # Memcached client hash strategy for distribution of data between servers. Supports "standard" (array based : "hash(key) mod server_count"), "libmemcached" (consistent hash), "ketama" (consistent hash), "php" (make easier to share data with PHP based clients), "election", "roundrobin", "random". Default is "standard".
 memcached.cache.servers-refresh-interval: # Interval in milliseconds that refreshes the list of cache node hostnames and IP addresses for AWS ElastiCache. The default is 60000 milliseconds.
+memcached.cache.metrics-cache-names: # Comma-separated list of cache names for which metrics will be collected.
 memcached.cache.disabled-cache-names: # Comma-separated list of cache names for which caching will be disabled. The main purpose of this property is to disable caching for debugging purposes.    
 ```
 
