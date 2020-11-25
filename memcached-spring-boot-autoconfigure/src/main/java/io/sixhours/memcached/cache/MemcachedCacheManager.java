@@ -55,7 +55,7 @@ public class MemcachedCacheManager extends AbstractTransactionSupportingCacheMan
     private String prefix = Default.PREFIX;
     private String namespace = Default.NAMESPACE;
     private Map<String, Integer> expirationPerCache;
-    private Map<String, MemcachedCacheProperties.CacheConfig> configurationPerCache = Collections.emptyMap();
+    private List<String> metricsCacheNames = Collections.emptyList();
     private Set<String> disabledCacheNames = new HashSet<>();
 
     /**
@@ -71,10 +71,8 @@ public class MemcachedCacheManager extends AbstractTransactionSupportingCacheMan
     protected Collection<? extends Cache> loadCaches() {
         List<MemcachedCache> caches = new ArrayList<>();
 
-        for (Map.Entry<String, MemcachedCacheProperties.CacheConfig> entry : configurationPerCache.entrySet()) {
-            if (entry.getValue().isMetricsEnabled()) {
-                caches.add(createCache(entry.getKey()));
-            }
+        for (String metricsCacheName : metricsCacheNames) {
+            caches.add(createCache(metricsCacheName));
         }
 
         return caches;
@@ -82,12 +80,6 @@ public class MemcachedCacheManager extends AbstractTransactionSupportingCacheMan
 
     @Override
     public Cache getCache(String name) {
-        MemcachedCacheProperties.CacheConfig cacheConfig = configurationPerCache.get(name);
-        if (cacheConfig != null && cacheConfig.isDisabled()) {
-            logger.info(String.format("Ignoring cache \"%s\" because it is was disabled in the configuration.", name));
-            return new NoOpCache(name);
-        }
-
         if(disabledCacheNames.contains(name)) {
             logger.info(String.format("Ignoring cache \"%s\" because it is on the disabled cache names", name));
             return new NoOpCache(name);
@@ -107,10 +99,6 @@ public class MemcachedCacheManager extends AbstractTransactionSupportingCacheMan
     }
 
     private int determineExpiration(String name) {
-        MemcachedCacheProperties.CacheConfig cacheConfig = configurationPerCache.get(name);
-        if (cacheConfig != null) {
-            return (int) cacheConfig.getExpiration().getSeconds();
-        }
         return Optional.ofNullable(expirationPerCache).map(e -> e.get(name))
                 .orElse(this.expiration);
     }
@@ -143,13 +131,13 @@ public class MemcachedCacheManager extends AbstractTransactionSupportingCacheMan
     }
 
     /**
-     * Sets configuration per cache.
+     * Sets cache names for which metrics will be collected.
      *
-     * @param configurationPerCache {@link Map} of configurations per cache key
+     * @param metricsCacheNames the metrics cache names
      */
-    public void setConfigurationPerCache(Map<String, MemcachedCacheProperties.CacheConfig> configurationPerCache) {
-        if (configurationPerCache != null) {
-            this.configurationPerCache = new ConcurrentHashMap<>(configurationPerCache);
+    public void setMetricsCacheNames(List<String> metricsCacheNames) {
+        if (metricsCacheNames != null) {
+            this.metricsCacheNames = metricsCacheNames;
         }
     }
 

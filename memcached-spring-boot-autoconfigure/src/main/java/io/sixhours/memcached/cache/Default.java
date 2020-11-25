@@ -54,19 +54,4 @@ public final class Default {
     private Default() {
         throw new AssertionError("Suppress default constructor");
     }
-
-
-    /**
-     * Default per cache configuration values.
-     *
-     * @author Sasa Bolic
-     */
-    public static class PerCache {
-
-        public static final int EXPIRATION = Default.EXPIRATION;
-
-        public static final boolean METRICS_ENABLED = false;
-
-        public static final boolean DISABLED = false;
-    }
 }

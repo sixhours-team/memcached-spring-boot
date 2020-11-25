@@ -89,7 +89,7 @@ public class MemcachedCachePropertiesDefaultValuesTest {
 
     @Test
     public void whenGetDisabledCaches_thenCorrectValue() {
-        Set<String> result = memcachedCacheProperties.getDisableCacheNames();
+        Set<String> result = memcachedCacheProperties.getDisabledCacheNames();
 
         assertThat(result).isNotNull();
         assertThat(result).isEmpty();

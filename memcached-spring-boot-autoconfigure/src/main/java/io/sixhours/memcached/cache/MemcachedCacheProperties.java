@@ -20,6 +20,7 @@ import static io.sixhours.memcached.cache.Default.SERVERS_REFRESH_INTERVAL;
 import java.net.InetSocketAddress;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -49,7 +50,12 @@ public class MemcachedCacheProperties {
     /**
      * Comma-separated list of cache names to disable
      */
-    private Set<String> disableCacheNames = new HashSet<>();
+    private Set<String> disabledCacheNames = new HashSet<>();
+
+    /**
+     * Comma-separated list of cache names for which metrics will be collected
+     */
+    private List<String> metricsCacheNames = new ArrayList<>();
 
     /**
      * Memcached server provider. Use 'appengine' if running on Google Cloud Platform;
@@ -64,8 +70,6 @@ public class MemcachedCacheProperties {
     private Duration expiration = Duration.ofSeconds(Default.EXPIRATION);
 
     private Map<String, Duration> expirationPerCache = new HashMap<>();
-
-    private Map<String, CacheConfig> configurationPerCache = new HashMap<>();
 
     /**
      * Cached object key prefix. The default is 'memcached:spring-boot'.
@@ -116,6 +120,22 @@ public class MemcachedCacheProperties {
                 .collect(Collectors.toList());
     }
 
+    public Set<String> getDisabledCacheNames() {
+        return disabledCacheNames;
+    }
+
+    public void setDisabledCacheNames(Set<String> disabledCacheNames) {
+        this.disabledCacheNames = disabledCacheNames;
+    }
+
+    public List<String> getMetricsCacheNames() {
+        return metricsCacheNames;
+    }
+
+    public void setMetricsCacheNames(List<String> metricsCacheNames) {
+        this.metricsCacheNames = metricsCacheNames;
+    }
+
     public Provider getProvider() {
         return provider;
     }
@@ -145,16 +165,6 @@ public class MemcachedCacheProperties {
 
     public Map<String, Duration> getExpirationPerCache() {
         return expirationPerCache;
-    }
-
-    public Map<String, CacheConfig> getConfigurationPerCache() {
-        return configurationPerCache;
-    }
-
-    public void setConfigurationPerCache(Map<String, CacheConfig> configurationPerCache) {
-        if (configurationPerCache != null) {
-            this.configurationPerCache = configurationPerCache;
-        }
     }
 
     public String getPrefix() {
@@ -209,14 +219,6 @@ public class MemcachedCacheProperties {
         this.hashStrategy = hashStrategy;
     }
 
-    public Set<String> getDisableCacheNames() {
-        return disableCacheNames;
-    }
-
-    public void setDisableCacheNames(Set<String> disableCacheNames) {
-        this.disableCacheNames = disableCacheNames;
-    }
-
     public enum Protocol {
         TEXT, BINARY
     }
@@ -227,51 +229,5 @@ public class MemcachedCacheProperties {
 
     public enum HashStrategy {
         STANDARD, LIBMEMCACHED, KETAMA, PHP, ELECTION, ROUNDROBIN, RANDOM
-    }
-
-    static class CacheConfig {
-
-        /**
-         * Cache expiration in seconds. The default is 0s, meaning the cache will never expire.
-         */
-        @DurationUnit(ChronoUnit.SECONDS)
-        private Duration expiration = Duration.ofSeconds(Default.PerCache.EXPIRATION);
-
-        /**
-         * Should the metrics be enabled for specific cache. The default is false.
-         */
-        private boolean metricsEnabled = Default.PerCache.METRICS_ENABLED;
-
-        /**
-         * Should we skip caching for specific cache name. The default is false.
-         */
-        private boolean disabled = Default.PerCache.DISABLED;
-
-        public Duration getExpiration() {
-            return expiration;
-        }
-
-        public void setExpiration(Duration expiration) {
-            if (expiration != null) {
-                validateExpiration(expiration);
-                this.expiration = expiration;
-            }
-        }
-
-        public boolean isMetricsEnabled() {
-            return metricsEnabled;
-        }
-
-        public void setMetricsEnabled(boolean metricsEnabled) {
-            this.metricsEnabled = metricsEnabled;
-        }
-
-        public boolean isDisabled() {
-            return disabled;
-        }
-
-        public void setDisabled(boolean disabled) {
-            this.disabled = disabled;
-        }
     }
 }

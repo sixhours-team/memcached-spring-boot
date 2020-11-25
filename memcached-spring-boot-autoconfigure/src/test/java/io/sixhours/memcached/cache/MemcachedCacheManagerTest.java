@@ -18,12 +18,10 @@ package io.sixhours.memcached.cache;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
-import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 import org.junit.Before;
@@ -90,31 +88,10 @@ public class MemcachedCacheManagerTest {
         assertThat(cache).isInstanceOf(NoOpCache.class);
     }
 
-	@Test
-	public void whenGetDisabledCacheThenNoOpCache() {
-        MemcachedCacheProperties.CacheConfig cacheConfig = new MemcachedCacheProperties.CacheConfig();
-        cacheConfig.setExpiration(Duration.ofHours(3));
-        cacheConfig.setMetricsEnabled(true);
-        cacheConfig.setDisabled(true);
-
-        Map<String, MemcachedCacheProperties.CacheConfig> configurationPerCache = Collections.singletonMap(EXISTING_CACHE, cacheConfig);
-
-        cacheManager.setConfigurationPerCache(configurationPerCache);
-
-        Cache cache = cacheManager.getCache(EXISTING_CACHE);
-
-        assertThat(cache).isInstanceOf(NoOpCache.class);
-	}
-
     @Test
-    public void whenLoadCachesThenReturnConfiguredCachesWithMetricsEnabled() {
-        MemcachedCacheProperties.CacheConfig cacheConfig = new MemcachedCacheProperties.CacheConfig();
-        cacheConfig.setExpiration(Duration.ofHours(3));
-        cacheConfig.setMetricsEnabled(true);
+    public void whenLoadCachesThenReturnMetricsCacheNames() {
+        cacheManager.setMetricsCacheNames(Collections.singletonList(EXISTING_CACHE));
 
-        Map<String, MemcachedCacheProperties.CacheConfig> configurationPerCache = Collections.singletonMap(EXISTING_CACHE, cacheConfig);
-
-        cacheManager.setConfigurationPerCache(configurationPerCache);
         Collection<? extends Cache> result = cacheManager.loadCaches();
 
         assertThat(result).isNotNull();
@@ -124,21 +101,5 @@ public class MemcachedCacheManagerTest {
         Object actual = result.toArray()[0];
         assertThat(actual).isInstanceOf(MemcachedCache.class);
         assertThat((MemcachedCache) actual).extracting("name").isEqualToComparingFieldByField(EXISTING_CACHE);
-    }
-
-    @Test
-    public void givenConfiguredCacheWithDisabledMetricWhenLoadCachesThenReturnEmptyResult() {
-        MemcachedCacheProperties.CacheConfig cacheConfig = new MemcachedCacheProperties.CacheConfig();
-        cacheConfig.setExpiration(Duration.ofHours(3));
-        cacheConfig.setMetricsEnabled(false);
-
-        Map<String, MemcachedCacheProperties.CacheConfig> configurationPerCache = Collections.singletonMap(EXISTING_CACHE, cacheConfig);
-
-        cacheManager.setConfigurationPerCache(configurationPerCache);
-        Collection<? extends Cache> result = cacheManager.loadCaches();
-
-        assertThat(result).isNotNull();
-        assertThat(result).isEmpty();
-        assertThat(result).isInstanceOf(ArrayList.class);
     }
 }

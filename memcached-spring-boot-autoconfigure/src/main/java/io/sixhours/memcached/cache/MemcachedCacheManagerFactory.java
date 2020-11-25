@@ -38,10 +38,10 @@ public abstract class MemcachedCacheManagerFactory {
         cacheManager.setExpiration((int) properties.getExpiration().getSeconds());
         cacheManager.setExpirationPerCache(properties.getExpirationPerCache().entrySet().stream()
                 .collect(Collectors.toMap(Map.Entry::getKey, e -> (int) e.getValue().getSeconds())));
-        cacheManager.setConfigurationPerCache(properties.getConfigurationPerCache());
+        cacheManager.setDisabledCacheNames(properties.getDisabledCacheNames());
+        cacheManager.setMetricsCacheNames(properties.getMetricsCacheNames());
         cacheManager.setPrefix(properties.getPrefix());
         cacheManager.setNamespace(Default.NAMESPACE);
-        cacheManager.setDisabledCacheNames(properties.getDisableCacheNames());
 
         return cacheManager;
     }
