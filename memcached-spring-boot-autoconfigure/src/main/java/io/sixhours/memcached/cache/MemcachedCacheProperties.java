@@ -205,7 +205,7 @@ public class MemcachedCacheProperties {
         this.serversRefreshInterval = serversRefreshInterval;
     }
 
-    private static void validateExpiration(Duration expiration) {
+    private void validateExpiration(Duration expiration) {
         if (expiration == null || expiration.toDays() > 30) {
             throw new IllegalStateException("Invalid expiration. It should not be null or greater than 30 days.");
         }
