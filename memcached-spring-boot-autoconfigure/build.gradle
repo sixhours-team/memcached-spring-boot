@@ -17,8 +17,8 @@ dependencies {
     optionalImplementation 'org.springframework.cloud:spring-cloud-context'
     optionalImplementation 'io.micrometer:micrometer-core'
 
-    testImplementation 'javax.cache:cache-api'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'javax.cache:cache-api'
     integrationTestImplementation "org.testcontainers:testcontainers:${testcontainersVersion}"
 }
 
