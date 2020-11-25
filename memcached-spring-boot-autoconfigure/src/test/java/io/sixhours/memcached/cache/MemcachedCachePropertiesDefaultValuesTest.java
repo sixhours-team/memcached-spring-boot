@@ -96,6 +96,14 @@ public class MemcachedCachePropertiesDefaultValuesTest {
     }
 
     @Test
+    public void whenGetMetricsCaches_thenCorrectValue() {
+        List<String> result = memcachedCacheProperties.getMetricsCacheNames();
+
+        assertThat(result).isNotNull();
+        assertThat(result).isEmpty();
+    }
+
+    @Test
     public void whenGetExpiration_thenCorrectValue() {
         Duration result = memcachedCacheProperties.getExpiration();
 
