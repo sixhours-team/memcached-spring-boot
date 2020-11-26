@@ -54,13 +54,16 @@ public class RefreshableConfigurationTest {
     @Test
     @DirtiesContext
     public void whenContextLoadedThenMemcachedCacheManagerInitialized() {
-        assertThat(cacheManager).isNotNull();
-        assertThat(cacheManager).isInstanceOf(MemcachedCacheManager.class);
+        assertThat(cacheManager)
+                .isNotNull()
+                .isInstanceOf(MemcachedCacheManager.class);
 
         Object memcachedClient = ReflectionTestUtils.getField(cacheManager, "memcachedClient");
 
-        assertThat(memcachedClient).isNotNull();
-        assertThat(memcachedClient).isInstanceOf(XMemcachedClient.class);
+        assertThat(memcachedClient)
+                .isNotNull()
+                .isInstanceOf(XMemcachedClient.class);
+
         assertMemcachedClient((IMemcachedClient) memcachedClient);
     }
 
@@ -81,10 +84,12 @@ public class RefreshableConfigurationTest {
         Object prefix = ReflectionTestUtils.getField(cacheManager, "prefix");
         Object afterRefresh = ReflectionTestUtils.getField(cacheManager, "memcachedClient");
 
-        assertThat(expiration).isNotNull();
-        assertThat(expiration).isEqualTo(Default.EXPIRATION);
-        assertThat(prefix).isNotNull();
-        assertThat(prefix).isEqualTo("test-prefix");
+        assertThat(expiration)
+                .isNotNull()
+                .isEqualTo(Default.EXPIRATION);
+        assertThat(prefix)
+                .isNotNull()
+                .isEqualTo("test-prefix");
         assertMemcachedClient((IMemcachedClient) afterRefresh,
                 MemcachedCacheProperties.Protocol.BINARY, Default.OPERATION_TIMEOUT);
     }

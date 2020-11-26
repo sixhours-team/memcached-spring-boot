@@ -94,9 +94,10 @@ public class MemcachedCacheManagerTest {
 
         Collection<? extends Cache> result = cacheManager.loadCaches();
 
-        assertThat(result).isNotNull();
-        assertThat(result).hasSize(1);
-        assertThat(result).isInstanceOf(ArrayList.class);
+        assertThat(result)
+                .isNotNull()
+                .hasSize(1)
+                .isInstanceOf(ArrayList.class);
 
         Object actual = result.toArray()[0];
         assertThat(actual).isInstanceOf(MemcachedCache.class);
