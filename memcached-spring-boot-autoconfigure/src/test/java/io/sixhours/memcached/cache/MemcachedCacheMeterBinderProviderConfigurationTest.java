@@ -112,16 +112,16 @@ public class MemcachedCacheMeterBinderProviderConfigurationTest {
         FunctionCounter puts = registry.get("cache.puts").tags(expectedTag).functionCounter();
         double availableServersCount = registry.get("available_servers_count").gauge().value();
 
-        assertThat(hits.count()).isEqualTo(0);
-        assertThat(misses.count()).isEqualTo(0);
-        assertThat(puts.count()).isEqualTo(0);
+        assertThat(hits.count()).isZero();
+        assertThat(misses.count()).isZero();
+        assertThat(puts.count()).isZero();
         assertThat(availableServersCount).isEqualTo(1.0);
 
         getCacheKeyValues(books, "a", "b", "b", "c", "d", "c", "a", "a", "a", "d");
 
         assertThat(hits.count()).isEqualTo(6);
         assertThat(misses.count()).isEqualTo(4);
-        assertThat(puts.count()).isEqualTo(0);
+        assertThat(puts.count()).isZero();
         assertThat(availableServersCount).isEqualTo(1.0);
     }
 
