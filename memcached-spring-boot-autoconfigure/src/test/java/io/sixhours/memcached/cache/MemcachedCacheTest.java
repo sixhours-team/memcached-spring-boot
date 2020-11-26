@@ -96,13 +96,13 @@ public class MemcachedCacheTest {
     public void whenLookupThenIncrementHits() {
         when(memcachedClient.get(any())).thenReturn(NAMESPACE_KEY_VALUE).thenReturn(cachedValue);
 
-        assertThat(memcachedCache.hits()).isEqualTo(0);
-        assertThat(memcachedCache.misses()).isEqualTo(0);
+        assertThat(memcachedCache.hits()).isZero();
+        assertThat(memcachedCache.misses()).isZero();
 
         memcachedCache.lookup(CACHED_OBJECT_KEY);
 
         assertThat(memcachedCache.hits()).isEqualTo(1);
-        assertThat(memcachedCache.misses()).isEqualTo(0);
+        assertThat(memcachedCache.misses()).isZero();
 
         verify(memcachedClient).get(memcachedKey);
         verify(memcachedClient).get(namespaceKey);
@@ -112,12 +112,12 @@ public class MemcachedCacheTest {
     public void whenLookupAndCacheValueMissingThenIncrementMisses() {
         when(memcachedClient.get(any())).thenReturn(NAMESPACE_KEY_VALUE).thenReturn(null);
 
-        assertThat(memcachedCache.hits()).isEqualTo(0);
-        assertThat(memcachedCache.misses()).isEqualTo(0);
+        assertThat(memcachedCache.hits()).isZero();
+        assertThat(memcachedCache.misses()).isZero();
 
         memcachedCache.lookup(CACHED_OBJECT_KEY);
 
-        assertThat(memcachedCache.hits()).isEqualTo(0);
+        assertThat(memcachedCache.hits()).isZero();
         assertThat(memcachedCache.misses()).isEqualTo(1);
 
         verify(memcachedClient).get(memcachedKey);
@@ -160,7 +160,7 @@ public class MemcachedCacheTest {
 
         Object actual = memcachedCache.get(CACHED_OBJECT_KEY, () -> valueLoaderValue);
 
-        assertThat(actual).isEqualTo(null);
+        assertThat(actual).isNull();
 
         verify(memcachedClient).get(namespaceKey);
         verify(memcachedClient).get(memcachedKey);
@@ -186,7 +186,7 @@ public class MemcachedCacheTest {
 
         Object actual = memcachedCache.get(CACHED_OBJECT_KEY, () -> valueLoaderValue);
 
-        assertThat(actual).isEqualTo(null);
+        assertThat(actual).isNull();
 
         verify(memcachedClient, times(2)).get(namespaceKey);
         verify(memcachedClient, times(2)).get(memcachedKey);
@@ -199,7 +199,7 @@ public class MemcachedCacheTest {
 
         Object actual = memcachedCache.get(CACHED_OBJECT_KEY, () -> valueLoaderNullValue);
 
-        assertThat(actual).isEqualTo(null);
+        assertThat(actual).isNull();
 
         verify(memcachedClient, times(3)).get(namespaceKey);
         verify(memcachedClient, times(2)).get(memcachedKey);
