@@ -35,12 +35,17 @@ import java.io.IOException;
  * Creates {@link CacheManager} when caching is enabled via {@link EnableCaching}.
  *
  * @author Igor Bolic
+ * @author Sasa Bolic
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass({net.rubyeye.xmemcached.MemcachedClient.class, CacheManager.class})
 @Conditional(NotAppEngineProviderCondition.class)
 @EnableConfigurationProperties(MemcachedCacheProperties.class)
 public class XMemcachedCacheAutoConfiguration {
+
+    private XMemcachedCacheAutoConfiguration() {
+        // Hide public constructor
+    }
 
     @Configuration
     @ConditionalOnRefreshScope
