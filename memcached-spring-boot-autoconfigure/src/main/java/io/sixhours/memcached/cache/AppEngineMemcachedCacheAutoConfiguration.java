@@ -35,6 +35,7 @@ import java.io.IOException;
  * Creates {@link CacheManager} when caching is enabled via {@link EnableCaching}.
  *
  * @author Igor Bolic
+ * @author Sasa Bolic
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass({com.google.appengine.api.memcache.BaseMemcacheService.class, CacheManager.class})
@@ -42,6 +43,10 @@ import java.io.IOException;
 @EnableConfigurationProperties(MemcachedCacheProperties.class)
 @AutoConfigureAfter(name = "org.springframework.cloud.autoconfigure.RefreshAutoConfiguration")
 public class AppEngineMemcachedCacheAutoConfiguration {
+
+    private AppEngineMemcachedCacheAutoConfiguration() {
+        // Hide public constructor
+    }
 
     @Configuration
     @ConditionalOnRefreshScope
