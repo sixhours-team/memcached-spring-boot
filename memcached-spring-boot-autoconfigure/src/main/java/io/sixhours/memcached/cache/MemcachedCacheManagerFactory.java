@@ -23,12 +23,13 @@ import java.util.stream.Collectors;
  * Factory for the {@link MemcachedCacheManager} instances.
  *
  * @author Igor Bolic
+ * @author Sasa Bolic
  */
 public abstract class MemcachedCacheManagerFactory {
 
     protected final MemcachedCacheProperties properties;
 
-    public MemcachedCacheManagerFactory(MemcachedCacheProperties properties) {
+    protected MemcachedCacheManagerFactory(MemcachedCacheProperties properties) {
         this.properties = properties;
     }
 
