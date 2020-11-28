@@ -44,10 +44,11 @@ import org.springframework.cache.transaction.AbstractTransactionSupportingCacheM
  * </code>
  *
  * @author Igor Bolic
+ * @author Sasa Bolic
  */
 public class MemcachedCacheManager extends AbstractTransactionSupportingCacheManager {
 
-    private final Logger logger = Logger.getLogger(MemcachedCacheManager.class.getName());
+    private static final Logger log = Logger.getLogger(MemcachedCacheManager.class.getName());
 
     final IMemcachedClient memcachedClient;
 
@@ -81,7 +82,7 @@ public class MemcachedCacheManager extends AbstractTransactionSupportingCacheMan
     @Override
     public Cache getCache(String name) {
         if(disabledCacheNames.contains(name)) {
-            logger.info(String.format("Ignoring cache \"%s\" because it is on the disabled cache names", name));
+            log.warning(() -> String.format("Ignoring cache '%s' because it is on the disabled cache names.", name));
             return new NoOpCache(name);
         }
 
