@@ -42,10 +42,6 @@ import java.io.IOException;
 @EnableConfigurationProperties(MemcachedCacheProperties.class)
 public class SpyMemcachedCacheAutoConfiguration {
 
-    private SpyMemcachedCacheAutoConfiguration() {
-        // Hide public constructor
-    }
-
     @Configuration
     @ConditionalOnRefreshScope
     static class RefreshableMemcachedCacheConfiguration {
