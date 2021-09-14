@@ -1,40 +1,8 @@
-apply plugin: 'com.jfrog.bintray'
-apply plugin: 'com.jfrog.artifactory'
-
-artifactory {
-    contextUrl = 'https://oss.jfrog.org'
-    publish {
-        repository {
-            repoKey = 'oss-snapshot-local'
-            username = System.getenv('BINTRAY_USER')
-            password = System.getenv('BINTRAY_KEY')
-        }
-        defaults {
-            publications('mavenJava')
-            publishArtifacts = true
-            publishPom = true
-        }
-    }
-    resolve {
-        repoKey = 'jcenter'
-    }
-}
-
-bintray {
-    user = System.getenv('BINTRAY_USER')
-    key = System.getenv('BINTRAY_KEY')
-    publications = ['mavenJava']
-    pkg {
-        repo = 'maven'
-        userOrg = 'sixhours-team'
-        name = "${project.group}:${project.name}"
-        websiteUrl = 'https://github.com/sixhours-team/memcached-spring-boot'
-        issueTrackerUrl = 'https://github.com/sixhours-team/memcached-spring-boot/issues'
-        licenses = ['Apache-2.0']
-        vcsUrl = 'https://github.com/sixhours-team/memcached-spring-boot'
-        version {
-            name = project.version
-            released = new Date()
+nexusPublishing {
+    repositories {
+        sonatype {
+            username = System.getenv('SONATYPE_USER')
+            password = System.getenv('SONATYPE_PASSWORD')
         }
     }
 }

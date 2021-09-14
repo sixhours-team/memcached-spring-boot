@@ -9,7 +9,7 @@
 Library that provides support for auto-configuration of Memcached cache in a Spring Boot application.
 
 It provides implementation for the [Spring Cache Abstraction](https://docs.spring.io/spring/docs/5.2.3.RELEASE/spring-framework-reference/integration.html#cache), backed by the [Xmemcached](https://github.com/killme2008/xmemcached).
-Supports cache eviction per key, as well as clearing out of the entire cache region. Binaries are available from **Maven Central** and **JCenter**.
+Supports cache eviction per key, as well as clearing out of the entire cache region. Binaries are available from **Maven Central**.
 
 ## Usage
 
@@ -64,7 +64,7 @@ To plug-in Memcached cache in your application follow the steps below:
 
   * Snapshot repository
 
-    If you want to use `SNAPSHOT` versions, add the snapshot-repo `https://oss.jfrog.org/artifactory/libs-snapshot/` as shown in the [example](https://github.com/sixhours-team/spring-boot-memcached-demo-java/blob/master/build.gradle#L16).
+    If you want to use `SNAPSHOT` versions, add the snapshot-repo `https://oss.sonatype.org/content/repositories/snapshots` as shown in the [example](https://github.com/sixhours-team/spring-boot-memcached-demo-java/blob/master/build.gradle#L16).
 
 2. Configure `Memcached` key-value store in your properties file (`application.yml`).
 
