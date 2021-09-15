@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/sixhours-team/memcached-spring-boot.svg?branch=master)](https://travis-ci.org/sixhours-team/memcached-spring-boot)
+[![Build Status](https://app.travis-ci.com/sixhours-team/memcached-spring-boot.svg?branch=master)](https://travis-ci.org/sixhours-team/memcached-spring-boot)
 [![codecov](https://codecov.io/gh/sixhours-team/memcached-spring-boot/branch/master/graph/badge.svg)](https://codecov.io/gh/sixhours-team/memcached-spring-boot)
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=io.sixhours%3Amemcached-spring-boot&metric=alert_status)](https://sonarcloud.io/dashboard?id=io.sixhours%3Amemcached-spring-boot)
 [![Join the chat at gitter.im/six-hours/memcached-spring-boot](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/six-hours/memcached-spring-boot?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
@@ -19,7 +19,7 @@ To plug-in Memcached cache in your application follow the steps below:
    * **Gradle**
 
       ```groovy
-      implementation('io.sixhours:memcached-spring-boot-starter:2.4.0')
+      implementation('io.sixhours:memcached-spring-boot-starter:2.4.1')
       ```
    * **Maven**
 
@@ -27,7 +27,7 @@ To plug-in Memcached cache in your application follow the steps below:
       <dependency>
           <groupId>io.sixhours</groupId>
           <artifactId>memcached-spring-boot-starter</artifactId>
-          <version>2.4.0</version>
+          <version>2.4.1</version>
       </dependency>
       ```
   
@@ -36,7 +36,7 @@ To plug-in Memcached cache in your application follow the steps below:
    * **Gradle**
 
         ```groovy
-        implementation('io.sixhours:memcached-spring-boot-starter:2.4.0') {
+        implementation('io.sixhours:memcached-spring-boot-starter:2.4.1') {
           exclude group: 'com.googlecode.xmemcached', module: 'xmemcached'
         }
         implementation('com.amazonaws:elasticache-java-cluster-client:1.1.2')
@@ -47,7 +47,7 @@ To plug-in Memcached cache in your application follow the steps below:
         <dependency>
             <groupId>io.sixhours</groupId>
             <artifactId>memcached-spring-boot-starter</artifactId>
-            <version>2.4.0</version>
+            <version>2.4.1</version>
             <exclusions>
                 <exclusion>
                     <groupId>com.googlecode.xmemcached</groupId>

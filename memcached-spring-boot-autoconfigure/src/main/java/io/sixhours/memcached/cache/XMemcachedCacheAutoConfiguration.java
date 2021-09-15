@@ -43,10 +43,6 @@ import java.io.IOException;
 @EnableConfigurationProperties(MemcachedCacheProperties.class)
 public class XMemcachedCacheAutoConfiguration {
 
-    private XMemcachedCacheAutoConfiguration() {
-        // Hide public constructor
-    }
-
     @Configuration
     @ConditionalOnRefreshScope
     static class RefreshableMemcachedCacheConfiguration {

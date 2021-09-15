@@ -15,7 +15,7 @@ ext {
     elasticacheClientVersion = '1.1.2'
     appengineApiVersion = '1.9.80'
     commonsLoggingVersion = '1.2'
-    testcontainersVersion = '1.15.0-rc2'
+    testcontainersVersion = '1.16.0'
 }
 
 ext.JAVA_GRADLE = "$rootDir/gradle/java.gradle"
@@ -25,7 +25,7 @@ ext.RELEASE_GRADLE = "$rootDir/gradle/release.gradle"
 ext.SONAR_GRADLE = "$rootDir/gradle/sonar.gradle"
 
 ext {
-    projectVersion = '2.4.0-SNAPSHOT'
+    projectVersion = '2.4.2-SNAPSHOT'
     useLastTag = false
 }
 
