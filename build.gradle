@@ -2,8 +2,7 @@ import org.springframework.boot.gradle.plugin.SpringBootPlugin
 
 plugins {
     id 'org.springframework.boot' version '2.3.0.RELEASE' apply false
-    id 'com.jfrog.bintray' version '1.8.5'
-    id 'com.jfrog.artifactory' version '4.15.2'
+    id 'io.github.gradle-nexus.publish-plugin' version '1.1.0'
     id 'com.github.hierynomus.license' version '0.15.0'
     id 'com.github.ben-manes.versions' version '0.28.0'
     id 'org.sonarqube' version '3.0'
@@ -29,6 +28,8 @@ ext {
     useLastTag = false
 }
 
+apply from: RELEASE_GRADLE
+
 allprojects {
     def gitVersion = { ->
         def stdout = new ByteArrayOutputStream()
@@ -49,7 +50,6 @@ subprojects {
     apply from: JAVA_GRADLE
     apply from: LICENSE_GRADLE
     apply from: PUBLISH_GRADLE
-    apply from: RELEASE_GRADLE
     apply plugin: 'io.spring.dependency-management'
     apply plugin: 'java-library'
 

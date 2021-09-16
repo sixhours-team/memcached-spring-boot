@@ -8,12 +8,12 @@ elif [ "$TRAVIS_PULL_REQUEST" == "false" ] && [ "$BUILD_PUBLISH" == "false" ]; t
   ./gradlew build
 elif [ "$TRAVIS_PULL_REQUEST" == "false" ] && [ "$TRAVIS_TAG" == "" ]; then
   echo -e 'Build Branch with Snapshot => Branch ['$TRAVIS_BRANCH']'
-  ./gradlew build artifactoryPublish
+  ./gradlew build publishToSonatype
 elif [ "$TRAVIS_PULL_REQUEST" == "false" ] && [ "$TRAVIS_TAG" != "" ]; then
   echo -e 'Build Branch for Release => Branch ['$TRAVIS_BRANCH']  Tag ['$TRAVIS_TAG']'
   case "$TRAVIS_TAG" in
   v[[:digit:]]*\.[[:digit:]]*\.[[:digit:]]*)
-    ./gradlew build bintrayUpload -x :bintrayUpload -PuseLastTag=true
+    ./gradlew build publishToSonatype closeSonatypeStagingRepository -PuseLastTag=true
     ;;
   *)
     echo -e 'WARN: Invalid Tag ['$TRAVIS_TAG']'
