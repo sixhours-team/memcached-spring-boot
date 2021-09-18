@@ -1,4 +1,5 @@
 apply plugin: 'maven-publish'
+apply plugin: 'signing'
 
 publishing {
     publications {
@@ -39,5 +40,12 @@ publishing {
                 }
             }
         }
+    }
+    signing {
+        def signingKey = System.getenv('GPG_SIGNING_KEY')
+        def signingPassword = System.getenv('GPG_SIGNING_PASSWORD')
+        useInMemoryPgpKeys(signingKey, signingPassword)
+
+        sign publishing.publications.mavenJava
     }
 }

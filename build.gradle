@@ -23,28 +23,25 @@ ext.PUBLISH_GRADLE = "$rootDir/gradle/publish.gradle"
 ext.RELEASE_GRADLE = "$rootDir/gradle/release.gradle"
 ext.SONAR_GRADLE = "$rootDir/gradle/sonar.gradle"
 
-ext {
-    projectVersion = '2.4.2-SNAPSHOT'
-    useLastTag = false
+def gitVersion = { ->
+    def stdout = new ByteArrayOutputStream()
+    exec {
+        ignoreExitValue true
+        commandLine 'git', 'describe', '--tags', '--abbrev=0', '--match', 'v[[:digit:]]*\\.[[:digit:]]*\\.[[:digit:]]*'
+        standardOutput = stdout
+    }
+    def version = stdout.toString().trim()
+    return !version.isEmpty() ? version - 'v' : projectVersion
+}
+
+def resolvedVersion = project.findProperty('release') ? gitVersion() : '2.4.2-SNAPSHOT'
+
+allprojects {
+    group = "io.sixhours"
+    version = resolvedVersion
 }
 
 apply from: RELEASE_GRADLE
-
-allprojects {
-    def gitVersion = { ->
-        def stdout = new ByteArrayOutputStream()
-        exec {
-            ignoreExitValue true
-            commandLine 'git', 'describe', '--tags', '--abbrev=0', '--match', 'v[[:digit:]]*\\.[[:digit:]]*\\.[[:digit:]]*'
-            standardOutput = stdout
-        }
-        def version = stdout.toString().trim()
-        return !version.isEmpty() ? version - 'v' : projectVersion
-    }
-
-    group = "io.sixhours"
-    version = useLastTag.toBoolean() ? gitVersion() : projectVersion
-}
 
 subprojects {
     apply from: JAVA_GRADLE
