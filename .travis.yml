@@ -12,7 +12,7 @@ jobs:
       env:
         - BUILD_PUBLISH=false
         - SONAR_ANALYSIS=true
-    - jdk: openjdk13
+    - jdk: openjdk17
       env:
         - BUILD_PUBLISH=false
         - SONAR_ANALYSIS=false
