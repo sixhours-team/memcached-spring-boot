@@ -3,7 +3,7 @@ import org.springframework.boot.gradle.plugin.SpringBootPlugin
 plugins {
     id 'org.springframework.boot' version '2.3.0.RELEASE' apply false
     id 'io.github.gradle-nexus.publish-plugin' version '1.1.0'
-    id 'com.github.hierynomus.license' version '0.15.0'
+    id 'com.github.hierynomus.license' version '0.16.1'
     id 'com.github.ben-manes.versions' version '0.28.0'
     id 'org.sonarqube' version '3.0'
 }
