@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 Sixhours
+ * Copyright 2016-2022 Sixhours
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,8 +49,8 @@ public class SpyMemcachedCacheAutoConfiguration {
         @Bean
         @RefreshScope
         @ConditionalOnMissingBean(value = MemcachedCacheManager.class, search = SearchStrategy.CURRENT)
-        public MemcachedCacheManager cacheManager(MemcachedCacheProperties properties) throws IOException {
-            return new SpyMemcachedCacheManagerFactory(properties).create();
+        public MemcachedCacheManager cacheManager(MemcachedCacheProperties properties, SpyMemcachedConnectionFactoryCustomizer customizer) throws IOException {
+            return new SpyMemcachedCacheManagerFactory(properties, customizer).create();
         }
     }
 
@@ -60,8 +60,14 @@ public class SpyMemcachedCacheAutoConfiguration {
 
         @Bean
         @ConditionalOnMissingBean(value = MemcachedCacheManager.class, search = SearchStrategy.CURRENT)
-        public MemcachedCacheManager cacheManager(MemcachedCacheProperties properties) throws IOException {
-            return new SpyMemcachedCacheManagerFactory(properties).create();
+        public MemcachedCacheManager cacheManager(MemcachedCacheProperties properties, SpyMemcachedConnectionFactoryCustomizer customizer) throws IOException {
+            return new SpyMemcachedCacheManagerFactory(properties, customizer).create();
         }
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(value = SpyMemcachedConnectionFactoryCustomizer.class)
+    public SpyMemcachedConnectionFactoryCustomizer spyMemcachedConnectionFactoryCustomizer() {
+        return (builder) -> {};
     }
 }

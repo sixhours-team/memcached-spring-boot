@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 Sixhours
+ * Copyright 2016-2022 Sixhours
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,8 +30,11 @@ import java.util.List;
  */
 public class SpyMemcachedCacheManagerFactory extends MemcachedCacheManagerFactory {
 
-    public SpyMemcachedCacheManagerFactory(MemcachedCacheProperties properties) {
+    private final SpyMemcachedConnectionFactoryCustomizer connectionFactoryCustomizer;
+
+    public SpyMemcachedCacheManagerFactory(MemcachedCacheProperties properties, SpyMemcachedConnectionFactoryCustomizer customizer) {
         super(properties);
+        this.connectionFactoryCustomizer = customizer;
     }
 
     @Override
@@ -47,9 +50,10 @@ public class SpyMemcachedCacheManagerFactory extends MemcachedCacheManagerFactor
                 .setOpTimeout(properties.getOperationTimeout().toMillis())
                 .setProtocol(connectionProtocol(protocol));
 
+        connectionFactoryCustomizer.customize(connectionFactoryBuilder);
+
         return new SpyMemcachedClient(new MemcachedClient(connectionFactoryBuilder.build(), servers));
     }
-
 
     private ClientMode clientMode(MemcachedCacheProperties.Provider provider) {
         switch (provider) {
