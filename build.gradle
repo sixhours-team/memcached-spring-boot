@@ -59,7 +59,7 @@ subprojects {
     }
 
     repositories {
-        jcenter()
+        mavenCentral()
     }
 
     dependencyManagement {
