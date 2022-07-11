@@ -1,6 +1,10 @@
 name: PR Build
 
-on: pull_request
+on:
+  # Triggers the workflow on push or pull request events
+  push:
+  pull_request:
+  workflow_dispatch:
 
 jobs:
   build:
@@ -14,7 +18,7 @@ jobs:
           java-version: 11
           distribution: temurin
       - name: Validate Gradle wrapper
-        uses: gradle/wrapper-validation-action@v2
+        uses: gradle/wrapper-validation-action@v1
       - name: Setup Gradle
         uses: gradle/gradle-build-action@v2
       - name: Execute Gradle build
