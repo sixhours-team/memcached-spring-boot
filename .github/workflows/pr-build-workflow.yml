@@ -8,6 +8,19 @@ on:
 
 jobs:
   build:
+    strategy:
+      matrix:
+        java: [ '8', '11', '17' ]
+        include:
+          - java: 8
+            publish: true
+            sonar: false
+          - java: 11
+            publish: false
+            sonar: true
+          - java: 8
+            publish: false
+            sonar: false
     name: Build
     runs-on: ubuntu-latest
     steps:
@@ -15,11 +28,13 @@ jobs:
       - name: Set up JDK
         uses: actions/setup-java@v3
         with:
-          java-version: 11
           distribution: temurin
+          java-version: ${{ matrix.java }}
       - name: Validate Gradle wrapper
         uses: gradle/wrapper-validation-action@v1
       - name: Setup Gradle
         uses: gradle/gradle-build-action@v2
+      - name: Get the tag name
+        run: echo "TAG=${GITHUB_REF/refs\/tags\//}"
       - name: Execute Gradle build
         run: ./gradlew build
