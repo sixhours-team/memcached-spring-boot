@@ -5,7 +5,7 @@ plugins {
     id 'io.github.gradle-nexus.publish-plugin' version '1.1.0'
     id 'com.github.hierynomus.license' version '0.16.1'
     id 'com.github.ben-manes.versions' version '0.28.0'
-    id 'org.sonarqube' version '3.0'
+    id 'org.sonarqube' version '3.4.0.2513'
 }
 
 ext {
@@ -34,7 +34,14 @@ def gitVersion = { ->
     return !version.isEmpty() ? version - 'v' : projectVersion
 }
 
-def resolvedVersion = project.findProperty('release') ? gitVersion() : '2.4.2-SNAPSHOT'
+def resolvedVersion = project.findProperty('release') ? gitVersion() : '2.4.3-SNAPSHOT'
+
+sonarqube {
+    properties {
+        property "sonar.organization", "sixhours"
+        property "sonar.host.url", "https://sonarcloud.io"
+    }
+}
 
 allprojects {
     group = "io.sixhours"

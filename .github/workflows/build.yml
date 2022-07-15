@@ -1,0 +1,55 @@
+name: Build
+
+on:
+  # Triggers the workflow on push or pull request events
+  push:
+    branches:
+      - '*'
+    tags-ignore:
+      - '*'
+  pull_request:
+
+env:
+  SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        java: [ '8', '11', '17' ]
+        include:
+          - java: 8
+            sonar: false
+          - java: 11
+            sonar: true
+          - java: 17
+            sonar: false
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up JDK
+        uses: actions/setup-java@v3
+        with:
+          distribution: temurin
+          java-version: ${{ matrix.java }}
+      - name: Validate Gradle wrapper
+        uses: gradle/wrapper-validation-action@v1
+      - name: Setup Gradle cache
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+      - name: Execute Gradle build
+        run: |
+          echo "Build Branch => Branch [$GITHUB_REF_NAME]"
+          ./gradlew build
+      - name: Run code analysis
+        if: ${{ matrix.sonar }}
+        run: |
+          echo "Run SonarQube Analysis => Branch [$GITHUB_REF_NAME]"
+          ./gradlew sonarqube -Dsonar.verbose=true
