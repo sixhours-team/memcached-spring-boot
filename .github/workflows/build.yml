@@ -9,9 +9,6 @@ on:
       - '*'
   pull_request:
 
-env:
-  SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-
 jobs:
   build:
     strategy:
@@ -25,6 +22,7 @@ jobs:
           - java: 17
             sonar: false
     name: Build
+    if: github.repository == 'sixhours-team/memcached-spring-boot'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -49,7 +47,9 @@ jobs:
           echo "Build Branch => Branch [$GITHUB_REF_NAME]"
           ./gradlew build
       - name: Run code analysis
-        if: ${{ matrix.sonar }}
+        if: ${{ matrix.sonar && github.event_name != 'pull_request'}}
         run: |
           echo "Run SonarQube Analysis => Branch [$GITHUB_REF_NAME]"
-          ./gradlew sonarqube -Dsonar.verbose=true
+          ./gradlew sonarqube -Dsonar.verbose=true --stacktrace
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
