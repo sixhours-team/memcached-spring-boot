@@ -8,6 +8,7 @@ on:
 jobs:
   snapshot:
     name: Release Snapshot
+    if: github.repository == 'sixhours-team/memcached-spring-boot'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
