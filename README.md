@@ -19,7 +19,7 @@ To plug-in Memcached cache in your application follow the steps below:
    * **Gradle**
 
       ```groovy
-      implementation('io.sixhours:memcached-spring-boot-starter:2.4.2')
+      implementation('io.sixhours:memcached-spring-boot-starter:2.4.3')
       ```
    * **Maven**
 
@@ -27,7 +27,7 @@ To plug-in Memcached cache in your application follow the steps below:
       <dependency>
           <groupId>io.sixhours</groupId>
           <artifactId>memcached-spring-boot-starter</artifactId>
-          <version>2.4.2</version>
+          <version>2.4.3</version>
       </dependency>
       ```
   
@@ -36,7 +36,7 @@ To plug-in Memcached cache in your application follow the steps below:
    * **Gradle**
 
         ```groovy
-        implementation('io.sixhours:memcached-spring-boot-starter:2.4.2') {
+        implementation('io.sixhours:memcached-spring-boot-starter:2.4.3') {
           exclude group: 'com.googlecode.xmemcached', module: 'xmemcached'
         }
         implementation('com.amazonaws:elasticache-java-cluster-client:1.1.2')
@@ -47,7 +47,7 @@ To plug-in Memcached cache in your application follow the steps below:
         <dependency>
             <groupId>io.sixhours</groupId>
             <artifactId>memcached-spring-boot-starter</artifactId>
-            <version>2.4.2</version>
+            <version>2.4.3</version>
             <exclusions>
                 <exclusion>
                     <groupId>com.googlecode.xmemcached</groupId>
