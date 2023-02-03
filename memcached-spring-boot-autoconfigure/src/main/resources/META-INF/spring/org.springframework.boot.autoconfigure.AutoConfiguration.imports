@@ -1,0 +1,2 @@
+io.sixhours.memcached.cache.MemcachedCacheAutoConfiguration
+io.sixhours.memcached.cache.MemcachedCacheMeterBinderProviderConfiguration
