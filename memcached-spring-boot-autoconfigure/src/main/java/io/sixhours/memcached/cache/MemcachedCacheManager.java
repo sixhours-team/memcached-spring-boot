@@ -15,6 +15,12 @@
  */
 package io.sixhours.memcached.cache;
 
+import org.springframework.cache.Cache;
+import org.springframework.cache.CacheManager;
+import org.springframework.cache.support.NoOpCache;
+import org.springframework.cache.transaction.AbstractTransactionSupportingCacheManager;
+
+import java.time.Clock;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -25,11 +31,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
-
-import org.springframework.cache.Cache;
-import org.springframework.cache.CacheManager;
-import org.springframework.cache.support.NoOpCache;
-import org.springframework.cache.transaction.AbstractTransactionSupportingCacheManager;
 
 /**
  * {@link CacheManager} implementation for Memcached.
@@ -58,6 +59,7 @@ public class MemcachedCacheManager extends AbstractTransactionSupportingCacheMan
     private Map<String, Integer> expirationPerCache;
     private List<String> metricsCacheNames = Collections.emptyList();
     private Set<String> disabledCacheNames = new HashSet<>();
+    private Clock clock = Clock.systemUTC();
 
     /**
      * Construct a {@link MemcachedCacheManager}
@@ -81,7 +83,7 @@ public class MemcachedCacheManager extends AbstractTransactionSupportingCacheMan
 
     @Override
     public Cache getCache(String name) {
-        if(disabledCacheNames.contains(name)) {
+        if (disabledCacheNames.contains(name)) {
             log.warning(() -> String.format("Ignoring cache '%s' because it is on the disabled cache names.", name));
             return new NoOpCache(name);
         }
@@ -96,7 +98,7 @@ public class MemcachedCacheManager extends AbstractTransactionSupportingCacheMan
 
     private MemcachedCache createCache(String name) {
         int cacheExpiration = determineExpiration(name);
-        return new MemcachedCache(name, memcachedClient, cacheExpiration, prefix, namespace);
+        return new MemcachedCache(name, memcachedClient, cacheExpiration, prefix, namespace, clock);
     }
 
     private int determineExpiration(String name) {
@@ -152,5 +154,15 @@ public class MemcachedCacheManager extends AbstractTransactionSupportingCacheMan
 
     public Set<String> getDisabledCacheNames() {
         return disabledCacheNames;
+    }
+
+    /**
+     * Overrides the default value of UTC timezone clock. Should be used only for tests in order not to rely
+     * on mocking frameworks, since mocking might not work with all JDK versions the tests are run on.
+     *
+     * @param clock The fixed clock instance
+     */
+    public void setClock(Clock clock) {
+        this.clock = clock;
     }
 }

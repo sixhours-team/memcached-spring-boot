@@ -19,6 +19,7 @@ dependencies {
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'javax.cache:cache-api'
+    testImplementation "org.awaitility:awaitility:${awaitilityVersion}"
     integrationTestImplementation "org.testcontainers:testcontainers:${testcontainersVersion}"
 }
 
