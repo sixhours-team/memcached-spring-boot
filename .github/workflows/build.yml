@@ -22,10 +22,7 @@ jobs:
           - java: 17
             sonar: false
     name: Build
-    # Skip main build (JDK versions build) once the pull request is merged into master.
-    # Once PR is merged the release-snapshot action should handle the SNAPSHOT
-    # build and release, and publish the Sonar analysis.
-    if: github.repository == 'sixhours-team/memcached-spring-boot' && github.event.pull_request.merged == false
+    if: github.repository == 'sixhours-team/memcached-spring-boot'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -49,6 +46,12 @@ jobs:
         run: |
           echo "Build Branch => Branch [$GITHUB_REF_NAME]"
           ./gradlew build
+      - name: Publish test report
+        uses: mikepenz/action-junit-report@v3
+        if: success() || failure() # always run even if the previous step fails
+        with:
+          check_name: Test results (${{ matrix.java }})
+          report_paths: memcached-spring-boot-autoconfigure/build/test-results/**/TEST-*.xml
       - name: Run code analysis
         if: ${{ matrix.sonar && github.event_name != 'pull_request'}}
         run: |
