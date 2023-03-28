@@ -17,6 +17,9 @@ package io.sixhours.memcached.cache;
 
 import org.springframework.cache.support.AbstractValueAdaptingCache;
 
+import java.time.Clock;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.Lock;
@@ -49,11 +52,27 @@ public class MemcachedCache extends AbstractValueAdaptingCache {
      * @param expiration      Cache expiration in seconds
      * @param prefix          Cache key prefix
      * @param namespace       Cache invalidation namespace key
+     * @param clock           Cache expiration clock
      */
-    public MemcachedCache(String name, IMemcachedClient memcachedClient, int expiration, String prefix, String namespace) {
+    public MemcachedCache(String name, IMemcachedClient memcachedClient, int expiration, String prefix, String namespace, Clock clock) {
         super(true);
         this.memcachedClient = memcachedClient;
-        this.memcacheCacheMetadata = new MemcacheCacheMetadata(name, expiration, prefix, namespace);
+        this.memcacheCacheMetadata = new MemcacheCacheMetadata(name, expiration, prefix, namespace, clock);
+    }
+
+    /**
+     * Create an {@code MemcachedCache} with the given settings.
+     * <p>
+     * Uses the UTC timezone system clock as default expiration time clock.
+     *
+     * @param name            Cache name
+     * @param memcachedClient {@link IMemcachedClient}
+     * @param expiration      Cache expiration in seconds
+     * @param prefix          Cache key prefix
+     * @param namespace       Cache invalidation namespace key
+     */
+    public MemcachedCache(String name, IMemcachedClient memcachedClient, int expiration, String prefix, String namespace) {
+        this(name, memcachedClient, expiration, prefix, namespace, Clock.systemUTC());
     }
 
     @Override
@@ -201,8 +220,9 @@ public class MemcachedCache extends AbstractValueAdaptingCache {
         private final int expiration;
         private final String keyPrefix;
         private final String namespaceKey;
+        private final Clock clock;
 
-        public MemcacheCacheMetadata(String name, int expiration, String cachePrefix, String namespace) {
+        public MemcacheCacheMetadata(String name, int expiration, String cachePrefix, String namespace, Clock clock) {
             this.name = name;
             this.expiration = expiration;
 
@@ -213,13 +233,31 @@ public class MemcachedCache extends AbstractValueAdaptingCache {
 
             this.keyPrefix = sb.toString();
             this.namespaceKey = sb.append(namespace).toString();
+            this.clock = clock;
         }
 
         public String name() {
             return name;
         }
 
+        /**
+         * Expiration times are specified in unsigned integer seconds. They can be set from 0, meaning "never expire",
+         * to 30 days (60*60*24*30). Any time higher than 30 days is interpreted as a unix timestamp date. If you
+         * want to expire an object on january 1st of next year, this is how you do that.
+         * <p>
+         * The unix timestamp is a way to track time as a running total of seconds. This count starts at the Unix
+         * Epoch on January 1st, 1970 at UTC. Therefore, the unix time stamp is merely the number of seconds between
+         * a particular date and the Unix Epoch.
+         *
+         * @return expiration time as seconds (up to 30 days) or as UNIX timestamp epoch seconds (greater than 30 days).
+         * @see <a href="https://github.com/memcached/memcached/wiki/Programming#expiration">Memcached Expiration</a>
+         * @see <a href="https://www.unixtimestamp.com/">Unix timestamp</a>
+         */
         public int expiration() {
+            // If the expiration is greater than 30 days: expiration time = UNIX timestamp + expiration
+            if (this.expiration > Duration.ofDays(30).getSeconds()) {
+                return (int) Instant.now(clock).plusSeconds(expiration).getEpochSecond();
+            }
             return expiration;
         }
 
