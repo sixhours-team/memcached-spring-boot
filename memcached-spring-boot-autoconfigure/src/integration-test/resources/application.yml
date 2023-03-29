@@ -16,6 +16,10 @@
 
 memcached.cache:
   servers: example1.com:12345,example2.com:12346
+  authentication:
+    username: test-user
+    password: test-password
+    mechanism: cram-md5
   servers-refresh-interval: 30000
   operation-timeout: 7200
   prefix: memcached:test-app

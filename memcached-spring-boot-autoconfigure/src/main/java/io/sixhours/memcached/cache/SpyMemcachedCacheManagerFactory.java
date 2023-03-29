@@ -18,6 +18,8 @@ package io.sixhours.memcached.cache;
 import net.spy.memcached.ClientMode;
 import net.spy.memcached.ConnectionFactoryBuilder;
 import net.spy.memcached.MemcachedClient;
+import net.spy.memcached.auth.AuthDescriptor;
+import net.spy.memcached.auth.PlainCallbackHandler;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -43,12 +45,24 @@ public class SpyMemcachedCacheManagerFactory extends MemcachedCacheManagerFactor
         final MemcachedCacheProperties.Provider provider = properties.getProvider();
         final MemcachedCacheProperties.Protocol protocol = properties.getProtocol();
         final MemcachedCacheProperties.HashStrategy hashStrategy = properties.getHashStrategy();
+        final MemcachedCacheProperties.Authentication authentication = properties.getAuthentication();
 
         final ConnectionFactoryBuilder connectionFactoryBuilder = new ConnectionFactoryBuilder()
                 .setLocatorType(hashStrategyToLocator(hashStrategy))
                 .setClientMode(clientMode(provider))
                 .setOpTimeout(properties.getOperationTimeout().toMillis())
                 .setProtocol(connectionProtocol(protocol));
+
+        if (!authentication.isEmpty()) {
+            connectionFactoryBuilder.setAuthDescriptor(
+                    new AuthDescriptor(
+                            new String[]{authentication.getMechanism().asString()},
+                            new PlainCallbackHandler(
+                                    authentication.getUsername(),
+                                    authentication.getPassword())
+                    )
+            );
+        }
 
         connectionFactoryCustomizer.customize(connectionFactoryBuilder);
 

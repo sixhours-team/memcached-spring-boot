@@ -55,6 +55,11 @@ public class MemcachedCacheContextConfigIT {
         assertThat(properties.getServers().get(1)).isNotNull();
         assertThat(properties.getServers().get(1).getHostName()).isEqualTo("example2.com");
         assertThat(properties.getServers().get(1).getPort()).isEqualTo(12346);
+        assertThat(properties.getAuthentication()).isNotNull();
+        assertThat(properties.getAuthentication().getUsername()).isEqualTo("test-user");
+        assertThat(properties.getAuthentication().getPassword()).isEqualTo("test-password");
+        assertThat(properties.getAuthentication().getMechanism())
+                .isEqualTo(MemcachedCacheProperties.Authentication.Mechanism.CRAM_MD5);
         assertThat(properties.getServersRefreshInterval()).isEqualTo(Duration.ofSeconds(30));
         assertThat(properties.getOperationTimeout()).isEqualTo(Duration.ofMillis(7200));
         assertThat(properties.getPrefix()).isEqualTo("memcached:test-app");

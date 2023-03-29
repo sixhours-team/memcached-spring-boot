@@ -19,14 +19,25 @@ import net.rubyeye.xmemcached.CommandFactory;
 import net.rubyeye.xmemcached.MemcachedClientBuilder;
 import net.rubyeye.xmemcached.MemcachedSessionLocator;
 import net.rubyeye.xmemcached.XMemcachedClientBuilder;
+import net.rubyeye.xmemcached.auth.AuthInfo;
+import net.rubyeye.xmemcached.auth.PlainCallbackHandler;
 import net.rubyeye.xmemcached.aws.AWSElasticCacheClientBuilder;
 import net.rubyeye.xmemcached.command.BinaryCommandFactory;
 import net.rubyeye.xmemcached.command.TextCommandFactory;
-import net.rubyeye.xmemcached.impl.*;
+import net.rubyeye.xmemcached.impl.ArrayMemcachedSessionLocator;
+import net.rubyeye.xmemcached.impl.ElectionMemcachedSessionLocator;
+import net.rubyeye.xmemcached.impl.KetamaMemcachedSessionLocator;
+import net.rubyeye.xmemcached.impl.LibmemcachedMemcachedSessionLocator;
+import net.rubyeye.xmemcached.impl.PHPMemcacheSessionLocator;
+import net.rubyeye.xmemcached.impl.RandomMemcachedSessionLocaltor;
+import net.rubyeye.xmemcached.impl.RoundRobinMemcachedSessionLocator;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * Factory for the XMemcached {@link MemcachedCacheManager} instances.
@@ -46,12 +57,27 @@ public class XMemcachedCacheManagerFactory extends MemcachedCacheManagerFactory 
         final MemcachedCacheProperties.Provider provider = properties.getProvider();
         final MemcachedCacheProperties.Protocol protocol = properties.getProtocol();
         final MemcachedCacheProperties.HashStrategy hashStrategy = properties.getHashStrategy();
+        final MemcachedCacheProperties.Authentication authentication = properties.getAuthentication();
 
         final MemcachedClientBuilder builder = builder(provider, servers);
 
         if (builder instanceof AWSElasticCacheClientBuilder) {
             ((AWSElasticCacheClientBuilder) builder)
                     .setPollConfigIntervalMs(properties.getServersRefreshInterval().toMillis());
+        }
+
+        if (!authentication.isEmpty()) {
+            Map<InetSocketAddress, AuthInfo> authInfoMap = servers.stream()
+                    .collect(Collectors.toMap(
+                            Function.identity(),
+                            i -> new AuthInfo(new PlainCallbackHandler(
+                                    authentication.getUsername(),
+                                    authentication.getPassword()),
+                                    new String[]{authentication.getMechanism().asString()}
+                            )
+                    ));
+
+            builder.setAuthInfoMap(authInfoMap);
         }
 
         builder.setSessionLocator(hashStrategyToLocator(hashStrategy));

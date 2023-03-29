@@ -46,6 +46,12 @@ public class MemcachedCacheProperties {
     private List<InetSocketAddress> servers = Default.SERVERS;
 
     /**
+     * Authentication configuration values. Requires binary protocol if used.
+     * Defaults to empty authentication configuration.
+     */
+    private Authentication authentication = Default.AUTHENTICATION;
+
+    /**
      * Comma-separated list of cache names to disable
      */
     private Set<String> disabledCacheNames = new HashSet<>();
@@ -122,6 +128,14 @@ public class MemcachedCacheProperties {
                 .map(SocketAddress::new)
                 .map(SocketAddress::value)
                 .collect(Collectors.toList());
+    }
+
+    public Authentication getAuthentication() {
+        return authentication;
+    }
+
+    public void setAuthentication(Authentication authentication) {
+        this.authentication = authentication;
     }
 
     public Set<String> getDisabledCacheNames() {
@@ -221,6 +235,69 @@ public class MemcachedCacheProperties {
 
     public void setHashStrategy(HashStrategy hashStrategy) {
         this.hashStrategy = hashStrategy;
+    }
+
+    public static class Authentication {
+
+        /**
+         * Login username of the memcached server.
+         */
+        private String username;
+
+        /**
+         * Login password of the memcached server.
+         */
+        private String password;
+
+        /**
+         * Authentication mechanisms to be used for login negotiation.
+         */
+        private Mechanism mechanism;
+
+        public String getUsername() {
+            return username;
+        }
+
+        public void setUsername(String username) {
+            this.username = username;
+        }
+
+        public String getPassword() {
+            return password;
+        }
+
+        public void setPassword(String password) {
+            this.password = password;
+        }
+
+        public Mechanism getMechanism() {
+            return mechanism != null ? mechanism : Default.AUTHENTICATION_MECHANISM;
+        }
+
+        public void setMechanism(Mechanism mechanism) {
+            this.mechanism = mechanism;
+        }
+
+        public boolean isEmpty() {
+            return username == null || password == null;
+        }
+
+        /**
+         * Supported authentication mechanisms.
+         */
+        public enum Mechanism {
+            PLAIN("PLAIN"), CRAM_MD5("CRAM-MD5");
+
+            private final String value;
+
+            Mechanism(String value) {
+                this.value = value;
+            }
+
+            public String asString() {
+                return value;
+            }
+        }
     }
 
     public enum Protocol {
