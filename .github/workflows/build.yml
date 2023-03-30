@@ -22,7 +22,10 @@ jobs:
           - java: 17
             sonar: false
     name: Build
-    if: github.repository == 'sixhours-team/memcached-spring-boot'
+    # Skip main build (JDK versions build) once the pull request is merged into master.
+    # Once PR is merged the release-snapshot action should handle the SNAPSHOT
+    # build and release, and publish the Sonar analysis.
+    if: github.repository == 'sixhours-team/memcached-spring-boot' && github.event.pull_request.merged == false
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
