@@ -35,7 +35,7 @@ def gitVersion = { ->
     return !version.isEmpty() ? version - 'v' : projectVersion
 }
 
-def resolvedVersion = project.findProperty('release') ? gitVersion() : '2.5.0-SNAPSHOT'
+def resolvedVersion = project.findProperty('release') ? gitVersion() : '2.5.1-SNAPSHOT'
 
 sonarqube {
     properties {
