@@ -71,6 +71,38 @@ public class MemcachedCachePropertiesValidationTest {
     }
 
     @Test
+    public void whenSetAuthenticationThenValidationOk() {
+        MemcachedCacheProperties.Authentication authentication = new MemcachedCacheProperties.Authentication();
+        authentication.setUsername("test-user");
+        authentication.setPassword("test-pwd");
+        authentication.setMechanism(MemcachedCacheProperties.Authentication.Mechanism.CRAM_MD5);
+
+        properties.setAuthentication(authentication);
+
+        assertThat(properties.getAuthentication()).isNotNull();
+        assertThat(properties.getAuthentication().getUsername()).isEqualTo("test-user");
+        assertThat(properties.getAuthentication().getPassword()).isEqualTo("test-pwd");
+        assertThat(properties.getAuthentication().getMechanism())
+                .isEqualTo(MemcachedCacheProperties.Authentication.Mechanism.CRAM_MD5);
+    }
+
+    @Test
+    public void whenSetAuthenticationWithNullValuesThenValidationOk() {
+        MemcachedCacheProperties.Authentication authentication = new MemcachedCacheProperties.Authentication();
+        authentication.setUsername(null);
+        authentication.setPassword(null);
+        authentication.setMechanism(null);
+
+        properties.setAuthentication(authentication);
+
+        assertThat(properties.getAuthentication()).isNotNull();
+        assertThat(properties.getAuthentication().getUsername()).isNull();
+        assertThat(properties.getAuthentication().getPassword()).isNull();
+        assertThat(properties.getAuthentication().getMechanism())
+                .isEqualTo(MemcachedCacheProperties.Authentication.Mechanism.PLAIN);
+    }
+
+    @Test
     public void whenSetDisabledCacheNamesThenValidationOk() {
         Set<String> names = new HashSet<>();
         names.add("cache-1");

@@ -68,6 +68,34 @@ public class MemcachedCachePropertiesTest {
     }
 
     @Test
+    public void whenGetAuthenticationUsername_thenCorrectValue() {
+        String result = memcachedCacheProperties.getAuthentication().getUsername();
+
+        assertThat(result)
+                .isNotNull()
+                .isEqualTo("user_config");
+    }
+
+    @Test
+    public void whenGetAuthenticationPassword_thenCorrectValue() {
+        String result = memcachedCacheProperties.getAuthentication().getPassword();
+
+        assertThat(result)
+                .isNotNull()
+                .isEqualTo("pwd_config");
+    }
+
+    @Test
+    public void whenGetAuthenticationMechanism_thenCorrectValue() {
+        MemcachedCacheProperties.Authentication.Mechanism result =
+                memcachedCacheProperties.getAuthentication().getMechanism();
+
+        assertThat(result)
+                .isNotNull()
+                .isEqualTo(MemcachedCacheProperties.Authentication.Mechanism.PLAIN);
+    }
+
+    @Test
     public void whenGetPrefix_thenCorrectValue() {
         String result = memcachedCacheProperties.getPrefix();
 

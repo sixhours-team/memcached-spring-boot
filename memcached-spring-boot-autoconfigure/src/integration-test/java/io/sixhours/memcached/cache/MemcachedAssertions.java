@@ -20,6 +20,7 @@ import net.rubyeye.xmemcached.impl.MemcachedConnector;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.net.InetSocketAddress;
+import java.net.SocketAddress;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -56,22 +57,23 @@ public final class MemcachedAssertions {
     }
 
     /**
-     * Asserts {@link MemcachedClient} against default configuration values.
+     * Asserts XMemcached implementation of {@link MemcachedClient} against default configuration values.
      *
-     * @param memcachedClient {@link MemcachedClient}
+     * @param memcachedClient {@link IMemcachedClient}
      */
     public static void assertMemcachedClient(IMemcachedClient memcachedClient) {
         assertMemcachedClient(memcachedClient, Default.PROTOCOL, Default.OPERATION_TIMEOUT);
     }
 
     /**
-     * Asserts {@link MemcachedClient} against expected configuration values.
+     * Asserts XMemcached implementation of {@link IMemcachedClient} against expected configuration values.
      *
-     * @param memcachedClient {@link MemcachedClient}
+     * @param memcachedClient {@link IMemcachedClient}
      * @param protocol        Expected protocol
      * @param servers         Expected server list
      */
     public static void assertMemcachedClient(IMemcachedClient memcachedClient, MemcachedCacheProperties.Protocol protocol, long operationTimeout, InetSocketAddress... servers) {
+        assertThat(memcachedClient.nativeClient()).isInstanceOf(MemcachedClient.class);
         final MemcachedClient nativeClient = (MemcachedClient) memcachedClient.nativeClient();
 
         final MemcachedConnector connector = (MemcachedConnector) nativeClient.getConnector();
@@ -87,9 +89,34 @@ public final class MemcachedAssertions {
                     .as("The number of memcached node endpoints should match server list size")
                     .hasSize(servers.length);
 
-            for (int i = 0; i < availableServers.length; i++) {
-                InetSocketAddress address = availableServers[i];
+            for (InetSocketAddress address : availableServers) {
+                assertThat(actualServers).contains(address);
+            }
+        }
+    }
 
+    /**
+     * Asserts Spymemcached implementation of {@link IMemcachedClient} against expected configuration values.
+     *
+     * @param memcachedClient {@link IMemcachedClient}
+     * @param servers         Expected server list
+     */
+    public static void assertSpymemcachedClient(IMemcachedClient memcachedClient, long operationTimeout, InetSocketAddress... servers) {
+        assertThat(memcachedClient.nativeClient()).isInstanceOf(net.spy.memcached.MemcachedClient.class);
+        final net.spy.memcached.MemcachedClient nativeClient = (net.spy.memcached.MemcachedClient) memcachedClient.nativeClient();
+
+        final SocketAddress[] availableServers = nativeClient.getAvailableServers().toArray(new SocketAddress[0]);
+        assertThat(nativeClient.getOperationTimeout()).isEqualTo(operationTimeout);
+
+        final List<InetSocketAddress> actualServers = Arrays.asList(servers);
+
+        if (actualServers.size() > 0) {
+            assertThat(availableServers)
+                    .as("The number of memcached node endpoints should match server list size")
+                    .hasSize(servers.length);
+
+            for (SocketAddress availableServer : availableServers) {
+                InetSocketAddress address = (InetSocketAddress) availableServer;
                 assertThat(actualServers).contains(address);
             }
         }

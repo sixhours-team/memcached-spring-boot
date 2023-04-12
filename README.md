@@ -39,7 +39,7 @@ To plug-in Memcached cache in your application follow the steps below:
         implementation('io.sixhours:memcached-spring-boot-starter:2.4.4') {
           exclude group: 'com.googlecode.xmemcached', module: 'xmemcached'
         }
-        implementation('com.amazonaws:elasticache-java-cluster-client:1.1.2')
+        implementation('com.amazonaws:elasticache-java-cluster-client:1.2.0')
         ```
    * **Maven**
 
@@ -58,7 +58,7 @@ To plug-in Memcached cache in your application follow the steps below:
         <dependency>
             <groupId>com.amazonaws</groupId>
             <artifactId>elasticache-java-cluster-client</artifactId>
-            <version>1.1.2</version>
+            <version>1.2.0</version>
         </dependency>
         ```
 
@@ -102,6 +102,26 @@ To plug-in Memcached cache in your application follow the steps below:
         provider: appengine
         expiration: 86400 # default expiration set to '86400' seconds i.e. 1 day
     ```
+
+   If you are using authentication to connect to the memcached server, check the example configuration below.
+   The memcached server has to support the authentication mechanism the client is using. By default, the `plain` 
+   authentication mechanism will be used, but if needed you can switch to `CRAM-MD5` mechanism by setting the 
+   `memcached.cache.authentication.mechanism: cram-md5` property.
+
+   >**Important:** The authentication requires `binary` protocol, therefore make sure that the `memcached.cache.protocol` property has
+been set to `binary`.
+
+    ```yaml
+     memcached.cache:
+       servers: example1.com:11211
+       provider: static
+       # default expiration set to '1d' (1 day i.e. '86400' seconds) and custom ones for cache_name1 and cache_name2
+       expiration: 1d
+       authentication:
+        username: my_user # replace with your memcached server 'username'
+        password: my_password # replace with your memcached server 'password'
+       protocol: binary # required for authentication
+     ```
 
 3. Enable caching support by adding `@EnableCaching` annotation to one of your `@Configuration` classes.
 
@@ -152,6 +172,12 @@ memcached.cache.expiration: # Default cache expiration (defaults to "0", meaning
 memcached.cache.expiration-per-cache.cacheName: # Set expiration for cache with given name. Overrides `memcached.cache.expiration` for the given cache. To set expiration value for cache named "cacheName" {cache_name}:{number} e.g. "authors: 3600" or "authors: 1h". If duration unit is not specified, seconds will be used by default.
 memcached.cache.prefix: # Cache key prefix (default "memcached:spring-boot")
 memcached.cache.protocol: # Memcached client protocol. Supports "text" and "binary" protocols (default is "text" protocol)
+
+# Authentication config properties are not required to be set if authentication is not used
+memcached.cache.authentication.username: # Login username of the memcached server. Requires "binary" protocol.
+memcached.cache.authentication.password: # Login password of the memcached server. Requires "binary" protocol.
+memcached.cache.authentication.mechanism: # Authentication mechanism to be used with memcached server. Defaults to "PLAIN". Supported mechanisms are "PLAIN" and "CRAM-MD5".
+
 memcached.cache.operation-timeout: # Memcached client operation timeout (default "2500 milliseconds"). If unit not specified, milliseconds will be used.
 memcached.cache.hash-strategy: # Memcached client hash strategy for distribution of data between servers. Supports "standard" (array based : "hash(key) mod server_count"), "libmemcached" (consistent hash), "ketama" (consistent hash), "php" (make easier to share data with PHP based clients), "election", "roundrobin", "random". Default is "standard".
 memcached.cache.servers-refresh-interval: # Interval in milliseconds that refreshes the list of cache node hostnames and IP addresses for AWS ElastiCache. The default is 60000 milliseconds.
@@ -181,8 +207,7 @@ Supported units are:
 
 * `d` for days
 
-**Notice:**
->If different applications are sharing the same Memcached server, make sure to specify unique cache `prefix` for each application
+>**Notice:** If different applications are sharing the same Memcached server, make sure to specify unique cache `prefix` for each application
 in order to avoid cache conflicts.
 
 ## Build

@@ -15,6 +15,8 @@
  */
 package io.sixhours.memcached.cache;
 
+import io.sixhours.memcached.cache.MemcachedCacheProperties.Authentication;
+import io.sixhours.memcached.cache.MemcachedCacheProperties.Authentication.Mechanism;
 import io.sixhours.memcached.cache.MemcachedCacheProperties.HashStrategy;
 import io.sixhours.memcached.cache.MemcachedCacheProperties.Provider;
 
@@ -33,6 +35,10 @@ import static java.util.Collections.singletonList;
 public final class Default {
 
     public static final List<InetSocketAddress> SERVERS = singletonList(new InetSocketAddress("localhost", 11211));
+
+    public static final Authentication AUTHENTICATION = new Authentication();
+
+    public static final Mechanism AUTHENTICATION_MECHANISM = Mechanism.PLAIN;
 
     public static final Provider PROVIDER = Provider.STATIC;
 

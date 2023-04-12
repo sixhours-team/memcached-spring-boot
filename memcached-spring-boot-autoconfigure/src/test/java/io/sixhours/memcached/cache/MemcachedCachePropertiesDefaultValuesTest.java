@@ -64,6 +64,17 @@ public class MemcachedCachePropertiesDefaultValuesTest {
     }
 
     @Test
+    public void whenGetAuthentication_thenNullValue() {
+        MemcachedCacheProperties.Authentication result = memcachedCacheProperties.getAuthentication();
+
+        assertThat(result).isNotNull();
+        assertThat(result.getUsername()).isNull();
+        assertThat(result.getPassword()).isNull();
+        assertThat(result.getMechanism())
+                .isEqualTo(MemcachedCacheProperties.Authentication.Mechanism.PLAIN);
+    }
+
+    @Test
     public void whenGetPrefix_thenCorrectValue() {
         String result = memcachedCacheProperties.getPrefix();
 
