@@ -3,6 +3,7 @@ apply plugin: 'jacoco'
 
 sonarqube {
     properties {
+        property "sonar.organization", "sixhours"
         property "sonar.projectKey", "${project.group}:${project.name}"
     }
 }
@@ -14,4 +15,7 @@ jacocoTestReport {
     }
 }
 
-build.dependsOn jacocoTestReport
+// Jacoco test report required only for Sonar analysis on Java 11
+if (JavaVersion.current().isJava11()) {
+    build.dependsOn jacocoTestReport
+}

@@ -53,6 +53,7 @@ jobs:
         if: ${{ matrix.sonar && github.event_name != 'pull_request'}}
         run: |
           echo "Run SonarQube Analysis => Branch [$GITHUB_REF_NAME]"
-          ./gradlew sonarqube -Dsonar.verbose=true --stacktrace
+          ./gradlew sonar -Dsonar.verbose=true --stacktrace
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
