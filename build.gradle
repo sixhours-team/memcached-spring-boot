@@ -37,13 +37,6 @@ def gitVersion = { ->
 
 def resolvedVersion = project.findProperty('release') ? gitVersion() : '2.5.1-SNAPSHOT'
 
-sonarqube {
-    properties {
-        property "sonar.organization", "sixhours"
-        property "sonar.host.url", "https://sonarcloud.io"
-    }
-}
-
 allprojects {
     group = "io.sixhours"
     version = resolvedVersion
