@@ -46,6 +46,7 @@ apply from: RELEASE_GRADLE
 
 subprojects {
     apply from: JAVA_GRADLE
+    apply from: SONAR_GRADLE
     apply from: LICENSE_GRADLE
     apply from: PUBLISH_GRADLE
     apply plugin: 'io.spring.dependency-management'

@@ -1,8 +1,6 @@
 ext.projectName = 'Memcached Spring Boot AutoConfiguration'
 ext.projectDesc = 'Memcached Spring Boot AutoConfiguration'
 
-apply from: SONAR_GRADLE
-
 dependencies {
     implementation 'org.springframework.boot:spring-boot-autoconfigure'
     implementation 'org.springframework:spring-context-support'
