@@ -1,10 +1,9 @@
 apply plugin: 'org.sonarqube'
 apply plugin: 'jacoco'
 
-sonarqube {
+rootProject.sonarqube {
     properties {
         property "sonar.organization", "sixhours"
-        property "sonar.projectKey", "${project.group}:${project.name}"
     }
 }
 
