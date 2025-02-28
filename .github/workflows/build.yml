@@ -18,9 +18,9 @@ jobs:
           - java: 8
             sonar: false
           - java: 11
-            sonar: true
-          - java: 17
             sonar: false
+          - java: 17
+            sonar: true
     name: Build
     # Skip main build (JDK versions build) once the pull request is merged into master.
     # Once PR is merged the release-snapshot action should handle the SNAPSHOT
