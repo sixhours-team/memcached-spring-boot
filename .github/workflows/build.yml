@@ -40,7 +40,7 @@ jobs:
           echo "Build Branch => Branch [$GITHUB_REF_NAME]"
           ./gradlew build
       - name: Run code analysis
-        if: ${{ github.event_name != 'pull_request'}}
+        if: ${{ github.ref == 'refs/heads/master' }}
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
