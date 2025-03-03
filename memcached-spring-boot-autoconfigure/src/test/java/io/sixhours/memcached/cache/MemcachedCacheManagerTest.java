@@ -100,7 +100,6 @@ public class MemcachedCacheManagerTest {
                 .isInstanceOf(ArrayList.class);
 
         Object actual = result.toArray()[0];
-        assertThat(actual).isInstanceOf(MemcachedCache.class);
-        assertThat((MemcachedCache) actual).extracting("name").isEqualToComparingFieldByField(EXISTING_CACHE);
+        assertThat(actual).isInstanceOfSatisfying(MemcachedCache.class, (MemcachedCache cache) -> assertThat(cache.getName()).isEqualTo(EXISTING_CACHE));
     }
 }
