@@ -212,7 +212,7 @@ in order to avoid cache conflicts.
 
 ## Build
 
-In order to build the project you will have to have [Java 1.8+](http://www.oracle.com/technetwork/java/javase/downloads/index.html) and [Docker](https://www.docker.com/get-docker) installed.
+In order to build the project you will have to have [Java 17+](https://www.oracle.com/java/technologies/javase/jdk17-archive-downloads.html) and [Docker](https://www.docker.com/get-docker) installed.
 To build the project invoke the following command:
 
     ./gradlew clean build
