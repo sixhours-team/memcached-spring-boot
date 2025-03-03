@@ -11,16 +11,6 @@ on:
 
 jobs:
   build:
-    strategy:
-      matrix:
-        java: [ '8', '11', '17' ]
-        include:
-          - java: 8
-            sonar: false
-          - java: 11
-            sonar: false
-          - java: 17
-            sonar: true
     name: Build
     # Skip main build (JDK versions build) once the pull request is merged into master.
     # Once PR is merged the release-snapshot action should handle the SNAPSHOT
@@ -33,7 +23,7 @@ jobs:
         uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: ${{ matrix.java }}
+          java-version: 17
       - name: Validate Gradle wrapper
         uses: gradle/wrapper-validation-action@v3
       - name: Setup Gradle cache
@@ -50,7 +40,7 @@ jobs:
           echo "Build Branch => Branch [$GITHUB_REF_NAME]"
           ./gradlew build
       - name: Run code analysis
-        if: ${{ matrix.sonar && github.event_name != 'pull_request'}}
+        if: ${{ github.event_name != 'pull_request'}}
         run: |
           echo "Run SonarQube Analysis => Branch [$GITHUB_REF_NAME]"
           ./gradlew sonar -Dsonar.verbose=true --stacktrace
