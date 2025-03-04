@@ -11,16 +11,16 @@ jobs:
     if: github.repository == 'sixhours-team/memcached-spring-boot'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Set up JDK
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: 8
+          java-version: 17
       - name: Validate Gradle wrapper
-        uses: gradle/wrapper-validation-action@v1
+        uses: gradle/wrapper-validation-action@v3
       - name: Setup Gradle cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: |
             ~/.gradle/caches
@@ -29,11 +29,11 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
       - name: Execute Gradle build and release
-        run: |
-          echo "Build Branch for Release => Branch [master] Tag [$GITHUB_REF_NAME]"
-          ./gradlew build publishToSonatype closeSonatypeStagingRepository -Prelease=true
         env:
           SONATYPE_USER: ${{ secrets.SONATYPE_USER }}
           SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
           GPG_SIGNING_KEY: ${{ secrets.GPG_SIGNING_KEY }}
           GPG_SIGNING_PASSWORD: ${{ secrets.GPG_SIGNING_PASSWORD }}
+        run: |
+          echo "Build Branch for Release => Branch [master] Tag [$GITHUB_REF_NAME]"
+          ./gradlew build publishToSonatype closeSonatypeStagingRepository -Prelease=true
