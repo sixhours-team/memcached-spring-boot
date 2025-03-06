@@ -14,7 +14,4 @@ jacocoTestReport {
     }
 }
 
-// Jacoco test report required only for Sonar analysis on Java 11
-if (JavaVersion.current().isJava11()) {
-    build.dependsOn jacocoTestReport
-}
+build.dependsOn jacocoTestReport
