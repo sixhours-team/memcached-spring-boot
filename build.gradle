@@ -12,10 +12,10 @@ ext {
     appengineApiVersion = '2.0.12'
     awaitilityVersion = '4.2.0'
     commonsLoggingVersion = '1.2'
-    elasticacheClientVersion = '1.2.0'
+    elasticacheClientVersion = '1.2.3'
     springCloudVersion = 'Hoxton.SR4'
     testcontainersVersion = '1.17.6'
-    xmemcachedVersion = '2.4.7'
+    xmemcachedVersion = '2.4.8'
 }
 
 ext.JAVA_GRADLE = "$rootDir/gradle/java.gradle"
