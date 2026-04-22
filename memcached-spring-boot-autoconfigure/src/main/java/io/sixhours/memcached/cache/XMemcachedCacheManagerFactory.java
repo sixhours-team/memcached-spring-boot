@@ -31,6 +31,7 @@ import net.rubyeye.xmemcached.impl.LibmemcachedMemcachedSessionLocator;
 import net.rubyeye.xmemcached.impl.PHPMemcacheSessionLocator;
 import net.rubyeye.xmemcached.impl.RandomMemcachedSessionLocaltor;
 import net.rubyeye.xmemcached.impl.RoundRobinMemcachedSessionLocator;
+import org.springframework.beans.factory.ObjectProvider;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -47,8 +48,11 @@ import java.util.stream.Collectors;
  */
 public class XMemcachedCacheManagerFactory extends MemcachedCacheManagerFactory {
 
-    public XMemcachedCacheManagerFactory(MemcachedCacheProperties properties) {
+    private final ObjectProvider<XMemcachedClientCustomizer> customizers;
+
+    public XMemcachedCacheManagerFactory(MemcachedCacheProperties properties, ObjectProvider<XMemcachedClientCustomizer> customizers) {
         super(properties);
+        this.customizers = customizers;
     }
 
     @Override
@@ -83,6 +87,8 @@ public class XMemcachedCacheManagerFactory extends MemcachedCacheManagerFactory 
         builder.setSessionLocator(hashStrategyToLocator(hashStrategy));
         builder.setOpTimeout(properties.getOperationTimeout().toMillis());
         builder.setCommandFactory(commandFactory(protocol));
+
+        customizers.orderedStream().forEach(customizer -> customizer.customize(builder));
 
         return new XMemcachedClient(builder.build());
     }

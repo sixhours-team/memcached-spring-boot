@@ -207,8 +207,74 @@ Supported units are:
 
 * `d` for days
 
->**Notice:** If different applications are sharing the same Memcached server, make sure to specify unique cache `prefix` for each application
-in order to avoid cache conflicts.
+> **Notice:** If different applications are sharing the same Memcached server, make sure to specify unique cache `prefix` for each application
+> in order to avoid cache conflicts.
+
+## Customizing Memcached Clients
+
+The `memcached.cache` application [properties](#properties) cover the most common configuration options shared across all supported
+clients, such as connection setup, timeouts, and basic client behavior.
+
+[Spymemcached](https://github.com/awslabs/aws-elasticache-cluster-client-memcached-for-java)
+and [Xmemcached](https://github.com/killme2008/xmemcached) clients also expose additional low-level options (such as
+connection handling, failure strategies, etc.) that are not available through these properties.
+
+If you need more control, you can use client-specific customizer beans. These are applied during Spring Boot
+auto-configuration while the client is being created and let you adjust the underlying builder before the client is
+instantiated. This allows you to add settings not exposed via `memcached.cache` or override existing ones when needed.
+
+### SpyMemcachedClient
+
+You can customize
+the [SpyMemcachedClient](memcached-spring-boot-autoconfigure/src/main/java/io/sixhours/memcached/cache/SpyMemcachedClient.java)
+by defining
+a [SpyMemcachedConnectionFactoryCustomizer](memcached-spring-boot-autoconfigure/src/main/java/io/sixhours/memcached/cache/SpyMemcachedConnectionFactoryCustomizer.java)
+bean. Any such customizer bean is called with the `net.spy.memcached.ConnectionFactoryBuilder`, which is used internally
+to construct the client.
+This allows fine-grained control over the underlying client settings, including failure handling, reconnect behavior,
+and operation tuning, for example:
+
+```java
+
+@Bean
+public SpyMemcachedConnectionFactoryCustomizer customizer() {
+    return builder -> {
+        builder.setMaxReconnectDelay(1000);
+        builder.setFailureMode(FailureMode.Retry);
+
+        // overrides 'memcached.cache.operation-timeout' value
+        // if already specified in application properties
+        builder.setOpTimeout(1200);
+    };
+}
+```
+
+### XMemcachedClient
+
+You can customize
+the [XMemcachedClient](memcached-spring-boot-autoconfigure/src/main/java/io/sixhours/memcached/cache/XMemcachedClient.java)
+by defining
+an [XMemcachedClientCustomizer](memcached-spring-boot-autoconfigure/src/main/java/io/sixhours/memcached/cache/XMemcachedClientCustomizer.java)
+bean. Any such customizer bean is called with the `net.rubyeye.xmemcached.MemcachedClientBuilder`, which is used internally
+to construct the client.
+This allows fine-grained control over the underlying client settings, including connection pooling, timeouts, and other
+advanced client features, for example:
+
+```java
+
+@Bean
+public XMemcachedClientCustomizer customizer() {
+    return builder -> {
+        builder.setConnectionPoolSize(123);
+        builder.setConnectTimeout(5000);
+        builder.setFailureMode(true);
+
+        // overrides 'memcached.cache.operation-timeout' value
+        // if already specified in application properties
+        builder.setOpTimeout(1200);
+    };
+}
+```
 
 ## Build
 

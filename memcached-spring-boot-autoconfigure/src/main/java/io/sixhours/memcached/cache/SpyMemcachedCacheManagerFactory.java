@@ -20,6 +20,7 @@ import net.spy.memcached.ConnectionFactoryBuilder;
 import net.spy.memcached.MemcachedClient;
 import net.spy.memcached.auth.AuthDescriptor;
 import net.spy.memcached.auth.PlainCallbackHandler;
+import org.springframework.beans.factory.ObjectProvider;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -32,11 +33,11 @@ import java.util.List;
  */
 public class SpyMemcachedCacheManagerFactory extends MemcachedCacheManagerFactory {
 
-    private final SpyMemcachedConnectionFactoryCustomizer connectionFactoryCustomizer;
+    private final ObjectProvider<SpyMemcachedConnectionFactoryCustomizer> customizers;
 
-    public SpyMemcachedCacheManagerFactory(MemcachedCacheProperties properties, SpyMemcachedConnectionFactoryCustomizer customizer) {
+    public SpyMemcachedCacheManagerFactory(MemcachedCacheProperties properties, ObjectProvider<SpyMemcachedConnectionFactoryCustomizer> customizers) {
         super(properties);
-        this.connectionFactoryCustomizer = customizer;
+        this.customizers = customizers;
     }
 
     @Override
@@ -64,7 +65,7 @@ public class SpyMemcachedCacheManagerFactory extends MemcachedCacheManagerFactor
             );
         }
 
-        connectionFactoryCustomizer.customize(connectionFactoryBuilder);
+        customizers.orderedStream().forEach(customizer -> customizer.customize(connectionFactoryBuilder));
 
         return new SpyMemcachedClient(new MemcachedClient(connectionFactoryBuilder.build(), servers));
     }
