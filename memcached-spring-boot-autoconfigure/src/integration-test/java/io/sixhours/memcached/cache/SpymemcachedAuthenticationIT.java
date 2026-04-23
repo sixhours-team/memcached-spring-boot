@@ -167,8 +167,7 @@ public class SpymemcachedAuthenticationIT {
 
         @Bean
         public MemcachedCacheManager cacheManager(MemcachedCacheProperties properties) throws IOException {
-            return new SpyMemcachedCacheManagerFactory(properties, builder -> {
-            }).create();
+            return new SpyMemcachedCacheManagerFactory(properties, null).create();
         }
     }
 }

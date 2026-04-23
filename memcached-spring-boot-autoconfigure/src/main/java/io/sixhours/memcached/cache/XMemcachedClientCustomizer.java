@@ -15,19 +15,19 @@
  */
 package io.sixhours.memcached.cache;
 
-import net.spy.memcached.ConnectionFactoryBuilder;
+import net.rubyeye.xmemcached.MemcachedClientBuilder;
 
 /**
- * A customizer interface for beans that want to adjust the {@link ConnectionFactoryBuilder}, allowing fine-tuning of the
- * auto-configuration before creating a {@link net.spy.memcached.MemcachedClient}.
+ * A customizer interface for beans that want to adjust the {@link MemcachedClientBuilder}, allowing fine-tuning of the
+ * auto-configuration before creating a {@link net.rubyeye.xmemcached.MemcachedClient}.
  */
 @FunctionalInterface
-public interface SpyMemcachedConnectionFactoryCustomizer {
+public interface XMemcachedClientCustomizer {
 
     /**
-     * Customize the given {@link ConnectionFactoryBuilder}.
+     * Customize the given {@link MemcachedClientBuilder}.
      *
      * @param builder the builder
      */
-    void customize(ConnectionFactoryBuilder builder);
+    void customize(MemcachedClientBuilder builder);
 }

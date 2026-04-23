@@ -15,6 +15,7 @@
  */
 package io.sixhours.memcached.cache;
 
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingClass;
@@ -49,8 +50,8 @@ public class SpyMemcachedCacheAutoConfiguration {
         @Bean
         @RefreshScope
         @ConditionalOnMissingBean(value = MemcachedCacheManager.class, search = SearchStrategy.CURRENT)
-        public MemcachedCacheManager cacheManager(MemcachedCacheProperties properties, SpyMemcachedConnectionFactoryCustomizer customizer) throws IOException {
-            return new SpyMemcachedCacheManagerFactory(properties, customizer).create();
+        public MemcachedCacheManager cacheManager(MemcachedCacheProperties properties, ObjectProvider<SpyMemcachedConnectionFactoryCustomizer> customizers) throws IOException {
+            return new SpyMemcachedCacheManagerFactory(properties, customizers).create();
         }
     }
 
@@ -60,14 +61,8 @@ public class SpyMemcachedCacheAutoConfiguration {
 
         @Bean
         @ConditionalOnMissingBean(value = MemcachedCacheManager.class, search = SearchStrategy.CURRENT)
-        public MemcachedCacheManager cacheManager(MemcachedCacheProperties properties, SpyMemcachedConnectionFactoryCustomizer customizer) throws IOException {
-            return new SpyMemcachedCacheManagerFactory(properties, customizer).create();
+        public MemcachedCacheManager cacheManager(MemcachedCacheProperties properties, ObjectProvider<SpyMemcachedConnectionFactoryCustomizer> customizers) throws IOException {
+            return new SpyMemcachedCacheManagerFactory(properties, customizers).create();
         }
-    }
-
-    @Bean
-    @ConditionalOnMissingBean(value = SpyMemcachedConnectionFactoryCustomizer.class)
-    public SpyMemcachedConnectionFactoryCustomizer spyMemcachedConnectionFactoryCustomizer() {
-        return (builder) -> {};
     }
 }

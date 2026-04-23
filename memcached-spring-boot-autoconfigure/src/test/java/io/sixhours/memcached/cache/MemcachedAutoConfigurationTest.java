@@ -15,7 +15,18 @@
  */
 package io.sixhours.memcached.cache;
 
-import net.rubyeye.xmemcached.impl.*;
+import net.rubyeye.xmemcached.MemcachedClient;
+import net.rubyeye.xmemcached.command.KestrelCommandFactory;
+import net.rubyeye.xmemcached.impl.ArrayMemcachedSessionLocator;
+import net.rubyeye.xmemcached.impl.ElectionMemcachedSessionLocator;
+import net.rubyeye.xmemcached.impl.KetamaMemcachedSessionLocator;
+import net.rubyeye.xmemcached.impl.LibmemcachedMemcachedSessionLocator;
+import net.rubyeye.xmemcached.impl.MemcachedConnector;
+import net.rubyeye.xmemcached.impl.PHPMemcacheSessionLocator;
+import net.rubyeye.xmemcached.impl.RandomMemcachedSessionLocaltor;
+import net.rubyeye.xmemcached.impl.RoundRobinMemcachedSessionLocator;
+import net.rubyeye.xmemcached.utils.Protocol;
+import net.spy.memcached.FailureMode;
 import org.junit.Test;
 import org.springframework.beans.BeanInstantiationException;
 import org.springframework.beans.factory.BeanCreationException;
@@ -174,7 +185,7 @@ public class MemcachedAutoConfigurationTest {
         this.contextRunner.withUserConfiguration(CacheConfiguration.class)
                 .withPropertyValues("memcached.cache.provider=appengine")
                 .withClassLoader(new FilteredClassLoader("com.google.appengine.api.memcache"))
-                .run(context ->  assertThat(context).doesNotHaveBean(MemcachedCacheManager.class));
+                .run(context -> assertThat(context).doesNotHaveBean(MemcachedCacheManager.class));
     }
 
     @Test
@@ -191,15 +202,88 @@ public class MemcachedAutoConfigurationTest {
     }
 
     @Test
-    public void whenXmemcachedOnClasspathThenSpymemcachedLoaded() {
+    public void whenXmemcachedNotOnClasspathThenSpymemcachedLoaded() {
         this.contextRunner.withUserConfiguration(CacheConfiguration.class)
                 .withClassLoader(new FilteredClassLoader("net.rubyeye.xmemcached"))
                 .run(context -> {
                     CacheManager cacheManager = cacheManager(context, CacheManager.class);
+
                     assertThat(cacheManager).isInstanceOf(DisposableMemcachedCacheManager.class)
-                            .hasFieldOrProperty("memcachedClient");
-                    assertThat(((DisposableMemcachedCacheManager) cacheManager).memcachedClient)
-                            .isInstanceOf(SpyMemcachedClient.class);
+                            .hasFieldOrProperty("memcachedClient")
+                            .extracting("memcachedClient")
+                            .isInstanceOfSatisfying(SpyMemcachedClient.class, (memcachedClient) -> {
+                                assertThat(memcachedClient.nativeClient())
+                                        .isInstanceOfSatisfying(net.spy.memcached.MemcachedClient.class, (client) -> {
+                                            assertThat(client.getNodeLocator().getAll()).isNotEmpty();
+                                            assertThat(client.getOperationTimeout()).isEqualTo(2500);
+                                        });
+                            });
+                });
+    }
+
+    @Test
+    public void whenXMemcachedNotOnClasspathThenSpymemcachedLoadedAndCustomizerApplied() {
+        this.contextRunner.withUserConfiguration(CacheWithSpyMemcachedClientCustomizerConfiguration.class)
+                .withClassLoader(new FilteredClassLoader("net.rubyeye.xmemcache"))
+                .run(context -> {
+                    CacheManager cacheManager = cacheManager(context, CacheManager.class);
+
+                    assertThat(cacheManager).isInstanceOf(DisposableMemcachedCacheManager.class)
+                            .hasFieldOrProperty("memcachedClient")
+                            .extracting("memcachedClient")
+                            .isInstanceOfSatisfying(SpyMemcachedClient.class, (memcachedClient) -> {
+                                assertThat(memcachedClient.nativeClient())
+                                        .isInstanceOfSatisfying(net.spy.memcached.MemcachedClient.class, (client) -> {
+                                            assertThat(client.getNodeLocator().getAll()).isNotEmpty();
+                                            assertThat(client.getOperationTimeout()).isEqualTo(1200);
+                                        });
+                            });
+                });
+    }
+
+    @Test
+    public void whenSpyMemcachedNotOnClasspathThenXMemcachedClientLoaded() {
+        this.contextRunner.withUserConfiguration(CacheConfiguration.class)
+                .withClassLoader(new FilteredClassLoader("net.spy.memcached"))
+                .run(context -> {
+                    CacheManager cacheManager = cacheManager(context, CacheManager.class);
+
+                    assertThat(cacheManager).isInstanceOf(DisposableMemcachedCacheManager.class)
+                            .hasFieldOrProperty("memcachedClient")
+                            .extracting("memcachedClient")
+                            .isInstanceOfSatisfying(XMemcachedClient.class, (memcachedClient) -> assertThat(memcachedClient.nativeClient()).isInstanceOfSatisfying(MemcachedClient.class, (client) -> {
+                                assertThat(client.getName()).startsWith("MemcachedClient-");
+                                assertThat(client.getOpTimeout()).isEqualTo(2500);
+                                assertThat(client.getConnector()).isInstanceOfSatisfying(MemcachedConnector.class, (connector) -> {
+                                    assertThat(connector).extracting("connectionPoolSize").isEqualTo(1);
+                                    assertThat(connector.getProtocol()).isEqualTo(Protocol.Text);
+                                });
+                                assertThat(client.getConnectTimeout()).isEqualTo(60000);
+                                assertThat(client.isFailureMode()).isFalse();
+                            }));
+                });
+    }
+
+    @Test
+    public void whenSpyMemcachedNotOnClasspathThenXMemcachedClientLoadedAndCustomizerApplied() {
+        this.contextRunner.withUserConfiguration(CacheWithXMemcachedClientCustomizerConfiguration.class)
+                .withClassLoader(new FilteredClassLoader("net.spy.memcached"))
+                .run(context -> {
+                    CacheManager cacheManager = cacheManager(context, CacheManager.class);
+
+                    assertThat(cacheManager).isInstanceOf(DisposableMemcachedCacheManager.class)
+                            .hasFieldOrProperty("memcachedClient")
+                            .extracting("memcachedClient")
+                            .isInstanceOfSatisfying(XMemcachedClient.class, (memcachedClient) -> assertThat(memcachedClient.nativeClient()).isInstanceOfSatisfying(MemcachedClient.class, (client) -> {
+                                assertThat(client.getName()).isEqualTo("customizer");
+                                assertThat(client.getOpTimeout()).isEqualTo(1200);
+                                assertThat(client.getConnector()).isInstanceOfSatisfying(MemcachedConnector.class, (connector) -> {
+                                    assertThat(connector).extracting("connectionPoolSize").isEqualTo(123);
+                                    assertThat(connector.getProtocol()).isEqualTo(Protocol.Kestrel);
+                                });
+                                assertThat(client.getConnectTimeout()).isEqualTo(5000);
+                                assertThat(client.isFailureMode()).isTrue();
+                            }));
                 });
     }
 
@@ -351,6 +435,35 @@ public class MemcachedAutoConfigurationTest {
             IMemcachedClient memcachedClient = mock(IMemcachedClient.class);
 
             return new MemcachedCacheManager(memcachedClient);
+        }
+    }
+
+    @Configuration
+    static class CacheWithSpyMemcachedClientCustomizerConfiguration extends CacheConfiguration {
+
+        @Bean
+        public SpyMemcachedConnectionFactoryCustomizer customizer() {
+            return builder -> {
+                builder.setOpTimeout(1200);
+                builder.setMaxReconnectDelay(1000);
+                builder.setFailureMode(FailureMode.Retry);
+            };
+        }
+    }
+
+    @Configuration
+    static class CacheWithXMemcachedClientCustomizerConfiguration extends CacheConfiguration {
+
+        @Bean
+        public XMemcachedClientCustomizer customizer() {
+            return builder -> {
+                builder.setName("customizer");
+                builder.setOpTimeout(1200);
+                builder.setConnectionPoolSize(123);
+                builder.setConnectTimeout(5000);
+                builder.setCommandFactory(new KestrelCommandFactory());
+                builder.setFailureMode(true);
+            };
         }
     }
 
