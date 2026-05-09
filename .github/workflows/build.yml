@@ -35,6 +35,9 @@ jobs:
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
           restore-keys: |
             ${{ runner.os }}-gradle-
+      - name: Check code formatting
+        run: |
+          ./gradlew spotlessCheck
       - name: Execute Gradle build
         run: |
           echo "Build Branch => Branch [$GITHUB_REF_NAME]"

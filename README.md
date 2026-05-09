@@ -287,6 +287,15 @@ To install the modules in the local Maven repository:
 
     ./gradlew clean build publishToMavenLocal
 
+## Code style
+
+The CI pipeline uses the [Spotless] Gradle plugin to enforce license headers and code formatting standards.
+Before submitting changes, format your code by running:
+
+```bash
+./gradlew spotlessApply
+```
+
 ## License
 
 Memcached Spring Boot is an Open Source software released under the [Apache 2.0 license](http://www.apache.org/licenses/LICENSE-2.0.html).
