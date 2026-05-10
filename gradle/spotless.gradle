@@ -1,0 +1,11 @@
+apply plugin: 'com.diffplug.spotless'
+
+spotless {
+    enforceCheck = false
+    java {
+        removeUnusedImports()
+        forbidWildcardImports()
+
+        licenseHeaderFile("$rootProject.projectDir/codequality/HEADER")
+    }
+}
