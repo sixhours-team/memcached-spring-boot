@@ -16,9 +16,9 @@
 package io.sixhours.memcached.cache;
 
 import net.spy.memcached.MemcachedClient;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.concurrent.ExecutionException;
 
@@ -30,34 +30,34 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 
-public class SpyMemcachedClientTest {
+class SpyMemcachedClientTest {
 
     private final MemcachedClient client = mock(MemcachedClient.class);
 
     private SpyMemcachedClient memcachedClient;
 
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
         this.memcachedClient = new SpyMemcachedClient(client);
 
         given(client.get(anyString())).willReturn("result");
         given(client.incr(anyString(), anyLong())).willReturn(123L);
     }
 
-    @After
-    public void tearDown() {
+    @AfterEach
+    void tearDown() {
         verifyNoMoreInteractions(client);
     }
 
     @Test
-    public void whenGetNativeCache_thenReturnCorrectValue() {
+    void whenGetNativeCache_thenReturnCorrectValue() {
         MemcachedClient result = this.memcachedClient.nativeClient();
 
         assertThat(result).isNotNull();
     }
 
     @Test
-    public void whenGet_thenCorrectMethodInvoked() {
+    void whenGet_thenCorrectMethodInvoked() {
         Object result = memcachedClient.get("my-key");
 
         assertThat(result).isNotNull();
@@ -65,42 +65,42 @@ public class SpyMemcachedClientTest {
     }
 
     @Test
-    public void whenSet_thenCorrectMethodInvoked() {
+    void whenSet_thenCorrectMethodInvoked() {
         memcachedClient.set("my-key", 12000, "my-value");
 
         verify(client).set("my-key", 12000, "my-value");
     }
 
     @Test
-    public void whenTouch_thenCorrectMethodInvoked() throws ExecutionException, InterruptedException {
+    void whenTouch_thenCorrectMethodInvoked() throws ExecutionException, InterruptedException {
         memcachedClient.touch("my-key", 700);
 
         verify(client).touch("my-key", 700);
     }
 
     @Test
-    public void whenDelete_thenCorrectMethodInvoked() {
+    void whenDelete_thenCorrectMethodInvoked() {
         memcachedClient.delete("my-key");
 
         verify(client).delete("my-key");
     }
 
     @Test
-    public void whenFlush_thenCorrectMethodInvoked() {
+    void whenFlush_thenCorrectMethodInvoked() {
         memcachedClient.flush();
 
         verify(client).flush();
     }
 
     @Test
-    public void whenIncr_thenCorrectMethodInvoked() {
+    void whenIncr_thenCorrectMethodInvoked() {
         memcachedClient.incr("my-key", 2);
 
         verify(client).incr("my-key", 2);
     }
 
     @Test
-    public void whenShutdown_thenCorrectMethodInvoked() {
+    void whenShutdown_thenCorrectMethodInvoked() {
         memcachedClient.shutdown();
 
         verify(client).shutdown();

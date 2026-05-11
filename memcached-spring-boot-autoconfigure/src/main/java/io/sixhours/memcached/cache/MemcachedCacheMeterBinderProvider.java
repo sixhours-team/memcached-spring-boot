@@ -16,8 +16,8 @@
 package io.sixhours.memcached.cache;
 
 import io.micrometer.core.instrument.Tag;
-import io.micrometer.core.instrument.binder.cache.CacheMeterBinder;
-import org.springframework.boot.actuate.metrics.cache.CacheMeterBinderProvider;
+import io.micrometer.core.instrument.binder.MeterBinder;
+import org.springframework.boot.cache.metrics.CacheMeterBinderProvider;
 
 /**
  * Memcached {@link CacheMeterBinderProvider}.
@@ -25,7 +25,7 @@ import org.springframework.boot.actuate.metrics.cache.CacheMeterBinderProvider;
 public class MemcachedCacheMeterBinderProvider implements CacheMeterBinderProvider<MemcachedCache> {
 
     @Override
-    public CacheMeterBinder getMeterBinder(MemcachedCache memcachedCache, Iterable<Tag> tags) {
+    public MeterBinder getMeterBinder(MemcachedCache memcachedCache, Iterable<Tag> tags) {
         return new MemcachedCacheMetrics(memcachedCache, memcachedCache.getName(), tags);
     }
 }

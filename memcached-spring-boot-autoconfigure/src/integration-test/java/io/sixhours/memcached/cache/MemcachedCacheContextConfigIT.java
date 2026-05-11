@@ -15,23 +15,23 @@
  */
 package io.sixhours.memcached.cache;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.test.context.ConfigFileApplicationContextInitializer;
+import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.time.Duration;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@RunWith(SpringRunner.class)
-@ContextConfiguration(classes = MemcachedCacheContextConfigIT.DefaultConfig.class, initializers = ConfigFileApplicationContextInitializer.class)
-public class MemcachedCacheContextConfigIT {
+@ExtendWith(SpringExtension.class)
+@ContextConfiguration(classes = MemcachedCacheContextConfigIT.DefaultConfig.class, initializers = ConfigDataApplicationContextInitializer.class)
+class MemcachedCacheContextConfigIT {
 
     @Autowired
     private MemcachedCacheManager memcachedCacheManager;
@@ -40,7 +40,7 @@ public class MemcachedCacheContextConfigIT {
     private MemcachedCacheProperties properties;
 
     @Test
-    public void contextLoads() {
+    void contextLoads() {
         // Cache manager with default XMemcached client loaded
         assertThat(memcachedCacheManager).isNotNull();
         assertThat(memcachedCacheManager.client()).isNotNull();

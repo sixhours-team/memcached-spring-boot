@@ -21,11 +21,11 @@ import io.micrometer.core.instrument.Tags;
 import io.micrometer.core.instrument.binder.MeterBinder;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import net.rubyeye.xmemcached.MemcachedClient;
-import org.junit.After;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
-import org.springframework.boot.actuate.metrics.cache.CacheMeterBinderProvider;
-import org.springframework.boot.autoconfigure.cache.CacheAutoConfiguration;
+import org.springframework.boot.cache.autoconfigure.CacheAutoConfiguration;
+import org.springframework.boot.cache.metrics.CacheMeterBinderProvider;
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
@@ -48,19 +48,19 @@ import static org.mockito.BDDMockito.mock;
  *
  * @author Igor Bolic
  */
-public class MemcachedCacheMeterBinderProviderConfigurationTest {
+class MemcachedCacheMeterBinderProviderConfigurationTest {
 
     private final AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 
     private Tags expectedTag = Tags.of("app", "test");
 
-    @After
-    public void tearDown() {
+    @AfterEach
+    void tearDown() {
         context.close();
     }
 
     @Test
-    public void whenCachingNotEnabledThenCacheStatisticsNotLoaded() {
+    void whenCachingNotEnabledThenCacheStatisticsNotLoaded() {
         loadContext(EmptyConfiguration.class);
 
         assertThatThrownBy(() ->
@@ -71,7 +71,7 @@ public class MemcachedCacheMeterBinderProviderConfigurationTest {
     }
 
     @Test
-    public void whenCacheTypeIsNoneThenCacheStatisticsNotLoaded() {
+    void whenCacheTypeIsNoneThenCacheStatisticsNotLoaded() {
         loadContext(CacheConfiguration.class, "spring.cache.type=none");
 
         assertThatThrownBy(() ->
@@ -82,7 +82,7 @@ public class MemcachedCacheMeterBinderProviderConfigurationTest {
     }
 
     @Test
-    public void whenNoCustomCacheManagerThenCacheStatisticsLoaded() {
+    void whenNoCustomCacheManagerThenCacheStatisticsLoaded() {
         loadContext(MemcachedAutoConfigurationTest.CacheConfiguration.class);
 
         CacheMeterBinderProvider provider = this.context.getBean("memcachedCacheMeterBinderProvider", CacheMeterBinderProvider.class);
@@ -91,7 +91,7 @@ public class MemcachedCacheMeterBinderProviderConfigurationTest {
     }
 
     @Test
-    public void whenMemcachedCacheManagerBeanThenCacheStatisticsLoaded() {
+    void whenMemcachedCacheManagerBeanThenCacheStatisticsLoaded() {
         loadContext(CacheWithMemcachedCacheManagerConfiguration.class);
 
         CacheMeterBinderProvider provider = this.context.getBean(

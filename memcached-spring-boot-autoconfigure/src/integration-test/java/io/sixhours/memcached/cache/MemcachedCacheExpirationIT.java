@@ -16,10 +16,9 @@
 package io.sixhours.memcached.cache;
 
 import net.rubyeye.xmemcached.XMemcachedClientBuilder;
-import org.junit.Before;
-import org.junit.ClassRule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.cache.Cache;
@@ -28,8 +27,10 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -49,12 +50,13 @@ import static org.awaitility.Awaitility.await;
  *
  * @author Igor Bolic
  */
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
+@Testcontainers
 @ContextConfiguration(classes = MemcachedCacheExpirationIT.CacheConfig.class)
-public class MemcachedCacheExpirationIT {
+class MemcachedCacheExpirationIT {
 
-    @ClassRule
-    public static GenericContainer memcached = new GenericContainer("memcached:alpine")
+    @Container
+    static GenericContainer memcached = new GenericContainer("memcached:alpine")
             .withExposedPorts(11211);
 
     @Autowired
@@ -63,14 +65,14 @@ public class MemcachedCacheExpirationIT {
     @Autowired
     IMemcachedClient memcachedClient;
 
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
         // Clear cache before each test
         memcachedClient.flush();
     }
 
     @Test
-    public void whenNewCacheCacheExpiresThenCachedValueNotFound() {
+    void whenNewCacheCacheExpiresThenCachedValueNotFound() {
         // Given new cache and default expiration of 4 seconds
         Cache cache = cacheManager.getCache("cache");
         assertThat(cache).isNotNull();
@@ -88,7 +90,7 @@ public class MemcachedCacheExpirationIT {
     }
 
     @Test
-    public void whenAuthorsCacheExpiresThenCachedValueNotFound() {
+    void whenAuthorsCacheExpiresThenCachedValueNotFound() {
         // Given authors cache with expiration in 3 seconds
         Cache authors = cacheManager.getCache("authors");
         assertThat(authors).isNotNull();
@@ -106,7 +108,7 @@ public class MemcachedCacheExpirationIT {
     }
 
     @Test
-    public void whenExpirationInThirtyDaysThenValueCached() {
+    void whenExpirationInThirtyDaysThenValueCached() {
         // Given Instant.now() time is 30 days and 2 seconds in the past
         Instant pastTime = Instant.now()
                 .minusSeconds(Duration.ofDays(30).minusSeconds(2).getSeconds());
@@ -136,7 +138,7 @@ public class MemcachedCacheExpirationIT {
     }
 
     @Test
-    public void whenExpirationInThirtyDaysAndSecondThenValueCached() {
+    void whenExpirationInThirtyDaysAndSecondThenValueCached() {
         // Given Instant.now() time is 30 days and 2 second in the past
         Instant pastTime = Instant.now()
                 .minusSeconds(Duration.ofDays(30).minusSeconds(2).getSeconds());
@@ -177,7 +179,7 @@ public class MemcachedCacheExpirationIT {
     }
 
     @Test
-    public void whenExpirationInThirtyDaysAndSomeSecondsThenUnixTimestampExpirationUsed() {
+    void whenExpirationInThirtyDaysAndSomeSecondsThenUnixTimestampExpirationUsed() {
         // Given Instant.now() time is 30 days and 2 seconds in the past
         Instant pastTime = Instant.now()
                 .minusSeconds(Duration.ofDays(30).minusSeconds(2).getSeconds());
@@ -217,7 +219,7 @@ public class MemcachedCacheExpirationIT {
     }
 
     @Test
-    public void whenExpirationInMoreThanThirtyDaysThenValueCached() {
+    void whenExpirationInMoreThanThirtyDaysThenValueCached() {
         // Given 40-days cache with expiration in 41 days
         Cache cache = cacheManager.getCache("41-days");
         assertThat(cache).isNotNull();
@@ -236,7 +238,7 @@ public class MemcachedCacheExpirationIT {
     }
 
     @Test
-    public void whenExpirationOfMoreThanThirtyDaysExpiresThenCachedValueNotFound() {
+    void whenExpirationOfMoreThanThirtyDaysExpiresThenCachedValueNotFound() {
         // Given Instant.now() time is 40 days and 2 seconds in the past
         Instant pastTime = Instant.now()
                 .minusSeconds(Duration.ofDays(40).minusSeconds(2).getSeconds());

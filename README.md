@@ -11,6 +11,17 @@ Library that provides support for auto-configuration of Memcached cache in a Spr
 It provides implementation for the [Spring Cache Abstraction](https://docs.spring.io/spring/docs/5.2.3.RELEASE/spring-framework-reference/integration.html#cache), backed by the [Xmemcached](https://github.com/killme2008/xmemcached).
 Supports cache eviction per key, as well as clearing out of the entire cache region. Binaries are available from **Maven Central**.
 
+## Versions Compatibility
+
+This project has a dependency on Spring Boot and its projects. The table below outlines the version compatibility matrix
+between Spring Boot, Java, and the Memcached Spring Boot library version.
+
+| Memcached Spring Boot Version | Spring Boot Version | Java Version |
+|:------------------------------|:--------------------|:-------------|
+| **3.x.x** (Current)           | 4.x.x               | 17           |
+| **2.0.0 - 2.5.x**             | 2.x.x - 3.5.x       | 8            |
+| **1.0.0 - 1.3.2**             | 1.5.x               | 8            |
+
 ## Usage
 
 To plug-in Memcached cache in your application follow the steps below:

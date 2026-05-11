@@ -21,14 +21,13 @@ import io.micrometer.core.instrument.Tags;
 import io.micrometer.core.instrument.binder.MeterBinder;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import net.rubyeye.xmemcached.XMemcachedClientBuilder;
-import org.junit.Before;
-import org.junit.ClassRule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.boot.actuate.metrics.cache.CacheMeterBinderProvider;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.cache.metrics.CacheMeterBinderProvider;
 import org.springframework.cache.Cache;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cache.interceptor.SimpleKey;
@@ -37,8 +36,10 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -52,12 +53,13 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Igor Bolic
  */
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
+@Testcontainers
 @ContextConfiguration(classes = MemcachedCacheIT.CacheConfig.class)
-public class MemcachedCacheIT {
+class MemcachedCacheIT {
 
-    @ClassRule
-    public static GenericContainer memcached = new GenericContainer("memcached:alpine")
+    @Container
+    static GenericContainer memcached = new GenericContainer("memcached:alpine")
             .withExposedPorts(11211);
 
     @Autowired
@@ -76,15 +78,15 @@ public class MemcachedCacheIT {
     @Qualifier("memcachedCacheMeterBinderProvider")
     CacheMeterBinderProvider provider;
 
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
         memcachedClient.flush();
         bookService.resetCounters();
         authorService.resetCounters();
     }
 
     @Test
-    public void whenFindAllThenBooksCached() {
+    void whenFindAllThenBooksCached() {
         List<Book> books = bookService.findAll();
 
         assertThat(books).isNotNull();
@@ -101,7 +103,7 @@ public class MemcachedCacheIT {
     }
 
     @Test
-    public void whenFindAllThenAuthorsCached() {
+    void whenFindAllThenAuthorsCached() {
         List<Author> authors = authorService.findAll();
 
         assertThat(authors).isNotNull();
@@ -116,7 +118,7 @@ public class MemcachedCacheIT {
     }
 
     @Test
-    public void whenTimeoutThenAuthorCacheExpired() throws InterruptedException {
+    void whenTimeoutThenAuthorCacheExpired() throws InterruptedException {
         List<Author> authors = authorService.findAll();
 
         assertThat(authors).isNotNull();
@@ -140,7 +142,7 @@ public class MemcachedCacheIT {
     }
 
     @Test
-    public void whenFindByYearThenBooksWithYearNotCached() {
+    void whenFindByYearThenBooksWithYearNotCached() {
         List<Book> books = bookService.findByYear(2016);
 
         assertThat(books).isNotNull();
@@ -155,7 +157,7 @@ public class MemcachedCacheIT {
     }
 
     @Test
-    public void whenFindByTitleThenBookWithTitleCached() {
+    void whenFindByTitleThenBookWithTitleCached() {
         Book book = bookService.findByTitle("Kotlin");
 
         assertThat(book).isNotNull();
@@ -172,7 +174,7 @@ public class MemcachedCacheIT {
     }
 
     @Test
-    public void whenTimeoutThenBookCacheExpired() throws InterruptedException {
+    void whenTimeoutThenBookCacheExpired() throws InterruptedException {
         Book book = bookService.findByTitle("Kotlin");
 
         assertThat(book).isNotNull();
@@ -195,7 +197,7 @@ public class MemcachedCacheIT {
     }
 
     @Test
-    public void whenTimeoutAndNewValueAddedThenBookCacheNotExpired() throws InterruptedException {
+    void whenTimeoutAndNewValueAddedThenBookCacheNotExpired() throws InterruptedException {
         Book kotlin = bookService.findByTitle("Kotlin");
 
         assertThat(kotlin).isNotNull();
@@ -238,7 +240,7 @@ public class MemcachedCacheIT {
     }
 
     @Test
-    public void whenUnlessNotMetThenBookWithTitleAndYearCached() {
+    void whenUnlessNotMetThenBookWithTitleAndYearCached() {
         Book book = bookService.findByTitleAndYear("Programming Kotlin", 2017);
         Book cachedBook = bookService.findByTitleAndYear("Programming Kotlin", 2017);
 
@@ -253,7 +255,7 @@ public class MemcachedCacheIT {
     }
 
     @Test
-    public void whenUnlessMetThenBookWithTitleAndYearNotCached() {
+    void whenUnlessMetThenBookWithTitleAndYearNotCached() {
         Book book = bookService.findByTitleAndYear("Spring Boot in Action", 2016);
         Book cachedBook = bookService.findByTitleAndYear("Spring Boot in Action", 2016);
 
@@ -268,7 +270,7 @@ public class MemcachedCacheIT {
     }
 
     @Test
-    public void whenUpdateThenBookWithTitleEvicted() {
+    void whenUpdateThenBookWithTitleEvicted() {
         Book book = bookService.findByTitle("Spring Boot in Action");
         assertThat(book).isNotNull();
 
@@ -287,7 +289,7 @@ public class MemcachedCacheIT {
     }
 
     @Test
-    public void whenClearThenOnlyBooksEvicted() {
+    void whenClearThenOnlyBooksEvicted() {
         bookService.findAll();
         authorService.findAll();
 
@@ -301,7 +303,7 @@ public class MemcachedCacheIT {
 
     @Test
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.BEFORE_METHOD)
-    public void whenGettingBooksFromCacheThenReturnCorrectStatistics() {
+    void whenGettingBooksFromCacheThenReturnCorrectStatistics() {
         bookService.findAll();
         bookService.findAll();
         bookService.findAll();

@@ -15,9 +15,9 @@
  */
 package io.sixhours.memcached.cache;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.springframework.cache.Cache;
 import org.springframework.cache.support.NullValue;
@@ -47,7 +47,7 @@ import static org.mockito.Mockito.when;
  *
  * @author Igor Bolic
  */
-public class MemcachedCacheTest {
+class MemcachedCacheTest {
 
     private static final String CACHED_OBJECT_KEY = "cached_value_key";
 
@@ -73,8 +73,8 @@ public class MemcachedCacheTest {
     private String memcachedKey;
     private String namespaceKey;
 
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
         memcachedClient = mock(IMemcachedClient.class);
         memcachedCache = new MemcachedCache(CACHE_NAME, memcachedClient, CACHE_EXPIRATION, CACHE_PREFIX, NAMESPACE_KEY);
 
@@ -82,13 +82,13 @@ public class MemcachedCacheTest {
         namespaceKey = String.format("%s:%s:%s", CACHE_PREFIX, CACHE_NAME, NAMESPACE_KEY);
     }
 
-    @After
-    public void tearDown() {
+    @AfterEach
+    void tearDown() {
         verifyNoMoreInteractions(memcachedClient);
     }
 
     @Test
-    public void whenLookupThenCallMemcachedClientGetKey() {
+    void whenLookupThenCallMemcachedClientGetKey() {
         when(memcachedClient.get(any())).thenReturn(NAMESPACE_KEY_VALUE).thenReturn(cachedValue);
 
         Object actual = memcachedCache.lookup(CACHED_OBJECT_KEY);
@@ -100,7 +100,7 @@ public class MemcachedCacheTest {
     }
 
     @Test
-    public void whenLookupThenIncrementHits() {
+    void whenLookupThenIncrementHits() {
         when(memcachedClient.get(any())).thenReturn(NAMESPACE_KEY_VALUE).thenReturn(cachedValue);
 
         assertThat(memcachedCache.hits()).isZero();
@@ -116,7 +116,7 @@ public class MemcachedCacheTest {
     }
 
     @Test
-    public void whenLookupAndCacheValueMissingThenIncrementMisses() {
+    void whenLookupAndCacheValueMissingThenIncrementMisses() {
         when(memcachedClient.get(any())).thenReturn(NAMESPACE_KEY_VALUE).thenReturn(null);
 
         assertThat(memcachedCache.hits()).isZero();
@@ -132,21 +132,21 @@ public class MemcachedCacheTest {
     }
 
     @Test
-    public void whenGetNameThenReturnCacheName() {
+    void whenGetNameThenReturnCacheName() {
         String actual = memcachedCache.getName();
 
         assertThat(actual).isEqualTo(CACHE_NAME);
     }
 
     @Test
-    public void whenGetNativeThenReturnMemcachedClient() {
+    void whenGetNativeThenReturnMemcachedClient() {
         IMemcachedClient actual = (IMemcachedClient) memcachedCache.getNativeCache();
 
         assertThat(actual).isSameAs(memcachedClient);
     }
 
     @Test
-    public void whenGetWithValueLoaderThenReturnCachedValue() {
+    void whenGetWithValueLoaderThenReturnCachedValue() {
         when(memcachedClient.get(anyString()))
                 .thenReturn(NAMESPACE_KEY_VALUE)
                 .thenReturn(cachedValue);
@@ -160,7 +160,7 @@ public class MemcachedCacheTest {
     }
 
     @Test
-    public void whenGetWithValueLoaderAndNullCachedValueThenReturnNull() {
+    void whenGetWithValueLoaderAndNullCachedValueThenReturnNull() {
         when(memcachedClient.get(anyString()))
                 .thenReturn(NAMESPACE_KEY_VALUE)
                 .thenReturn(nullCachedValue);
@@ -174,7 +174,7 @@ public class MemcachedCacheTest {
     }
 
     @Test
-    public void whenGetWithValueLoaderAndCachedValueFromSecondLookupThenReturnCachedValue() {
+    void whenGetWithValueLoaderAndCachedValueFromSecondLookupThenReturnCachedValue() {
         when(memcachedClient.get(namespaceKey)).thenReturn(NAMESPACE_KEY_VALUE);
         when(memcachedClient.get(memcachedKey)).thenReturn(null).thenReturn(cachedValue);
 
@@ -187,7 +187,7 @@ public class MemcachedCacheTest {
     }
 
     @Test
-    public void whenGetWithValueLoaderAndNullCachedValueFromSecondLookupThenReturnNull() {
+    void whenGetWithValueLoaderAndNullCachedValueFromSecondLookupThenReturnNull() {
         when(memcachedClient.get(namespaceKey)).thenReturn(NAMESPACE_KEY_VALUE);
         when(memcachedClient.get(memcachedKey)).thenReturn(null).thenReturn(nullCachedValue);
 
@@ -200,7 +200,7 @@ public class MemcachedCacheTest {
     }
 
     @Test
-    public void whenGetWithValueLoaderAndCachedValueMissingThenReturnValueLoaderNull() {
+    void whenGetWithValueLoaderAndCachedValueMissingThenReturnValueLoaderNull() {
         when(memcachedClient.get(namespaceKey)).thenReturn(NAMESPACE_KEY_VALUE);
         when(memcachedClient.get(memcachedKey)).thenReturn(null);
 
@@ -215,7 +215,7 @@ public class MemcachedCacheTest {
     }
 
     @Test
-    public void whenGetWithValueLoaderAndCachedValueMissingThenReturnValueLoaderValue() {
+    void whenGetWithValueLoaderAndCachedValueMissingThenReturnValueLoaderValue() {
         when(memcachedClient.get(namespaceKey)).thenReturn(NAMESPACE_KEY_VALUE);
         when(memcachedClient.get(memcachedKey)).thenReturn(null);
 
@@ -230,7 +230,7 @@ public class MemcachedCacheTest {
     }
 
     @Test
-    public void whenGetWithValueLoaderThrowsExceptionThenValueRetrievalException() {
+    void whenGetWithValueLoaderThrowsExceptionThenValueRetrievalException() {
         when(memcachedClient.get(namespaceKey))
                 .thenReturn(NAMESPACE_KEY_VALUE)
                 .thenReturn(null);
@@ -248,7 +248,7 @@ public class MemcachedCacheTest {
     }
 
     @Test
-    public void whenPutNullThenStoreNullValueInstance() {
+    void whenPutNullThenStoreNullValueInstance() {
         when(memcachedClient.get(namespaceKey)).thenReturn(NAMESPACE_KEY_VALUE);
 
         memcachedCache.put(CACHED_OBJECT_KEY, null);
@@ -259,7 +259,7 @@ public class MemcachedCacheTest {
     }
 
     @Test
-    public void whenPutValueWithCustomClockThenStoreValueWithCustomClockExpiration() {
+    void whenPutValueWithCustomClockThenStoreValueWithCustomClockExpiration() {
         Instant pastTime = Instant.now()
                 .minusSeconds(Duration.ofDays(30).minusSeconds(2).getSeconds());
         Clock clock = Clock.fixed(pastTime, ZoneId.of("UTC"));
@@ -288,7 +288,7 @@ public class MemcachedCacheTest {
     }
 
     @Test
-    public void whenPutValueExpirationThirtyDaysMinusSecondThenStoreValue() {
+    void whenPutValueExpirationThirtyDaysMinusSecondThenStoreValue() {
         int expiration = (int) Duration.ofDays(30).minusSeconds(1).getSeconds();
 
         memcachedCache = new MemcachedCache(
@@ -308,7 +308,7 @@ public class MemcachedCacheTest {
     }
 
     @Test
-    public void whenPutValueExpirationUpToThirtyDaysThenStoreValue() {
+    void whenPutValueExpirationUpToThirtyDaysThenStoreValue() {
         int expiration = (int) Duration.ofDays(30).getSeconds();
 
         memcachedCache = new MemcachedCache(
@@ -328,7 +328,7 @@ public class MemcachedCacheTest {
     }
 
     @Test
-    public void whenPutValueExpirationOfThirtyDaysAndOneSecondThenStoreValueUsingUnixTimestamp() {
+    void whenPutValueExpirationOfThirtyDaysAndOneSecondThenStoreValueUsingUnixTimestamp() {
         int expiration = (int) Duration.ofDays(30).plusSeconds(1).getSeconds();
         int expectedExpiration = (int) Instant.now().plusSeconds(expiration).getEpochSecond();
 
@@ -357,7 +357,7 @@ public class MemcachedCacheTest {
     }
 
     @Test
-    public void whenPutValueExpirationOfFiftyDaysAndOneSecondThenStoreValueUsingUnixTimestamp() {
+    void whenPutValueExpirationOfFiftyDaysAndOneSecondThenStoreValueUsingUnixTimestamp() {
         int expiration = (int) Duration.ofDays(50).getSeconds();
         int expectedExpiration = (int) Instant.now().plusSeconds(expiration).getEpochSecond();
 
@@ -386,7 +386,7 @@ public class MemcachedCacheTest {
     }
 
     @Test
-    public void whenPutValueExpirationOfTenYearsThenStoreValueUsingUnixTimestamp() {
+    void whenPutValueExpirationOfTenYearsThenStoreValueUsingUnixTimestamp() {
         int expiration = (int) Duration.ofDays(10 * 365).getSeconds();
         int expectedExpiration = (int) Instant.now().plusSeconds(expiration).getEpochSecond();
 
@@ -415,7 +415,7 @@ public class MemcachedCacheTest {
     }
 
     @Test
-    public void whenPutAndNamespaceMissingThenSetNamespace() {
+    void whenPutAndNamespaceMissingThenSetNamespace() {
         when(memcachedClient.get(namespaceKey)).thenReturn(null);
 
         memcachedCache.put(CACHED_OBJECT_KEY, cachedValue);
@@ -427,7 +427,7 @@ public class MemcachedCacheTest {
     }
 
     @Test
-    public void whenPutIfAbsentThenReturnExistingValue() {
+    void whenPutIfAbsentThenReturnExistingValue() {
         when(memcachedClient.get(anyString())).thenReturn(NAMESPACE_KEY_VALUE).thenReturn(cachedValue);
 
         Cache.ValueWrapper actual = memcachedCache.putIfAbsent(CACHED_OBJECT_KEY, newCachedValue);
@@ -439,7 +439,7 @@ public class MemcachedCacheTest {
     }
 
     @Test
-    public void whenPutIfAbsentAndNoCachedValueThenReturnNewValue() {
+    void whenPutIfAbsentAndNoCachedValueThenReturnNewValue() {
         when(memcachedClient.get(anyString()))
                 .thenReturn(NAMESPACE_KEY_VALUE)
                 .thenReturn(null)
@@ -456,7 +456,7 @@ public class MemcachedCacheTest {
     }
 
     @Test
-    public void whenEvictThenMemcachedClientDelete() {
+    void whenEvictThenMemcachedClientDelete() {
         when(memcachedClient.get(anyString())).thenReturn(NAMESPACE_KEY_VALUE);
 
         memcachedCache.evict(CACHED_OBJECT_KEY);
@@ -466,7 +466,7 @@ public class MemcachedCacheTest {
     }
 
     @Test
-    public void whenClearThenMemcachedClientIncrNamespace() {
+    void whenClearThenMemcachedClientIncrNamespace() {
         memcachedCache.clear();
 
         verify(memcachedClient).incr(namespaceKey, 1);

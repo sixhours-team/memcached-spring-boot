@@ -15,7 +15,7 @@
  */
 package io.sixhours.memcached.cache;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.cloud.autoconfigure.RefreshAutoConfiguration;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -30,12 +30,12 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Igor Bolic
  */
-public class ConditionalOnRefreshScopeTest {
+class ConditionalOnRefreshScopeTest {
 
     private final AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 
     @Test
-    public void whenMissingRefreshAutoConfigurationThenOutcomeShouldNotMatch() {
+    void whenMissingRefreshAutoConfigurationThenOutcomeShouldNotMatch() {
         this.context.register(OnRefreshScopeConfig.class);
         this.context.refresh();
 
@@ -43,7 +43,7 @@ public class ConditionalOnRefreshScopeTest {
     }
 
     @Test
-    public void whenHavingRefreshAutoConfigurationThenOutcomeShouldMatch() {
+    void whenHavingRefreshAutoConfigurationThenOutcomeShouldMatch() {
         this.context.register(OnRefreshScopeConfig.class, RefreshAutoConfiguration.class);
         this.context.refresh();
 
