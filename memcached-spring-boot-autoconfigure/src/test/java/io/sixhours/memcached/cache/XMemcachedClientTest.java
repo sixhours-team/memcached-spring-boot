@@ -17,9 +17,9 @@ package io.sixhours.memcached.cache;
 
 import net.rubyeye.xmemcached.MemcachedClient;
 import net.rubyeye.xmemcached.exception.MemcachedException;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.util.concurrent.TimeoutException;
@@ -36,34 +36,34 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 
-public class XMemcachedClientTest {
+class XMemcachedClientTest {
 
     private final MemcachedClient client = mock(MemcachedClient.class);
 
     private XMemcachedClient memcachedClient;
 
-    @Before
-    public void setUp() throws InterruptedException, MemcachedException, TimeoutException {
+    @BeforeEach
+    void setUp() throws InterruptedException, MemcachedException, TimeoutException {
         this.memcachedClient = new XMemcachedClient(client);
 
         given(client.get(anyString())).willReturn("result");
         given(client.incr(anyString(), anyLong())).willReturn(123L);
     }
 
-    @After
-    public void tearDown() {
+    @AfterEach
+    void tearDown() {
         verifyNoMoreInteractions(client);
     }
 
     @Test
-    public void whenGetNativeCache_thenReturnCorrectValue() {
+    void whenGetNativeCache_thenReturnCorrectValue() {
         MemcachedClient result = this.memcachedClient.nativeClient();
 
         assertThat(result).isNotNull();
     }
 
     @Test
-    public void whenGet_thenCorrectMethodInvoked() throws InterruptedException, MemcachedException, TimeoutException {
+    void whenGet_thenCorrectMethodInvoked() throws InterruptedException, MemcachedException, TimeoutException {
         Object result = memcachedClient.get("my-key");
 
         assertThat(result).isNotNull();
@@ -71,7 +71,7 @@ public class XMemcachedClientTest {
     }
 
     @Test
-    public void whenGetWithError_thenThrowException() throws InterruptedException, MemcachedException, TimeoutException {
+    void whenGetWithError_thenThrowException() throws InterruptedException, MemcachedException, TimeoutException {
         given(client.get(anyString())).willThrow(new TimeoutException("Test timeout error"));
 
         assertThatThrownBy(() -> memcachedClient.get("my-key"))
@@ -83,7 +83,7 @@ public class XMemcachedClientTest {
     }
 
     @Test
-    public void whenGetWithInterrupted_thenThrowException() throws InterruptedException, MemcachedException, TimeoutException {
+    void whenGetWithInterrupted_thenThrowException() throws InterruptedException, MemcachedException, TimeoutException {
         given(client.get(anyString())).willThrow(new InterruptedException("Test interrupted error"));
 
         assertThatThrownBy(() -> memcachedClient.get("my-key"))
@@ -95,14 +95,14 @@ public class XMemcachedClientTest {
     }
 
     @Test
-    public void whenSet_thenCorrectMethodInvoked() throws InterruptedException, MemcachedException, TimeoutException {
+    void whenSet_thenCorrectMethodInvoked() throws InterruptedException, MemcachedException, TimeoutException {
         memcachedClient.set("my-key", 12000, "my-value");
 
         verify(client).set("my-key", 12000, "my-value");
     }
 
     @Test
-    public void whenSetWithError_thenThrowException() throws InterruptedException, MemcachedException, TimeoutException {
+    void whenSetWithError_thenThrowException() throws InterruptedException, MemcachedException, TimeoutException {
         given(client.set(anyString(), anyInt(), any())).willThrow(new TimeoutException("Test timeout error"));
 
         assertThatThrownBy(() -> memcachedClient.set("my-key", 12000, "my-value"))
@@ -114,7 +114,7 @@ public class XMemcachedClientTest {
     }
 
     @Test
-    public void whenSetWithInterrupted_thenThrowException() throws InterruptedException, MemcachedException, TimeoutException {
+    void whenSetWithInterrupted_thenThrowException() throws InterruptedException, MemcachedException, TimeoutException {
         given(client.set(anyString(), anyInt(), any())).willThrow(new InterruptedException("Test interrupted error"));
 
         assertThatThrownBy(() -> memcachedClient.set("my-key", 12000, "my-value"))
@@ -126,14 +126,14 @@ public class XMemcachedClientTest {
     }
 
     @Test
-    public void whenTouch_thenCorrectMethodInvoked() throws InterruptedException, TimeoutException, MemcachedException {
+    void whenTouch_thenCorrectMethodInvoked() throws InterruptedException, TimeoutException, MemcachedException {
         memcachedClient.touch("my-key", 700);
 
         verify(client).touch("my-key", 700);
     }
 
     @Test
-    public void whenTouchWithError_thenThrowException() throws InterruptedException, MemcachedException, TimeoutException {
+    void whenTouchWithError_thenThrowException() throws InterruptedException, MemcachedException, TimeoutException {
         given(client.touch(anyString(), anyInt())).willThrow(new TimeoutException("Test timeout error"));
 
         assertThatThrownBy(() -> memcachedClient.touch("my-key", 700))
@@ -145,7 +145,7 @@ public class XMemcachedClientTest {
     }
 
     @Test
-    public void whenTouchWithInterrupted_thenThrowException() throws InterruptedException, MemcachedException, TimeoutException {
+    void whenTouchWithInterrupted_thenThrowException() throws InterruptedException, MemcachedException, TimeoutException {
         given(client.touch(anyString(), anyInt())).willThrow(new InterruptedException("Test interrupted error"));
 
         assertThatThrownBy(() -> memcachedClient.touch("my-key", 700))
@@ -157,14 +157,14 @@ public class XMemcachedClientTest {
     }
 
     @Test
-    public void whenDelete_thenCorrectMethodInvoked() throws InterruptedException, MemcachedException, TimeoutException {
+    void whenDelete_thenCorrectMethodInvoked() throws InterruptedException, MemcachedException, TimeoutException {
         memcachedClient.delete("my-key");
 
         verify(client).delete("my-key");
     }
 
     @Test
-    public void whenDeleteWithError_thenThrowException() throws InterruptedException, MemcachedException, TimeoutException {
+    void whenDeleteWithError_thenThrowException() throws InterruptedException, MemcachedException, TimeoutException {
         given(client.delete(anyString())).willThrow(new TimeoutException("Test timeout error"));
 
         assertThatThrownBy(() -> memcachedClient.delete("my-key"))
@@ -176,7 +176,7 @@ public class XMemcachedClientTest {
     }
 
     @Test
-    public void whenDeleteWithInterrupted_thenThrowException() throws InterruptedException, MemcachedException, TimeoutException {
+    void whenDeleteWithInterrupted_thenThrowException() throws InterruptedException, MemcachedException, TimeoutException {
         given(client.delete(anyString())).willThrow(new InterruptedException("Test interrupted error"));
 
         assertThatThrownBy(() -> memcachedClient.delete("my-key"))
@@ -188,14 +188,14 @@ public class XMemcachedClientTest {
     }
 
     @Test
-    public void whenFlush_thenCorrectMethodInvoked() throws InterruptedException, MemcachedException, TimeoutException {
+    void whenFlush_thenCorrectMethodInvoked() throws InterruptedException, MemcachedException, TimeoutException {
         memcachedClient.flush();
 
         verify(client).flushAll();
     }
 
     @Test
-    public void whenFlushWithError_thenThrowException() throws InterruptedException, MemcachedException, TimeoutException {
+    void whenFlushWithError_thenThrowException() throws InterruptedException, MemcachedException, TimeoutException {
         doThrow(new TimeoutException("Test timeout error")).when(client).flushAll();
 
         assertThatThrownBy(() -> memcachedClient.flush())
@@ -207,7 +207,7 @@ public class XMemcachedClientTest {
     }
 
     @Test
-    public void whenFlushWithInterrupted_thenThrowException() throws InterruptedException, MemcachedException, TimeoutException {
+    void whenFlushWithInterrupted_thenThrowException() throws InterruptedException, MemcachedException, TimeoutException {
         doThrow(new InterruptedException("Test interrupted error")).when(client).flushAll();
 
         assertThatThrownBy(() -> memcachedClient.flush())
@@ -219,14 +219,14 @@ public class XMemcachedClientTest {
     }
 
     @Test
-    public void whenIncr_thenCorrectMethodInvoked() throws InterruptedException, MemcachedException, TimeoutException {
+    void whenIncr_thenCorrectMethodInvoked() throws InterruptedException, MemcachedException, TimeoutException {
         memcachedClient.incr("my-key", 2);
 
         verify(client).incr("my-key", 2);
     }
 
     @Test
-    public void whenIncrWithError_thenThrowException() throws InterruptedException, MemcachedException, TimeoutException {
+    void whenIncrWithError_thenThrowException() throws InterruptedException, MemcachedException, TimeoutException {
         given(client.incr(anyString(), anyLong())).willThrow(new TimeoutException("Test timeout error"));
 
         assertThatThrownBy(() -> memcachedClient.incr("my-key", 2))
@@ -238,7 +238,7 @@ public class XMemcachedClientTest {
     }
 
     @Test
-    public void whenIncrWithInterrupted_thenThrowException() throws InterruptedException, MemcachedException, TimeoutException {
+    void whenIncrWithInterrupted_thenThrowException() throws InterruptedException, MemcachedException, TimeoutException {
         given(client.incr(anyString(), anyLong())).willThrow(new InterruptedException("Test interrupted error"));
 
         assertThatThrownBy(() -> memcachedClient.incr("my-key", 2))
@@ -250,14 +250,14 @@ public class XMemcachedClientTest {
     }
 
     @Test
-    public void whenShutdown_thenCorrectMethodInvoked() throws IOException {
+    void whenShutdown_thenCorrectMethodInvoked() throws IOException {
         memcachedClient.shutdown();
 
         verify(client).shutdown();
     }
 
     @Test
-    public void whenShutdownWithError_thenThrowException() throws IOException {
+    void whenShutdownWithError_thenThrowException() throws IOException {
         doThrow(IOException.class).when(client).shutdown();
 
         assertThatThrownBy(() -> memcachedClient.shutdown())

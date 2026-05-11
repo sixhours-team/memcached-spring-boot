@@ -4,8 +4,8 @@ java {
     toolchain {
         languageVersion = JavaLanguageVersion.of(17)
     }
-    sourceCompatibility = JavaVersion.VERSION_1_8
-    targetCompatibility = JavaVersion.VERSION_1_8
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
 
     withJavadocJar()
     withSourcesJar()
@@ -13,6 +13,10 @@ java {
     registerFeature('optional') {
         usingSourceSet(sourceSets.main)
     }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.compilerArgs += '-parameters'
 }
 
 sourceSets {
@@ -31,7 +35,7 @@ configurations {
     testImplementation.extendsFrom optionalImplementation
 }
 
-task integrationTest(type: Test) {
+tasks.register('integrationTest', Test) {
     description = 'Runs integration tests.'
     group = 'verification'
 
@@ -41,3 +45,7 @@ task integrationTest(type: Test) {
 }
 
 check.dependsOn integrationTest
+
+tasks.withType(Test).configureEach {
+    useJUnitPlatform()
+}

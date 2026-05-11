@@ -25,7 +25,7 @@ import io.micrometer.core.instrument.binder.cache.CaffeineCacheMetrics;
  *
  * @author Mat Mannion
  */
-public class MemcachedCacheMetrics extends CacheMeterBinder {
+public class MemcachedCacheMetrics extends CacheMeterBinder<MemcachedCache> {
     private final MemcachedCache cache;
 
     /**

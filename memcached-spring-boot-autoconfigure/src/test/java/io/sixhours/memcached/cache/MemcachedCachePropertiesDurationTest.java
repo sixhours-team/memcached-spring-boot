@@ -15,14 +15,14 @@
  */
 package io.sixhours.memcached.cache;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.boot.test.context.ConfigFileApplicationContextInitializer;
+import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.net.InetSocketAddress;
 import java.time.Duration;
@@ -33,17 +33,17 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.entry;
 import static org.assertj.core.api.Assertions.tuple;
 
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @ActiveProfiles("config-duration-test")
-@ContextConfiguration(classes = { MemcachedCacheProperties.class }, initializers = { ConfigFileApplicationContextInitializer.class })
+@ContextConfiguration(classes = {MemcachedCacheProperties.class}, initializers = {ConfigDataApplicationContextInitializer.class})
 @EnableConfigurationProperties
-public class MemcachedCachePropertiesDurationTest {
+class MemcachedCachePropertiesDurationTest {
 
     @Autowired
     private MemcachedCacheProperties memcachedCacheProperties;
 
     @Test
-    public void whenGetProvider_thenCorrectValue() {
+    void whenGetProvider_thenCorrectValue() {
         MemcachedCacheProperties.Provider result = memcachedCacheProperties.getProvider();
 
         assertThat(result)
@@ -52,7 +52,7 @@ public class MemcachedCachePropertiesDurationTest {
     }
 
     @Test
-    public void whenGetServers_thenCorrectValue() {
+    void whenGetServers_thenCorrectValue() {
         List<InetSocketAddress> result = memcachedCacheProperties.getServers();
 
         assertThat(result)
@@ -67,7 +67,7 @@ public class MemcachedCachePropertiesDurationTest {
     }
 
     @Test
-    public void whenGetPrefix_thenCorrectValue() {
+    void whenGetPrefix_thenCorrectValue() {
         String result = memcachedCacheProperties.getPrefix();
 
         assertThat(result)
@@ -76,7 +76,7 @@ public class MemcachedCachePropertiesDurationTest {
     }
 
     @Test
-    public void whenGetProtocol_thenCorrectValue() {
+    void whenGetProtocol_thenCorrectValue() {
         MemcachedCacheProperties.Protocol result = memcachedCacheProperties.getProtocol();
 
         assertThat(result)
@@ -85,7 +85,7 @@ public class MemcachedCachePropertiesDurationTest {
     }
 
     @Test
-    public void whenGetOperationTimeout_thenCorrectValue() {
+    void whenGetOperationTimeout_thenCorrectValue() {
         Duration result = memcachedCacheProperties.getOperationTimeout();
 
         assertThat(result)
@@ -94,7 +94,7 @@ public class MemcachedCachePropertiesDurationTest {
     }
 
     @Test
-    public void whenGetServersRefreshInterval_thenCorrectValue() {
+    void whenGetServersRefreshInterval_thenCorrectValue() {
         Duration result = memcachedCacheProperties.getServersRefreshInterval();
 
         assertThat(result)
@@ -103,7 +103,7 @@ public class MemcachedCachePropertiesDurationTest {
     }
 
     @Test
-    public void whenGetExpiration_thenCorrectValue() {
+    void whenGetExpiration_thenCorrectValue() {
         Duration result = memcachedCacheProperties.getExpiration();
 
         assertThat(result)
@@ -112,7 +112,7 @@ public class MemcachedCachePropertiesDurationTest {
     }
 
     @Test
-    public void whenGetExpirationPerCache_thenCorrectValue() {
+    void whenGetExpirationPerCache_thenCorrectValue() {
         Map<String, Duration> result = memcachedCacheProperties.getExpirationPerCache();
 
         assertThat(result)

@@ -3,6 +3,7 @@ ext.projectDesc = 'Memcached Spring Boot AutoConfiguration'
 
 dependencies {
     implementation 'org.springframework.boot:spring-boot-autoconfigure'
+    implementation 'org.springframework.boot:spring-boot-cache'
     implementation 'org.springframework:spring-context-support'
 
     annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
@@ -12,13 +13,16 @@ dependencies {
     optionalImplementation "com.google.appengine:appengine-api-1.0-sdk:${appengineApiVersion}"
 
     optionalImplementation 'org.springframework.boot:spring-boot-actuator'
+    optionalImplementation 'org.springframework.boot:spring-boot-micrometer-metrics'
     optionalImplementation 'org.springframework.cloud:spring-cloud-context'
     optionalImplementation 'io.micrometer:micrometer-core'
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.junit.platform:junit-platform-launcher'
     testImplementation 'javax.cache:cache-api'
     testImplementation "org.awaitility:awaitility:${awaitilityVersion}"
-    integrationTestImplementation "org.testcontainers:testcontainers:${testcontainersVersion}"
+
+    integrationTestImplementation "org.testcontainers:testcontainers-junit-jupiter:${testcontainersVersion}"
 }
 
 compileJava.dependsOn(processResources)

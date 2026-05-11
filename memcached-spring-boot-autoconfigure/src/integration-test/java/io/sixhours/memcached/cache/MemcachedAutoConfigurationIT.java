@@ -16,15 +16,14 @@
 package io.sixhours.memcached.cache;
 
 import io.sixhours.memcached.cache.MemcachedCacheProperties.Protocol;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.ClassRule;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.BeanInstantiationException;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.UnsatisfiedDependencyException;
-import org.springframework.boot.autoconfigure.cache.CacheAutoConfiguration;
+import org.springframework.boot.cache.autoconfigure.CacheAutoConfiguration;
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
@@ -37,6 +36,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.net.InetSocketAddress;
 import java.util.Collections;
@@ -56,13 +57,14 @@ import static org.mockito.Mockito.mock;
  * @author Igor Bolic
  * @author Sasa Bolic
  */
-public class MemcachedAutoConfigurationIT {
+@Testcontainers
+class MemcachedAutoConfigurationIT {
 
-    @ClassRule
-    public static GenericContainer MEMCACHED_1 = new GenericContainer("memcached:alpine")
+    @Container
+    static GenericContainer<?> MEMCACHED_1 = new GenericContainer<>("memcached:alpine")
             .withExposedPorts(11211);
-    @ClassRule
-    public static GenericContainer MEMCACHED_2 = new GenericContainer("memcached:alpine")
+    @Container
+    static GenericContainer MEMCACHED_2 = new GenericContainer("memcached:alpine")
             .withExposedPorts(11211);
 
     private final AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext();
@@ -73,22 +75,22 @@ public class MemcachedAutoConfigurationIT {
     private String memcachedHost2;
     private int memcachedPort2;
 
-    @Before
-    public void setUp() {
-        memcachedHost1 = MEMCACHED_1.getContainerIpAddress();
+    @BeforeEach
+    void setUp() {
+        memcachedHost1 = MEMCACHED_1.getHost();
         memcachedPort1 = MEMCACHED_1.getFirstMappedPort();
 
-        memcachedHost2 = MEMCACHED_2.getContainerIpAddress();
+        memcachedHost2 = MEMCACHED_2.getHost();
         memcachedPort2 = MEMCACHED_2.getFirstMappedPort();
     }
 
-    @After
-    public void tearDown() {
+    @AfterEach
+    void tearDown() {
         applicationContext.close();
     }
 
     @Test
-    public void whenCachingNotEnabledThenMemcachedNotLoaded() {
+    void whenCachingNotEnabledThenMemcachedNotLoaded() {
         loadContext(EmptyConfiguration.class);
 
         assertThatThrownBy(() ->
@@ -99,7 +101,7 @@ public class MemcachedAutoConfigurationIT {
     }
 
     @Test
-    public void whenCacheTypeIsNoneThenMemcachedNotLoaded() {
+    void whenCacheTypeIsNoneThenMemcachedNotLoaded() {
         loadContext(CacheConfiguration.class, "spring.cache.type=none");
 
         assertThatThrownBy(() ->
@@ -110,7 +112,7 @@ public class MemcachedAutoConfigurationIT {
     }
 
     @Test
-    public void whenCacheTypeIsNoneThenNoOpCacheLoaded() {
+    void whenCacheTypeIsNoneThenNoOpCacheLoaded() {
         loadContext(CacheConfiguration.class, "spring.cache.type=none");
 
         CacheManager cacheManager = this.applicationContext.getBean(CacheManager.class);
@@ -119,7 +121,7 @@ public class MemcachedAutoConfigurationIT {
     }
 
     @Test
-    public void whenCacheTypeIsSimpleThenMemcachedNotLoaded() {
+    void whenCacheTypeIsSimpleThenMemcachedNotLoaded() {
         loadContext(CacheConfiguration.class, "spring.cache.type=simple");
 
         assertThatThrownBy(() ->
@@ -130,7 +132,7 @@ public class MemcachedAutoConfigurationIT {
     }
 
     @Test
-    public void whenCacheTypeIsSimpleThenSimpleCacheLoaded() {
+    void whenCacheTypeIsSimpleThenSimpleCacheLoaded() {
         loadContext(CacheConfiguration.class, "spring.cache.type=simple");
 
         CacheManager cacheManager = this.applicationContext.getBean(CacheManager.class);
@@ -139,16 +141,16 @@ public class MemcachedAutoConfigurationIT {
     }
 
     @Test
-    public void whenCacheTypeIsInvalidThenContextNotLoaded() {
+    void whenCacheTypeIsInvalidThenContextNotLoaded() {
         assertThatThrownBy(() ->
                 loadContext(CacheConfiguration.class, "spring.cache.type=invalid-type")
         )
                 .isInstanceOf(BeanCreationException.class)
-                .hasMessageContaining("Failed to bind properties under 'spring.cache.type' to org.springframework.boot.autoconfigure.cache.CacheType");
+                .hasMessageContaining("Could not bind properties to 'CacheProperties'");
     }
 
     @Test
-    public void whenUsingCustomCacheManagerThenMemcachedCacheManagerNotLoaded() {
+    void whenUsingCustomCacheManagerThenMemcachedCacheManagerNotLoaded() {
         loadContext(CacheWithCustomCacheManagerConfiguration.class);
 
         assertThatThrownBy(() ->
@@ -159,7 +161,7 @@ public class MemcachedAutoConfigurationIT {
     }
 
     @Test
-    public void whenUsingCustomCacheManagerThenMemcachedCustomCacheManagerLoaded() {
+    void whenUsingCustomCacheManagerThenMemcachedCustomCacheManagerLoaded() {
         loadContext(CacheWithCustomCacheManagerConfiguration.class);
 
         CacheManager cacheManager = this.applicationContext.getBean(CacheManager.class);
@@ -168,7 +170,7 @@ public class MemcachedAutoConfigurationIT {
     }
 
     @Test
-    public void whenNoCustomCacheManagerThenMemcachedCacheManagerLoaded() {
+    void whenNoCustomCacheManagerThenMemcachedCacheManagerLoaded() {
         loadContext(CacheConfiguration.class);
 
         CacheManager cacheManager = this.applicationContext.getBean(CacheManager.class);
@@ -177,7 +179,7 @@ public class MemcachedAutoConfigurationIT {
     }
 
     @Test
-    public void whenNoCustomCacheManagerThenMemcachedWithDefaultConfigurationLoaded() {
+    void whenNoCustomCacheManagerThenMemcachedWithDefaultConfigurationLoaded() {
         loadContext(CacheConfiguration.class);
 
         MemcachedCacheManager memcachedCacheManager = this.applicationContext.getBean(MemcachedCacheManager.class);
@@ -189,7 +191,7 @@ public class MemcachedAutoConfigurationIT {
     }
 
     @Test
-    public void whenRefreshAutoConfigurationThenRefreshConfigurationLoaded() {
+    void whenRefreshAutoConfigurationThenRefreshConfigurationLoaded() {
         loadContext(CacheWithRefreshAutoConfiguration.class);
 
         assertThat(this.applicationContext
@@ -197,7 +199,7 @@ public class MemcachedAutoConfigurationIT {
     }
 
     @Test
-    public void whenRefreshAutoConfigurationThenDefaultConfigurationLoaded() {
+    void whenRefreshAutoConfigurationThenDefaultConfigurationLoaded() {
         loadContext(CacheWithRefreshAutoConfiguration.class);
 
         MemcachedCacheManager cacheManager = this.applicationContext.getBean(MemcachedCacheManager.class);
@@ -209,7 +211,7 @@ public class MemcachedAutoConfigurationIT {
     }
 
     @Test
-    public void whenMemcachedCacheManagerBeanAlreadyInContextThenMemcachedWithNonCustomConfigurationLoaded() {
+    void whenMemcachedCacheManagerBeanAlreadyInContextThenMemcachedWithNonCustomConfigurationLoaded() {
         loadContext(CacheWithMemcachedCacheManagerConfiguration.class, "memcached.cache.expiration=3600",
                 "memcached.cache.prefix=custom:prefix",
                 "memcached.cache.namespace=custom_namespace");
@@ -223,7 +225,7 @@ public class MemcachedAutoConfigurationIT {
     }
 
     @Test
-    public void whenAppEngineProviderThenAppEngineMemcachedLoaded() {
+    void whenAppEngineProviderThenAppEngineMemcachedLoaded() {
         loadContext(CacheConfiguration.class, "memcached.cache.provider=appengine");
 
         CacheManager cacheManager = this.applicationContext.getBean(CacheManager.class);
@@ -233,7 +235,7 @@ public class MemcachedAutoConfigurationIT {
     }
 
     @Test
-    public void whenAwsProviderAndMultipleServerListThenMemcachedNotLoaded() {
+    void whenAwsProviderAndMultipleServerListThenMemcachedNotLoaded() {
         assertThatThrownBy(() ->
                 loadContext(CacheConfiguration.class, String.format("memcached.cache.servers=%s:%d,%s:%d", memcachedHost1, memcachedPort1, memcachedHost2, memcachedPort2),
                         "memcached.cache.provider=aws")
@@ -244,7 +246,7 @@ public class MemcachedAutoConfigurationIT {
     }
 
     @Test
-    public void whenStaticProviderAndMultipleServerListThenMemcachedLoaded() {
+    void whenStaticProviderAndMultipleServerListThenMemcachedLoaded() {
         loadContext(CacheConfiguration.class, String.format("memcached.cache.servers=%s:%d, %s:%d", memcachedHost1, memcachedPort1, memcachedHost2, memcachedPort2),
                 "memcached.cache.provider=static");
 
@@ -257,7 +259,7 @@ public class MemcachedAutoConfigurationIT {
     }
 
     @Test
-    public void whenTextProtocolAndMultipleServerListThenMemcachedLoaded() {
+    void whenTextProtocolAndMultipleServerListThenMemcachedLoaded() {
         loadContext(CacheConfiguration.class, String.format("memcached.cache.servers=%s:%d, %s:%d", memcachedHost1, memcachedPort1, memcachedHost2, memcachedPort2),
                 "memcached.cache.protocol=text");
 
@@ -270,7 +272,7 @@ public class MemcachedAutoConfigurationIT {
     }
 
     @Test
-    public void whenBinaryProtocolAndMultipleServerListThenMemcachedLoaded() {
+    void whenBinaryProtocolAndMultipleServerListThenMemcachedLoaded() {
         loadContext(CacheConfiguration.class, String.format("memcached.cache.servers=%s:%d,%s:%d", memcachedHost1, memcachedPort1, memcachedHost2, memcachedPort2),
                 "memcached.cache.protocol=binary");
 
@@ -283,7 +285,7 @@ public class MemcachedAutoConfigurationIT {
     }
 
     @Test
-    public void whenStaticProviderAndEmptyServerListThenMemcachedNotLoaded() {
+    void whenStaticProviderAndEmptyServerListThenMemcachedNotLoaded() {
         assertThatThrownBy(() ->
                 loadContext(CacheConfiguration.class, "memcached.cache.servers=",
                         "memcached.cache.provider=static")
@@ -293,7 +295,7 @@ public class MemcachedAutoConfigurationIT {
     }
 
     @Test
-    public void whenOperationTimeoutInvalidThenMemcachedNotLoaded() {
+    void whenOperationTimeoutInvalidThenMemcachedNotLoaded() {
         assertThatThrownBy(() -> loadContext(CacheConfiguration.class,
                 "memcached.cache.operation-timeout=0"))
                 .isInstanceOf(UnsatisfiedDependencyException.class)
@@ -302,7 +304,7 @@ public class MemcachedAutoConfigurationIT {
 
 
     @Test
-    public void whenCustomConfigurationThenMemcachedLoaded() {
+    void whenCustomConfigurationThenMemcachedLoaded() {
         loadContext(CacheConfiguration.class, String.format("memcached.cache.servers=%s:%d", memcachedHost1, memcachedPort1),
                 "memcached.cache.provider=static",
                 "memcached.cache.expiration=3600",
@@ -320,7 +322,7 @@ public class MemcachedAutoConfigurationIT {
     }
 
     @Test
-    public void whenPartialConfigurationValuesThenMemcachedLoaded() {
+    void whenPartialConfigurationValuesThenMemcachedLoaded() {
         loadContext(CacheConfiguration.class, String.format("memcached.cache.servers=%s:%d", memcachedHost1, memcachedPort1),
                 "memcached.cache.prefix=custom:prefix");
 
@@ -333,7 +335,7 @@ public class MemcachedAutoConfigurationIT {
     }
 
     @Test
-    public void whenExpirationsValuesGiven() {
+    void whenExpirationsValuesGiven() {
         loadContext(CacheConfiguration.class, String.format("memcached.cache.servers=%s:%d", memcachedHost1, memcachedPort1),
                 "memcached.cache.expiration=800", "memcached.cache.expiration-per-cache.testKey1=400", "memcached.cache.expiration-per-cache.testKey2=500", "memcached.cache.expiration-per-cache.testKey3=600", "memcached.cache.expiration-per-cache.testKey4=700");
 

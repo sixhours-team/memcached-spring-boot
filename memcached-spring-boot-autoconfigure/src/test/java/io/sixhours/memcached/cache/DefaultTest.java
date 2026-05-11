@@ -15,7 +15,8 @@
  */
 package io.sixhours.memcached.cache;
 
-import org.junit.Test;
+
+import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -27,10 +28,10 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
  *
  * @author Igor Bolic
  */
-public class DefaultTest {
+class DefaultTest {
 
     @Test
-    public void whenInstantiatedThenException() {
+    void whenInstantiatedThenException() {
         Constructor constructor = Default.class.getDeclaredConstructors()[0];
         constructor.setAccessible(true);
 

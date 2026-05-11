@@ -15,8 +15,8 @@
  */
 package io.sixhours.memcached.cache;
 
-import org.junit.After;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -32,17 +32,17 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Sasa Bolic
  * @author Igor Bolic
  */
-public class ConditionalOnMissingSpringCacheProviderTest {
+class ConditionalOnMissingSpringCacheProviderTest {
 
     private final AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 
-    @After
-    public void tearDown() {
+    @AfterEach
+    void tearDown() {
         this.context.close();
     }
 
     @Test
-    public void whenSpringCacheTypeIsEmptyThenOutcomeShouldNotMatch() {
+    void whenSpringCacheTypeIsEmptyThenOutcomeShouldNotMatch() {
         TestPropertyValues.of("spring.cache.type=").applyTo(this.context);
         this.context.register(OnMissingSpringCacheTypeConfig.class);
         this.context.refresh();
@@ -51,7 +51,7 @@ public class ConditionalOnMissingSpringCacheProviderTest {
     }
 
     @Test
-    public void whenSpringCacheTypeIsPresentThenOutcomeShouldNotMatch() {
+    void whenSpringCacheTypeIsPresentThenOutcomeShouldNotMatch() {
         TestPropertyValues.of("spring.cache.type=none").applyTo(this.context);
         this.context.register(OnMissingSpringCacheTypeConfig.class);
         this.context.refresh();
@@ -60,7 +60,7 @@ public class ConditionalOnMissingSpringCacheProviderTest {
     }
 
     @Test
-    public void whenSpringCacheTypeIsNotPresentThenOutcomeShouldMatch() {
+    void whenSpringCacheTypeIsNotPresentThenOutcomeShouldMatch() {
         this.context.register(OnMissingSpringCacheTypeConfig.class);
         this.context.refresh();
 

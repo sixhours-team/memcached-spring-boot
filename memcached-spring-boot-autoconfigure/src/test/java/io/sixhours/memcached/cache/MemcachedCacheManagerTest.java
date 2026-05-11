@@ -24,8 +24,8 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.cache.Cache;
 import org.springframework.cache.support.NoOpCache;
 
@@ -34,15 +34,15 @@ import org.springframework.cache.support.NoOpCache;
  *
  * @author Igor Bolic
  */
-public class MemcachedCacheManagerTest {
+class MemcachedCacheManagerTest {
 
     private static final String EXISTING_CACHE = "existing-cache";
     private static final String NON_EXISTING_CACHE = "non-existing-cache";
 
     private MemcachedCacheManager cacheManager;
 
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
         IMemcachedClient memcachedClient = mock(IMemcachedClient.class);
         cacheManager = new MemcachedCacheManager(memcachedClient);
 
@@ -50,7 +50,7 @@ public class MemcachedCacheManagerTest {
     }
 
     @Test
-    public void whenGetNonExistingCacheThenIncreaseCacheSize() {
+    void whenGetNonExistingCacheThenIncreaseCacheSize() {
         Cache cache = cacheManager.getCache(NON_EXISTING_CACHE);
 
         assertThat(cache).isNotNull();
@@ -60,7 +60,7 @@ public class MemcachedCacheManagerTest {
     }
 
     @Test
-    public void whenGetCacheThenReturnExistingCache() {
+    void whenGetCacheThenReturnExistingCache() {
         Cache cache = cacheManager.getCache(EXISTING_CACHE);
 
         assertThat(cacheManager.getCache(EXISTING_CACHE)).isSameAs(cache);
@@ -70,7 +70,7 @@ public class MemcachedCacheManagerTest {
     }
 
     @Test
-    public void whenGetCacheNamesThenReturnExistingCacheNames() {
+    void whenGetCacheNamesThenReturnExistingCacheNames() {
         Collection<String> cacheNames = cacheManager.getCacheNames();
         String[] cacheNamesArray = cacheNames.toArray(new String[0]);
 
@@ -79,7 +79,7 @@ public class MemcachedCacheManagerTest {
     }
 
     @Test
-    public void whenGetDisabledCacheThenIncreaseCacheSize() {
+    void whenGetDisabledCacheThenIncreaseCacheSize() {
         final Set<String> disabledCacheNames = new HashSet<>();
         disabledCacheNames.add(EXISTING_CACHE);
         cacheManager.setDisabledCacheNames(disabledCacheNames);
@@ -89,7 +89,7 @@ public class MemcachedCacheManagerTest {
     }
 
     @Test
-    public void whenLoadCachesThenReturnMetricsCacheNames() {
+    void whenLoadCachesThenReturnMetricsCacheNames() {
         cacheManager.setMetricsCacheNames(Collections.singletonList(EXISTING_CACHE));
 
         Collection<? extends Cache> result = cacheManager.loadCaches();

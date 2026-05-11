@@ -15,8 +15,8 @@
  */
 package io.sixhours.memcached.cache;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.time.Duration;
 import java.util.ArrayList;
@@ -29,17 +29,17 @@ import java.util.Set;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-public class MemcachedCachePropertiesValidationTest {
+class MemcachedCachePropertiesValidationTest {
 
     private MemcachedCacheProperties properties;
 
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
         properties = new MemcachedCacheProperties();
     }
 
     @Test
-    public void whenSetServersThenValidationOk() {
+    void whenSetServersThenValidationOk() {
         properties.setServers("example1.com:1122");
 
         assertThat(properties.getServers()).hasSize(1);
@@ -50,28 +50,28 @@ public class MemcachedCachePropertiesValidationTest {
     }
 
     @Test
-    public void whenSetNullServersThenValidationFails() {
+    void whenSetNullServersThenValidationFails() {
         assertThatThrownBy(() -> properties.setServers(null))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("Server list is empty");
     }
 
     @Test
-    public void whenSetEmptyServersThenValidationFails() {
+    void whenSetEmptyServersThenValidationFails() {
         assertThatThrownBy(() -> properties.setServers(""))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("Server list is empty");
     }
 
     @Test
-    public void whenSetBlankServersThenValidationFails() {
+    void whenSetBlankServersThenValidationFails() {
         assertThatThrownBy(() -> properties.setServers(" "))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("Invalid server value. It cannot be empty");
     }
 
     @Test
-    public void whenSetAuthenticationThenValidationOk() {
+    void whenSetAuthenticationThenValidationOk() {
         MemcachedCacheProperties.Authentication authentication = new MemcachedCacheProperties.Authentication();
         authentication.setUsername("test-user");
         authentication.setPassword("test-pwd");
@@ -87,7 +87,7 @@ public class MemcachedCachePropertiesValidationTest {
     }
 
     @Test
-    public void whenSetAuthenticationWithNullValuesThenValidationOk() {
+    void whenSetAuthenticationWithNullValuesThenValidationOk() {
         MemcachedCacheProperties.Authentication authentication = new MemcachedCacheProperties.Authentication();
         authentication.setUsername(null);
         authentication.setPassword(null);
@@ -103,7 +103,7 @@ public class MemcachedCachePropertiesValidationTest {
     }
 
     @Test
-    public void whenSetDisabledCacheNamesThenValidationOk() {
+    void whenSetDisabledCacheNamesThenValidationOk() {
         Set<String> names = new HashSet<>();
         names.add("cache-1");
         properties.setDisabledCacheNames(names);
@@ -113,14 +113,14 @@ public class MemcachedCachePropertiesValidationTest {
     }
 
     @Test
-    public void whenSetEmptyDisabledCacheNamesThenValidationOk() {
+    void whenSetEmptyDisabledCacheNamesThenValidationOk() {
         properties.setDisabledCacheNames(new HashSet<>());
 
         assertThat(properties.getDisabledCacheNames()).isEmpty();
     }
 
     @Test
-    public void whenSetMetricsCacheNamesThenValidationOk() {
+    void whenSetMetricsCacheNamesThenValidationOk() {
         List<String> names = new ArrayList<>();
         names.add("cache-1");
         properties.setMetricsCacheNames(names);
@@ -130,63 +130,63 @@ public class MemcachedCachePropertiesValidationTest {
     }
 
     @Test
-    public void whenSetEmptyMetricsCacheNamesThenValidationOk() {
+    void whenSetEmptyMetricsCacheNamesThenValidationOk() {
         properties.setMetricsCacheNames(new ArrayList<>());
 
         assertThat(properties.getMetricsCacheNames()).isEmpty();
     }
 
     @Test
-    public void whenSetNullMetricsCacheNamesThenValidationOk() {
+    void whenSetNullMetricsCacheNamesThenValidationOk() {
         properties.setMetricsCacheNames(null);
 
         assertThat(properties.getMetricsCacheNames()).isNull();
     }
 
     @Test
-    public void whenSetProviderThenValidationOk() {
+    void whenSetProviderThenValidationOk() {
         properties.setProvider(MemcachedCacheProperties.Provider.STATIC);
 
         assertThat(properties.getProvider()).isEqualTo(MemcachedCacheProperties.Provider.STATIC);
     }
 
     @Test
-    public void whenSetNullProviderThenValidationOk() {
+    void whenSetNullProviderThenValidationOk() {
         properties.setProvider(null);
 
         assertThat(properties.getProvider()).isNull();
     }
 
     @Test
-    public void whenSetZeroExpirationThenValidationOk() {
+    void whenSetZeroExpirationThenValidationOk() {
         properties.setExpiration(Duration.ZERO);
 
         assertThat(properties.getExpiration()).isEqualTo(Duration.ZERO);
     }
 
     @Test
-    public void whenSetPositiveExpirationThenValidationOk() {
+    void whenSetPositiveExpirationThenValidationOk() {
         properties.setExpiration(Duration.ofDays(40));
 
         assertThat(properties.getExpiration()).isEqualTo(Duration.ofDays(40));
     }
 
     @Test
-    public void whenSetNullExpirationThenValidationFails() {
+    void whenSetNullExpirationThenValidationFails() {
         assertThatThrownBy(() -> properties.setExpiration(null))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("Invalid expiration. Duration must be greater than or equal to 0 (zero) seconds.");
     }
 
     @Test
-    public void whenSetNegativeExpirationThenValidationFails() {
+    void whenSetNegativeExpirationThenValidationFails() {
         assertThatThrownBy(() -> properties.setExpiration(Duration.ofSeconds(-1)))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("Invalid expiration. Duration must be greater than or equal to 0 (zero) seconds.");
     }
 
     @Test
-    public void whenSetExpirationPerCacheThenValidationOk() {
+    void whenSetExpirationPerCacheThenValidationOk() {
         Map<String, String> perCache = new HashMap<>();
         perCache.put("cache-1", "1d");
         perCache.put("cache-2", "15h");
@@ -203,14 +203,14 @@ public class MemcachedCachePropertiesValidationTest {
     }
 
     @Test
-    public void whenSetNullExpirationPerCacheThenValidationOk() {
+    void whenSetNullExpirationPerCacheThenValidationOk() {
         properties.setExpirationPerCache(null);
 
         assertThat(properties.getExpirationPerCache()).isEmpty();
     }
 
     @Test
-    public void whenSetNegativeExpirationPerCacheThenValidationFails() {
+    void whenSetNegativeExpirationPerCacheThenValidationFails() {
         Map<String, String> perCache = new HashMap<>();
         perCache.put("cache-1", "-1d");
         perCache.put("cache-4", "40d");
@@ -221,98 +221,98 @@ public class MemcachedCachePropertiesValidationTest {
     }
 
     @Test
-    public void whenSetPrefixThenValidationOk() {
+    void whenSetPrefixThenValidationOk() {
         properties.setPrefix("my-cache");
 
         assertThat(properties.getPrefix()).isEqualTo("my-cache");
     }
 
     @Test
-    public void whenSetNullPrefixThenValidationOk() {
+    void whenSetNullPrefixThenValidationOk() {
         properties.setPrefix(null);
 
         assertThat(properties.getPrefix()).isNull();
     }
 
     @Test
-    public void whenSetProtocolThenValidationOk() {
+    void whenSetProtocolThenValidationOk() {
         properties.setProtocol(MemcachedCacheProperties.Protocol.TEXT);
 
         assertThat(properties.getProtocol()).isEqualTo(MemcachedCacheProperties.Protocol.TEXT);
     }
 
     @Test
-    public void whenSetNullProtocolThenValidationOk() {
+    void whenSetNullProtocolThenValidationOk() {
         properties.setProtocol(null);
 
         assertThat(properties.getProtocol()).isNull();
     }
 
     @Test
-    public void whenSetOperationTimeoutThenValidationOk() {
+    void whenSetOperationTimeoutThenValidationOk() {
         properties.setOperationTimeout(Duration.ofHours(4));
 
         assertThat(properties.getOperationTimeout()).isEqualTo(Duration.ofHours(4));
     }
 
     @Test
-    public void whenSetNullOperationTimeoutThenValidationFails() {
+    void whenSetNullOperationTimeoutThenValidationFails() {
         assertThatThrownBy(() -> properties.setOperationTimeout(null))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("Operation timeout must be greater then zero");
     }
 
     @Test
-    public void whenSetZeroOperationTimeoutThenValidationFails() {
+    void whenSetZeroOperationTimeoutThenValidationFails() {
         assertThatThrownBy(() -> properties.setOperationTimeout(Duration.ZERO))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("Operation timeout must be greater then zero");
     }
 
     @Test
-    public void whenSetNegativeOperationTimeoutThenValidationFails() {
+    void whenSetNegativeOperationTimeoutThenValidationFails() {
         assertThatThrownBy(() -> properties.setOperationTimeout(Duration.ofDays(-1)))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("Operation timeout must be greater then zero");
     }
 
     @Test
-    public void whenSetServersRefreshIntervalThenValidationOk() {
+    void whenSetServersRefreshIntervalThenValidationOk() {
         properties.setServersRefreshInterval(Duration.ofHours(4));
 
         assertThat(properties.getServersRefreshInterval()).isEqualTo(Duration.ofHours(4));
     }
 
     @Test
-    public void whenSetNullServersRefreshIntervalThenValidationFails() {
+    void whenSetNullServersRefreshIntervalThenValidationFails() {
         assertThatThrownBy(() -> properties.setServersRefreshInterval(null))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("Servers refresh interval must be greater then zero");
     }
 
     @Test
-    public void whenSetZeroServersRefreshIntervalThenValidationFails() {
+    void whenSetZeroServersRefreshIntervalThenValidationFails() {
         assertThatThrownBy(() -> properties.setServersRefreshInterval(Duration.ZERO))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("Servers refresh interval must be greater then zero");
     }
 
     @Test
-    public void whenSetNegativeServersRefreshIntervalThenValidationFails() {
+    void whenSetNegativeServersRefreshIntervalThenValidationFails() {
         assertThatThrownBy(() -> properties.setServersRefreshInterval(Duration.ofDays(-1)))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("Servers refresh interval must be greater then zero");
     }
 
     @Test
-    public void whenSetHashStrategyThenValidationOk() {
+    void whenSetHashStrategyThenValidationOk() {
         properties.setHashStrategy(MemcachedCacheProperties.HashStrategy.KETAMA);
 
         assertThat(properties.getHashStrategy()).isEqualTo(MemcachedCacheProperties.HashStrategy.KETAMA);
     }
 
     @Test
-    public void whenSetNullHashStrategyThenValidationOk() {
+    void whenSetNullHashStrategyThenValidationOk() {
         properties.setHashStrategy(null);
 
         assertThat(properties.getHashStrategy()).isNull();

@@ -16,12 +16,11 @@
 package io.sixhours.memcached.cache;
 
 import net.spy.memcached.OperationTimeoutException;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.ClassRule;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.springframework.boot.autoconfigure.cache.CacheAutoConfiguration;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
+import org.springframework.boot.cache.autoconfigure.CacheAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.cache.annotation.EnableCaching;
@@ -29,6 +28,8 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -44,18 +45,19 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
  * <p>
  * Using bitnami memcached container which supports PLAIN authentication mechanism.
  */
-@Ignore("Until the https://github.com/awslabs/aws-elasticache-cluster-client-memcached-for-java/pull/5 issue FIX is " +
+@Disabled("Until the https://github.com/awslabs/aws-elasticache-cluster-client-memcached-for-java/pull/5 issue FIX is " +
         "released for AWS elasticache-client (1.2.1 version), this test should be ignored, since MemcachedClient initialization will fail with NPE")
+@Testcontainers
 public class SpymemcachedAuthenticationIT {
 
-    @ClassRule
-    public static GenericContainer MEMCACHED_1 = new GenericContainer("bitnami/memcached:latest")
+    @Container
+    static GenericContainer MEMCACHED_1 = new GenericContainer("bitnami/memcached:latest")
             .withEnv("MEMCACHED_USERNAME", "my_user")
             .withEnv("MEMCACHED_PASSWORD", "my_password")
             .withExposedPorts(11211);
 
-    @ClassRule
-    public static GenericContainer MEMCACHED_2 = new GenericContainer("bitnami/memcached:latest")
+    @Container
+    static GenericContainer MEMCACHED_2 = new GenericContainer("bitnami/memcached:latest")
             .withEnv("MEMCACHED_USERNAME", "my_user")
             .withEnv("MEMCACHED_PASSWORD", "my_password")
             .withExposedPorts(11211);
@@ -68,8 +70,8 @@ public class SpymemcachedAuthenticationIT {
     private String memcachedHost2;
     private int memcachedPort2;
 
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
         memcachedHost1 = MEMCACHED_1.getHost();
         memcachedPort1 = MEMCACHED_1.getFirstMappedPort();
 
@@ -77,13 +79,13 @@ public class SpymemcachedAuthenticationIT {
         memcachedPort2 = MEMCACHED_2.getFirstMappedPort();
     }
 
-    @After
-    public void tearDown() {
+    @AfterEach
+    void tearDown() {
         applicationContext.close();
     }
 
     @Test
-    public void whenTextProtocolAndCredentialsThenMemcachedClientFails() {
+    void whenTextProtocolAndCredentialsThenMemcachedClientFails() {
         loadContext(
                 "memcached.cache.protocol=text",
                 "memcached.cache.authentication.username=my_user",
@@ -105,7 +107,7 @@ public class SpymemcachedAuthenticationIT {
     }
 
     @Test
-    public void whenBinaryProtocolAndCredentialsThenMemcachedClientSuccessful() {
+    void whenBinaryProtocolAndCredentialsThenMemcachedClientSuccessful() {
         loadContext(
                 "memcached.cache.protocol=binary",
                 "memcached.cache.authentication.username=my_user",
@@ -125,7 +127,7 @@ public class SpymemcachedAuthenticationIT {
     }
 
     @Test
-    public void whenBinaryProtocolAndIncorrectCredentialsThenMemcachedNotLoaded() {
+    void whenBinaryProtocolAndIncorrectCredentialsThenMemcachedNotLoaded() {
         loadContext(
                 "memcached.cache.protocol=binary",
                 "memcached.cache.authentication.username=my_user_incorrect",

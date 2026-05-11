@@ -27,12 +27,12 @@ import net.rubyeye.xmemcached.impl.RandomMemcachedSessionLocaltor;
 import net.rubyeye.xmemcached.impl.RoundRobinMemcachedSessionLocator;
 import net.rubyeye.xmemcached.utils.Protocol;
 import net.spy.memcached.FailureMode;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.BeanInstantiationException;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.UnsatisfiedDependencyException;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
-import org.springframework.boot.autoconfigure.cache.CacheAutoConfiguration;
+import org.springframework.boot.cache.autoconfigure.CacheAutoConfiguration;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
@@ -57,75 +57,78 @@ import static org.mockito.Mockito.mock;
  * @author Igor Bolic
  * @author Sasa Bolic
  */
-public class MemcachedAutoConfigurationTest {
+class MemcachedAutoConfigurationTest {
 
     private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
             .withConfiguration(AutoConfigurations.of(CacheAutoConfiguration.class, MemcachedCacheAutoConfiguration.class));
 
     @Test
-    public void whenCachingNotEnabledThenMemcachedNotLoaded() {
+    void whenCachingNotEnabledThenMemcachedNotLoaded() {
         this.contextRunner.withUserConfiguration(EmptyConfiguration.class)
                 .run(context -> assertThat(context).doesNotHaveBean(MemcachedCacheManager.class));
     }
 
     @Test
-    public void whenCacheTypeIsNoneThenMemcachedNotLoaded() {
+    void whenCacheTypeIsNoneThenMemcachedNotLoaded() {
         this.contextRunner.withUserConfiguration(CacheConfiguration.class)
                 .withPropertyValues("spring.cache.type=none")
                 .run(context -> assertThat(context).doesNotHaveBean(MemcachedCacheManager.class));
     }
 
     @Test
-    public void whenCacheTypeIsNoneThenNoOpCacheLoaded() {
+    void whenCacheTypeIsNoneThenNoOpCacheLoaded() {
         this.contextRunner.withUserConfiguration(CacheConfiguration.class)
                 .withPropertyValues("spring.cache.type=none")
                 .run(context -> cacheManager(context, NoOpCacheManager.class));
     }
 
     @Test
-    public void whenCacheTypeIsSimpleThenMemcachedNotLoaded() {
+    void whenCacheTypeIsSimpleThenMemcachedNotLoaded() {
         this.contextRunner.withUserConfiguration(CacheConfiguration.class)
                 .withPropertyValues("spring.cache.type=simple")
                 .run(context -> assertThat(context).doesNotHaveBean(MemcachedCacheManager.class));
     }
 
     @Test
-    public void whenCacheTypeIsSimpleThenSimpleCacheLoaded() {
+    void whenCacheTypeIsSimpleThenSimpleCacheLoaded() {
         this.contextRunner.withUserConfiguration(CacheConfiguration.class)
                 .withPropertyValues("spring.cache.type=simple")
                 .run(context -> cacheManager(context, ConcurrentMapCacheManager.class));
     }
 
     @Test
-    public void whenCacheTypeIsInvalidThenContextNotLoaded() {
+    void whenCacheTypeIsInvalidThenContextNotLoaded() {
         this.contextRunner.withUserConfiguration(CacheConfiguration.class)
                 .withPropertyValues("spring.cache.type=invalid-type")
                 .run(context -> assertThat(context).getFailure()
-                        .isInstanceOf(BeanCreationException.class)
-                        .hasMessageContaining("Failed to bind properties under 'spring.cache.type'")
+                        .isInstanceOfSatisfying(BeanCreationException.class, exception -> {
+                            assertThat(exception).hasMessageContaining("Could not bind properties to 'CacheProperties'");
+                            assertThat(exception.getRootCause()).isInstanceOf(IllegalArgumentException.class)
+                                    .hasMessageContaining("No enum constant org.springframework.boot.autoconfigure.cache.CacheType.invalid-type");
+                        })
                 );
     }
 
     @Test
-    public void whenUsingCustomCacheManagerThenMemcachedCacheManagerNotLoaded() {
+    void whenUsingCustomCacheManagerThenMemcachedCacheManagerNotLoaded() {
         this.contextRunner.withUserConfiguration(CacheWithCustomCacheManagerConfiguration.class)
                 .run(context -> assertThat(context).doesNotHaveBean(MemcachedCacheManager.class));
     }
 
     @Test
-    public void whenUsingCustomCacheManagerThenMemcachedCustomCacheManagerLoaded() {
+    void whenUsingCustomCacheManagerThenMemcachedCustomCacheManagerLoaded() {
         this.contextRunner.withUserConfiguration(CacheWithCustomCacheManagerConfiguration.class)
                 .run(context -> cacheManager(context, ConcurrentMapCacheManager.class));
     }
 
     @Test
-    public void whenNoCustomCacheManagerThenMemcachedCacheManagerLoaded() {
+    void whenNoCustomCacheManagerThenMemcachedCacheManagerLoaded() {
         this.contextRunner.withUserConfiguration(CacheConfiguration.class)
                 .run(context -> cacheManager(context, MemcachedCacheManager.class));
     }
 
     @Test
-    public void whenRefreshAutoConfigurationThenRefreshConfigurationLoaded() {
+    void whenRefreshAutoConfigurationThenRefreshConfigurationLoaded() {
         this.contextRunner.withUserConfiguration(CacheWithRefreshAutoConfiguration.class)
                 .run(context -> {
                     assertThat(context.getBeanDefinitionNames()).contains("cacheManager");
@@ -135,7 +138,7 @@ public class MemcachedAutoConfigurationTest {
     }
 
     @Test
-    public void whenMemcachedCacheManagerBeanAlreadyInContextThenMemcachedWithNonCustomConfigurationLoaded() {
+    void whenMemcachedCacheManagerBeanAlreadyInContextThenMemcachedWithNonCustomConfigurationLoaded() {
         this.contextRunner.withUserConfiguration(CacheWithMemcachedCacheManagerConfiguration.class)
                 .withPropertyValues(
                         "memcached.cache.expiration=3600",
@@ -154,7 +157,7 @@ public class MemcachedAutoConfigurationTest {
     }
 
     @Test
-    public void whenAwsProviderAndMultipleServerListThenMemcachedNotLoaded() {
+    void whenAwsProviderAndMultipleServerListThenMemcachedNotLoaded() {
         this.contextRunner.withUserConfiguration(CacheConfiguration.class)
                 .withPropertyValues(
                         String.format("memcached.cache.servers=%s:%d,%s:%d", "memcachedHost1", 11211, "memcachedHost2", 11211),
@@ -168,7 +171,7 @@ public class MemcachedAutoConfigurationTest {
     }
 
     @Test
-    public void whenAppEngineProviderThenAppEngineMemcachedLoaded() {
+    void whenAppEngineProviderThenAppEngineMemcachedLoaded() {
         this.contextRunner.withUserConfiguration(CacheConfiguration.class)
                 .withPropertyValues("memcached.cache.provider=appengine")
                 .run(context -> {
@@ -181,7 +184,7 @@ public class MemcachedAutoConfigurationTest {
     }
 
     @Test
-    public void whenAppEngineProviderAndNoAppEngineOnClasspathThenMemcachedNotLoaded() {
+    void whenAppEngineProviderAndNoAppEngineOnClasspathThenMemcachedNotLoaded() {
         this.contextRunner.withUserConfiguration(CacheConfiguration.class)
                 .withPropertyValues("memcached.cache.provider=appengine")
                 .withClassLoader(new FilteredClassLoader("com.google.appengine.api.memcache"))
@@ -189,7 +192,7 @@ public class MemcachedAutoConfigurationTest {
     }
 
     @Test
-    public void whenNoAppEngineOnClasspathThenXMemcachedLoaded() {
+    void whenNoAppEngineOnClasspathThenXMemcachedLoaded() {
         this.contextRunner.withUserConfiguration(CacheConfiguration.class)
                 .withClassLoader(new FilteredClassLoader("com.google.appengine.api.memcache"))
                 .run(context -> {
@@ -202,7 +205,7 @@ public class MemcachedAutoConfigurationTest {
     }
 
     @Test
-    public void whenXmemcachedNotOnClasspathThenSpymemcachedLoaded() {
+    void whenXmemcachedNotOnClasspathThenSpymemcachedLoaded() {
         this.contextRunner.withUserConfiguration(CacheConfiguration.class)
                 .withClassLoader(new FilteredClassLoader("net.rubyeye.xmemcached"))
                 .run(context -> {
@@ -222,7 +225,7 @@ public class MemcachedAutoConfigurationTest {
     }
 
     @Test
-    public void whenXMemcachedNotOnClasspathThenSpymemcachedLoadedAndCustomizerApplied() {
+    void whenXMemcachedNotOnClasspathThenSpymemcachedLoadedAndCustomizerApplied() {
         this.contextRunner.withUserConfiguration(CacheWithSpyMemcachedClientCustomizerConfiguration.class)
                 .withClassLoader(new FilteredClassLoader("net.rubyeye.xmemcache"))
                 .run(context -> {
@@ -242,7 +245,7 @@ public class MemcachedAutoConfigurationTest {
     }
 
     @Test
-    public void whenSpyMemcachedNotOnClasspathThenXMemcachedClientLoaded() {
+    void whenSpyMemcachedNotOnClasspathThenXMemcachedClientLoaded() {
         this.contextRunner.withUserConfiguration(CacheConfiguration.class)
                 .withClassLoader(new FilteredClassLoader("net.spy.memcached"))
                 .run(context -> {
@@ -265,7 +268,7 @@ public class MemcachedAutoConfigurationTest {
     }
 
     @Test
-    public void whenSpyMemcachedNotOnClasspathThenXMemcachedClientLoadedAndCustomizerApplied() {
+    void whenSpyMemcachedNotOnClasspathThenXMemcachedClientLoadedAndCustomizerApplied() {
         this.contextRunner.withUserConfiguration(CacheWithXMemcachedClientCustomizerConfiguration.class)
                 .withClassLoader(new FilteredClassLoader("net.spy.memcached"))
                 .run(context -> {
@@ -288,7 +291,7 @@ public class MemcachedAutoConfigurationTest {
     }
 
     @Test
-    public void whenStaticProviderAndEmptyServerListThenMemcachedNotLoaded() {
+    void whenStaticProviderAndEmptyServerListThenMemcachedNotLoaded() {
         this.contextRunner.withUserConfiguration(CacheConfiguration.class)
                 .withPropertyValues(
                         "memcached.cache.servers=",
@@ -301,7 +304,7 @@ public class MemcachedAutoConfigurationTest {
     }
 
     @Test
-    public void whenOperationTimeoutZeroThenMemcachedNotLoaded() {
+    void whenOperationTimeoutZeroThenMemcachedNotLoaded() {
         this.contextRunner.withUserConfiguration(CacheConfiguration.class)
                 .withPropertyValues("memcached.cache.operation-timeout=0")
                 .run(context -> assertThat(context).getFailure()
@@ -311,7 +314,7 @@ public class MemcachedAutoConfigurationTest {
     }
 
     @Test
-    public void whenOperationTimeoutNegativeThenMemcachedNotLoaded() {
+    void whenOperationTimeoutNegativeThenMemcachedNotLoaded() {
         this.contextRunner.withUserConfiguration(CacheConfiguration.class)
                 .withPropertyValues("memcached.cache.operation-timeout=-1")
                 .run(context -> assertThat(context).getFailure()
@@ -321,7 +324,7 @@ public class MemcachedAutoConfigurationTest {
     }
 
     @Test
-    public void whenServersRefreshIntervalZeroThenMemcachedNotLoaded() {
+    void whenServersRefreshIntervalZeroThenMemcachedNotLoaded() {
         this.contextRunner.withUserConfiguration(CacheConfiguration.class)
                 .withPropertyValues("memcached.cache.servers-refresh-interval=0")
                 .run(context -> assertThat(context).getFailure()
@@ -331,7 +334,7 @@ public class MemcachedAutoConfigurationTest {
     }
 
     @Test
-    public void whenServersRefreshIntervalNegativeThenMemcachedNotLoaded() {
+    void whenServersRefreshIntervalNegativeThenMemcachedNotLoaded() {
         this.contextRunner.withUserConfiguration(CacheConfiguration.class)
                 .withPropertyValues("memcached.cache.servers-refresh-interval=-1")
                 .run(context -> assertThat(context).getFailure()
@@ -341,42 +344,42 @@ public class MemcachedAutoConfigurationTest {
     }
 
     @Test
-    public void whenStaticProviderAndStandardHashStrategyThenMemcachedLoaded() {
+    void whenStaticProviderAndStandardHashStrategyThenMemcachedLoaded() {
         whenHashStrategyThenCorrectSessionLocator("standard", ArrayMemcachedSessionLocator.class);
     }
 
     @Test
-    public void whenStaticProviderAndLibmemcachedHashStrategyThenMemcachedLoaded() {
+    void whenStaticProviderAndLibmemcachedHashStrategyThenMemcachedLoaded() {
         whenHashStrategyThenCorrectSessionLocator("libmemcached", LibmemcachedMemcachedSessionLocator.class);
     }
 
     @Test
-    public void whenStaticProviderAndKetamaHashStrategyThenMemcachedLoaded() {
+    void whenStaticProviderAndKetamaHashStrategyThenMemcachedLoaded() {
         whenHashStrategyThenCorrectSessionLocator("ketama", KetamaMemcachedSessionLocator.class);
     }
 
     @Test
-    public void whenStaticProviderAndPhpHashStrategyThenMemcachedLoaded() {
+    void whenStaticProviderAndPhpHashStrategyThenMemcachedLoaded() {
         whenHashStrategyThenCorrectSessionLocator("php", PHPMemcacheSessionLocator.class);
     }
 
     @Test
-    public void whenStaticProviderAndElectionHashStrategyThenMemcachedLoaded() {
+    void whenStaticProviderAndElectionHashStrategyThenMemcachedLoaded() {
         whenHashStrategyThenCorrectSessionLocator("election", ElectionMemcachedSessionLocator.class);
     }
 
     @Test
-    public void whenStaticProviderAndRoundRobinHashStrategyThenMemcachedLoaded() {
+    void whenStaticProviderAndRoundRobinHashStrategyThenMemcachedLoaded() {
         whenHashStrategyThenCorrectSessionLocator("roundrobin", RoundRobinMemcachedSessionLocator.class);
     }
 
     @Test
-    public void whenStaticProviderAndRandomHashStrategyThenMemcachedLoaded() {
+    void whenStaticProviderAndRandomHashStrategyThenMemcachedLoaded() {
         whenHashStrategyThenCorrectSessionLocator("random", RandomMemcachedSessionLocaltor.class);
     }
 
     @Test
-    public void whenStaticProviderAndNoHashStrategyThenMemcachedLoaded() {
+    void whenStaticProviderAndNoHashStrategyThenMemcachedLoaded() {
         whenHashStrategyThenCorrectSessionLocator(null, ArrayMemcachedSessionLocator.class);
     }
 

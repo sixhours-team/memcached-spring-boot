@@ -15,8 +15,7 @@
  */
 package io.sixhours.memcached.cache;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -27,7 +26,6 @@ import org.springframework.cloud.context.refresh.ContextRefresher;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import static io.sixhours.memcached.cache.MemcachedAssertions.assertMemcachedClient;
@@ -38,7 +36,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Igor Bolic
  */
-@RunWith(SpringRunner.class)
 @SpringBootTest(classes = RefreshableConfigurationTest.TestConfiguration.class)
 public class RefreshableConfigurationTest {
 
@@ -53,7 +50,7 @@ public class RefreshableConfigurationTest {
 
     @Test
     @DirtiesContext
-    public void whenContextLoadedThenMemcachedCacheManagerInitialized() {
+    void whenContextLoadedThenMemcachedCacheManagerInitialized() {
         assertThat(cacheManager)
                 .isNotNull()
                 .isInstanceOf(MemcachedCacheManager.class);
@@ -69,7 +66,7 @@ public class RefreshableConfigurationTest {
 
     @Test
     @DirtiesContext
-    public void whenConfigurationChangedThenMemcachedClientReinitialized() {
+    void whenConfigurationChangedThenMemcachedClientReinitialized() {
         Object beforeRefresh = ReflectionTestUtils.getField(cacheManager, "memcachedClient");
         assertMemcachedClient((IMemcachedClient) beforeRefresh);
 
