@@ -37,7 +37,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Igor Bolic
  */
 @SpringBootTest(classes = RefreshableConfigurationTest.TestConfiguration.class)
-public class RefreshableConfigurationTest {
+class RefreshableConfigurationTest {
 
     @Autowired
     private ConfigurableEnvironment environment;

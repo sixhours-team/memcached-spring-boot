@@ -22,7 +22,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -78,7 +77,7 @@ class AppEngineMemcachedClientTest {
     }
 
     @Test
-    void whenTouch_thenCorrectMethodInvoked() throws ExecutionException, InterruptedException {
+    void whenTouch_thenCorrectMethodInvoked() {
         memcachedClient.touch("my-key", 700);
 
         verify(service).getIdentifiable("my-key");

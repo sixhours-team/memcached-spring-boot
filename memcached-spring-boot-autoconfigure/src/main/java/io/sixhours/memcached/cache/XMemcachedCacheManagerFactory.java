@@ -21,7 +21,7 @@ import net.rubyeye.xmemcached.MemcachedSessionLocator;
 import net.rubyeye.xmemcached.XMemcachedClientBuilder;
 import net.rubyeye.xmemcached.auth.AuthInfo;
 import net.rubyeye.xmemcached.auth.PlainCallbackHandler;
-import net.rubyeye.xmemcached.aws.AWSElasticCacheClientBuilder;
+import net.rubyeye.xmemcached.autodiscovery.AutoDiscoveryCacheClientBuilder;
 import net.rubyeye.xmemcached.command.BinaryCommandFactory;
 import net.rubyeye.xmemcached.command.TextCommandFactory;
 import net.rubyeye.xmemcached.impl.ArrayMemcachedSessionLocator;
@@ -65,9 +65,8 @@ public class XMemcachedCacheManagerFactory extends MemcachedCacheManagerFactory 
 
         final MemcachedClientBuilder builder = builder(provider, servers);
 
-        if (builder instanceof AWSElasticCacheClientBuilder) {
-            ((AWSElasticCacheClientBuilder) builder)
-                    .setPollConfigIntervalMs(properties.getServersRefreshInterval().toMillis());
+        if (builder instanceof AutoDiscoveryCacheClientBuilder autoDiscoveryCacheClientBuilder) {
+            autoDiscoveryCacheClientBuilder.setPollConfigIntervalMs(properties.getServersRefreshInterval().toMillis());
         }
 
         if (!authentication.isEmpty()) {
@@ -94,25 +93,20 @@ public class XMemcachedCacheManagerFactory extends MemcachedCacheManagerFactory 
     }
 
     private MemcachedClientBuilder builder(MemcachedCacheProperties.Provider provider, List<InetSocketAddress> servers) {
-        switch (provider) {
-            case STATIC:
-                return new XMemcachedClientBuilder(servers);
-            case AWS:
-                return new AWSElasticCacheClientBuilder(servers);
-            default:
-                throw new IllegalArgumentException(String.format("Invalid provider=%s for the XMemcached configuration", provider));
-        }
+        return switch (provider) {
+            case STATIC -> new XMemcachedClientBuilder(servers);
+            case AWS -> new AutoDiscoveryCacheClientBuilder(servers);
+            default ->
+                    throw new IllegalArgumentException(String.format("Invalid provider=%s for the XMemcached configuration", provider));
+        };
     }
 
     private CommandFactory commandFactory(MemcachedCacheProperties.Protocol protocol) {
-        switch (protocol) {
-            case TEXT:
-                return new TextCommandFactory();
-            case BINARY:
-                return new BinaryCommandFactory();
-            default:
-                throw new IllegalArgumentException("Invalid protocol for the XMemcached configuration");
-        }
+        return switch (protocol) {
+            case TEXT -> new TextCommandFactory();
+            case BINARY -> new BinaryCommandFactory();
+            default -> throw new IllegalArgumentException("Invalid protocol for the XMemcached configuration");
+        };
     }
 
     private MemcachedSessionLocator hashStrategyToLocator(MemcachedCacheProperties.HashStrategy hashStrategy) {

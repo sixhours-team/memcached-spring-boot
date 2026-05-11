@@ -22,16 +22,10 @@ import java.net.InetSocketAddress;
  *
  * @author Igor Bolic
  */
-public final class SocketAddress {
-
-    private final InetSocketAddress value;
+public record SocketAddress(InetSocketAddress value) {
 
     public SocketAddress(String value) {
-        this.value = socketAddress(value);
-    }
-
-    public InetSocketAddress value() {
-        return value;
+        this(socketAddress(value));
     }
 
     /**
@@ -40,7 +34,7 @@ public final class SocketAddress {
      * @param server Server address
      * @return InetSocketAddress
      */
-    private InetSocketAddress socketAddress(String server) {
+    private static InetSocketAddress socketAddress(String server) {
         if (server == null) {
             throw new IllegalArgumentException("Invalid server value. It should not be null");
         }

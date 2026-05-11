@@ -44,6 +44,9 @@ import java.io.IOException;
 @AutoConfigureAfter(name = "org.springframework.cloud.autoconfigure.RefreshAutoConfiguration")
 public class AppEngineMemcachedCacheAutoConfiguration {
 
+    private AppEngineMemcachedCacheAutoConfiguration() {
+    }
+
     @Configuration
     @ConditionalOnRefreshScope
     static class RefreshableMemcachedCacheConfiguration {

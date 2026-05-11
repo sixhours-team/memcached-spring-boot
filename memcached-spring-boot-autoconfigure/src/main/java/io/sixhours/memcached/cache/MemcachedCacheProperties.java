@@ -18,19 +18,17 @@ package io.sixhours.memcached.cache;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.convert.DurationStyle;
 import org.springframework.boot.convert.DurationUnit;
-import org.springframework.util.StringUtils;
 
 import java.net.InetSocketAddress;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * Configuration properties for Memcached cache.
@@ -121,13 +119,14 @@ public class MemcachedCacheProperties {
      * @param value Comma-separated list
      */
     public void setServers(String value) {
-        if (value == null || StringUtils.isEmpty(value)) {
+        if (value == null || value.isBlank()) {
             throw new IllegalArgumentException("Server list is empty");
         }
-        this.servers = Stream.of(value.split("\\s*,\\s*"))
+        this.servers = Arrays.stream(value.split(","))
+                .map(String::trim)
                 .map(SocketAddress::new)
                 .map(SocketAddress::value)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public Authentication getAuthentication() {
