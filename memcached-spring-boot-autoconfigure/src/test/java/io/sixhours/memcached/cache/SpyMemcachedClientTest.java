@@ -20,8 +20,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.concurrent.ExecutionException;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
@@ -72,7 +70,7 @@ class SpyMemcachedClientTest {
     }
 
     @Test
-    void whenTouch_thenCorrectMethodInvoked() throws ExecutionException, InterruptedException {
+    void whenTouch_thenCorrectMethodInvoked() {
         memcachedClient.touch("my-key", 700);
 
         verify(client).touch("my-key", 700);

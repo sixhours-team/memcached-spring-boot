@@ -16,11 +16,11 @@ Supports cache eviction per key, as well as clearing out of the entire cache reg
 This project has a dependency on Spring Boot and its projects. The table below outlines the version compatibility matrix
 between Spring Boot, Java, and the Memcached Spring Boot library version.
 
-| Memcached Spring Boot Version | Spring Boot Version | Java Version |
-|:------------------------------|:--------------------|:-------------|
-| **3.x.x** (Current)           | 4.x.x               | 17           |
-| **2.0.0 - 2.5.x**             | 2.x.x - 3.5.x       | 8            |
-| **1.0.0 - 1.3.2**             | 1.5.x               | 8            |
+| Memcached Spring Boot Version | Spring Boot Version | Minimum Java Version |
+|:------------------------------|:--------------------|:---------------------|
+| **3.x.x** (Current)           | 4.x.x               | 17                   |
+| **2.0.0 - 2.5.x**             | 2.x.x - 3.5.x       | 8                    |
+| **1.0.0 - 1.3.2**             | 1.5.x               | 8                    |
 
 ## Usage
 

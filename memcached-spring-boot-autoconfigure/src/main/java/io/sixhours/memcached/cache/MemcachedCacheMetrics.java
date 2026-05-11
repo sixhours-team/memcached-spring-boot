@@ -68,9 +68,7 @@ public class MemcachedCacheMetrics extends CacheMeterBinder<MemcachedCache> {
 
     @Override
     protected void bindImplementationSpecificMetrics(MeterRegistry registry) {
-        if (cache.getNativeCache() instanceof XMemcachedClient) {
-            final XMemcachedClient memcachedClient = (XMemcachedClient) cache.getNativeCache();
-
+        if (cache.getNativeCache() instanceof XMemcachedClient memcachedClient) {
             registry.gauge("available_servers_count", memcachedClient.nativeClient().getAvailableServers().size());
         }
     }

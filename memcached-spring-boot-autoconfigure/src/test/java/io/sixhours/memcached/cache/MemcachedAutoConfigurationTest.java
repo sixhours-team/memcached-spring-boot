@@ -16,7 +16,7 @@
 package io.sixhours.memcached.cache;
 
 import net.rubyeye.xmemcached.MemcachedClient;
-import net.rubyeye.xmemcached.command.KestrelCommandFactory;
+import net.rubyeye.xmemcached.command.BinaryCommandFactory;
 import net.rubyeye.xmemcached.impl.ArrayMemcachedSessionLocator;
 import net.rubyeye.xmemcached.impl.ElectionMemcachedSessionLocator;
 import net.rubyeye.xmemcached.impl.KetamaMemcachedSessionLocator;
@@ -214,9 +214,9 @@ class MemcachedAutoConfigurationTest {
                     assertThat(cacheManager).isInstanceOf(DisposableMemcachedCacheManager.class)
                             .hasFieldOrProperty("memcachedClient")
                             .extracting("memcachedClient")
-                            .isInstanceOfSatisfying(SpyMemcachedClient.class, (memcachedClient) -> {
+                            .isInstanceOfSatisfying(SpyMemcachedClient.class, memcachedClient -> {
                                 assertThat(memcachedClient.nativeClient())
-                                        .isInstanceOfSatisfying(net.spy.memcached.MemcachedClient.class, (client) -> {
+                                        .isInstanceOfSatisfying(net.spy.memcached.MemcachedClient.class, client -> {
                                             assertThat(client.getNodeLocator().getAll()).isNotEmpty();
                                             assertThat(client.getOperationTimeout()).isEqualTo(2500);
                                         });
@@ -234,9 +234,9 @@ class MemcachedAutoConfigurationTest {
                     assertThat(cacheManager).isInstanceOf(DisposableMemcachedCacheManager.class)
                             .hasFieldOrProperty("memcachedClient")
                             .extracting("memcachedClient")
-                            .isInstanceOfSatisfying(SpyMemcachedClient.class, (memcachedClient) -> {
+                            .isInstanceOfSatisfying(SpyMemcachedClient.class, memcachedClient -> {
                                 assertThat(memcachedClient.nativeClient())
-                                        .isInstanceOfSatisfying(net.spy.memcached.MemcachedClient.class, (client) -> {
+                                        .isInstanceOfSatisfying(net.spy.memcached.MemcachedClient.class, client -> {
                                             assertThat(client.getNodeLocator().getAll()).isNotEmpty();
                                             assertThat(client.getOperationTimeout()).isEqualTo(1200);
                                         });
@@ -254,10 +254,10 @@ class MemcachedAutoConfigurationTest {
                     assertThat(cacheManager).isInstanceOf(DisposableMemcachedCacheManager.class)
                             .hasFieldOrProperty("memcachedClient")
                             .extracting("memcachedClient")
-                            .isInstanceOfSatisfying(XMemcachedClient.class, (memcachedClient) -> assertThat(memcachedClient.nativeClient()).isInstanceOfSatisfying(MemcachedClient.class, (client) -> {
+                            .isInstanceOfSatisfying(XMemcachedClient.class, memcachedClient -> assertThat(memcachedClient.nativeClient()).isInstanceOfSatisfying(MemcachedClient.class, client -> {
                                 assertThat(client.getName()).startsWith("MemcachedClient-");
                                 assertThat(client.getOpTimeout()).isEqualTo(2500);
-                                assertThat(client.getConnector()).isInstanceOfSatisfying(MemcachedConnector.class, (connector) -> {
+                                assertThat(client.getConnector()).isInstanceOfSatisfying(MemcachedConnector.class, connector -> {
                                     assertThat(connector).extracting("connectionPoolSize").isEqualTo(1);
                                     assertThat(connector.getProtocol()).isEqualTo(Protocol.Text);
                                 });
@@ -277,12 +277,12 @@ class MemcachedAutoConfigurationTest {
                     assertThat(cacheManager).isInstanceOf(DisposableMemcachedCacheManager.class)
                             .hasFieldOrProperty("memcachedClient")
                             .extracting("memcachedClient")
-                            .isInstanceOfSatisfying(XMemcachedClient.class, (memcachedClient) -> assertThat(memcachedClient.nativeClient()).isInstanceOfSatisfying(MemcachedClient.class, (client) -> {
+                            .isInstanceOfSatisfying(XMemcachedClient.class, memcachedClient -> assertThat(memcachedClient.nativeClient()).isInstanceOfSatisfying(MemcachedClient.class, client -> {
                                 assertThat(client.getName()).isEqualTo("customizer");
                                 assertThat(client.getOpTimeout()).isEqualTo(1200);
-                                assertThat(client.getConnector()).isInstanceOfSatisfying(MemcachedConnector.class, (connector) -> {
+                                assertThat(client.getConnector()).isInstanceOfSatisfying(MemcachedConnector.class, connector -> {
                                     assertThat(connector).extracting("connectionPoolSize").isEqualTo(123);
-                                    assertThat(connector.getProtocol()).isEqualTo(Protocol.Kestrel);
+                                    assertThat(connector.getProtocol()).isEqualTo(Protocol.Binary);
                                 });
                                 assertThat(client.getConnectTimeout()).isEqualTo(5000);
                                 assertThat(client.isFailureMode()).isTrue();
@@ -464,7 +464,7 @@ class MemcachedAutoConfigurationTest {
                 builder.setOpTimeout(1200);
                 builder.setConnectionPoolSize(123);
                 builder.setConnectTimeout(5000);
-                builder.setCommandFactory(new KestrelCommandFactory());
+                builder.setCommandFactory(new BinaryCommandFactory());
                 builder.setFailureMode(true);
             };
         }

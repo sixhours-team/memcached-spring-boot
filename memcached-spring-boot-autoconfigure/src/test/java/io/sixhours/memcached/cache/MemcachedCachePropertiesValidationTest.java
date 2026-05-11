@@ -67,7 +67,7 @@ class MemcachedCachePropertiesValidationTest {
     void whenSetBlankServersThenValidationFails() {
         assertThatThrownBy(() -> properties.setServers(" "))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("Invalid server value. It cannot be empty");
+                .hasMessage("Server list is empty");
     }
 
     @Test
@@ -180,7 +180,9 @@ class MemcachedCachePropertiesValidationTest {
 
     @Test
     void whenSetNegativeExpirationThenValidationFails() {
-        assertThatThrownBy(() -> properties.setExpiration(Duration.ofSeconds(-1)))
+        Duration negativeExpiration = Duration.ofSeconds(-1);
+
+        assertThatThrownBy(() -> properties.setExpiration(negativeExpiration))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("Invalid expiration. Duration must be greater than or equal to 0 (zero) seconds.");
     }
@@ -196,10 +198,10 @@ class MemcachedCachePropertiesValidationTest {
         properties.setExpirationPerCache(perCache);
 
         assertThat(properties.getExpirationPerCache()).hasSize(4);
-        assertThat(properties.getExpirationPerCache().get("cache-1")).isEqualTo(Duration.ofDays(1));
-        assertThat(properties.getExpirationPerCache().get("cache-2")).isEqualTo(Duration.ofHours(15));
-        assertThat(properties.getExpirationPerCache().get("cache-3")).isEqualTo(Duration.ofDays(30));
-        assertThat(properties.getExpirationPerCache().get("cache-4")).isEqualTo(Duration.ofDays(40));
+        assertThat(properties.getExpirationPerCache()).containsEntry("cache-1", Duration.ofDays(1));
+        assertThat(properties.getExpirationPerCache()).containsEntry("cache-2", Duration.ofHours(15));
+        assertThat(properties.getExpirationPerCache()).containsEntry("cache-3", Duration.ofDays(30));
+        assertThat(properties.getExpirationPerCache()).containsEntry("cache-4", Duration.ofDays(40));
     }
 
     @Test
@@ -271,7 +273,9 @@ class MemcachedCachePropertiesValidationTest {
 
     @Test
     void whenSetNegativeOperationTimeoutThenValidationFails() {
-        assertThatThrownBy(() -> properties.setOperationTimeout(Duration.ofDays(-1)))
+        Duration negativeOperationTimeout = Duration.ofDays(-1);
+
+        assertThatThrownBy(() -> properties.setOperationTimeout(negativeOperationTimeout))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("Operation timeout must be greater then zero");
     }
@@ -299,7 +303,9 @@ class MemcachedCachePropertiesValidationTest {
 
     @Test
     void whenSetNegativeServersRefreshIntervalThenValidationFails() {
-        assertThatThrownBy(() -> properties.setServersRefreshInterval(Duration.ofDays(-1)))
+        Duration negativeServersRefreshInterval = Duration.ofDays(-1);
+
+        assertThatThrownBy(() -> properties.setServersRefreshInterval(negativeServersRefreshInterval))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("Servers refresh interval must be greater then zero");
     }
