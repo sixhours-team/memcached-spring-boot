@@ -25,13 +25,11 @@ ext.RELEASE_GRADLE = "$rootDir/gradle/release.gradle"
 ext.SONAR_GRADLE = "$rootDir/gradle/sonar.gradle"
 
 def gitVersion = { ->
-    def stdout = new ByteArrayOutputStream()
-    exec {
+    def gitDescribe = providers.exec {
         ignoreExitValue true
         commandLine 'git', 'describe', '--tags', '--abbrev=0', '--match', 'v[[:digit:]]*\\.[[:digit:]]*\\.[[:digit:]]*'
-        standardOutput = stdout
     }
-    def version = stdout.toString().trim()
+    def version = gitDescribe.standardOutput.asText.get().trim()
     return !version.isEmpty() ? version - 'v' : projectVersion
 }
 
