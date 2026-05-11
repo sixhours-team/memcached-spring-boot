@@ -18,7 +18,7 @@ jobs:
           distribution: temurin
           java-version: 17
       - name: Validate Gradle wrapper
-        uses: gradle/actions/wrapper-validation@v5
+        uses: gradle/actions/wrapper-validation@0723195856401067f7a2779048b490ace7a47d7c # v5.0.2
       - name: Setup Gradle cache
         uses: actions/cache@v4
         with:
